@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>富贵每日工作手册</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f0f9ff;--bg2:#e0f2fe;--glass:rgba(255,255,255,.65);--glass2:rgba(255,255,255,.8);
+    --border:rgba(14,165,233,.12);--border2:rgba(14,165,233,.25);
+    --text:#0c2d48;--text2:#5a7a9e;--text3:#7da8c8;
+    --cyan:#0ea5e9;--purple:#38bdf8;--pink:#7dd3fc;--green:#10b981;--orange:#f59e0b;--red:#ef4444;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh;padding:20px;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(ellipse 600px 400px at 20% 10%,rgba(56,189,248,.15),transparent),
+      radial-gradient(ellipse 500px 300px at 80% 20%,rgba(14,165,233,.12),transparent),
+      radial-gradient(ellipse 400px 300px at 60% 80%,rgba(56,189,248,.10),transparent);
+  }
+  body::after{
+    content:'';position:fixed;inset:0;z-index:-1;
+    background-image:linear-gradient(rgba(14,165,233,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,.04) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+  .header{
+    max-width:960px;margin:0 auto 20px;
+    background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(14,165,233,.06));
+    border:1px solid var(--border2);border-radius:18px;padding:28px 32px;
+    backdrop-filter:blur(20px);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+    position:relative;overflow:hidden;
+  }
+  .header::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--purple),#bae6fd);
+  }
+  .header-left h1{
+    font-size:26px;font-weight:800;letter-spacing:-.5px;
+    background:linear-gradient(135deg,var(--cyan),var(--purple),#bae6fd);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .header-left .date{font-size:14px;color:var(--text2);margin-top:4px}
+  .header-left .greeting{font-size:13px;color:var(--cyan);margin-top:6px;font-weight:500}
+  .header-right{text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .phase-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);
+    padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;color:var(--orange);
+  }
+  .phase-tag .dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  .streak-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);
+    padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;color:var(--pink);
+  }
+  .streak-badge .fire{font-size:15px}
+  .main{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:768px){.main{grid-template-columns:1fr}}
+  .card{
+    background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px 24px;
+    backdrop-filter:blur(16px);transition:border-color .2s;
+    box-shadow:0 2px 16px rgba(14,165,233,.06);
+  }
+  .card:hover{border-color:var(--border2)}
+  .card-title{
+    font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card-title .icon{font-size:18px}
+  .card-title .accent{width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--cyan),var(--purple))}
+  .quote-banner{
+    max-width:960px;margin:0 auto 16px;padding:16px 24px;
+    background:linear-gradient(135deg,rgba(56,189,248,.06),rgba(14,165,233,.04));
+    border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(12px);
+    display:flex;align-items:center;gap:14px;
+  }
+  .quote-banner .q-icon{font-size:24px;flex-shrink:0;opacity:.7}
+  .quote-banner .q-text{font-size:14px;color:var(--text2);line-height:1.6;font-style:italic;flex:1}
+  .quote-banner .q-text strong{color:var(--cyan);font-style:normal;font-weight:600}
+  .mood-row{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+  .mood-label{font-size:12px;color:var(--text3);font-weight:600;white-space:nowrap}
+  .mood-options{display:flex;gap:6px}
+  .mood-btn{
+    width:36px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--glass);
+    font-size:18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;
+  }
+  .mood-btn:hover{border-color:var(--purple);transform:scale(1.1)}
+  .mood-btn.selected{border-color:var(--purple);background:rgba(56,189,248,.15);box-shadow:0 0 12px rgba(56,189,248,.3)}
+  .task-group{margin-bottom:16px}
+  .task-group:last-of-type{margin-bottom:0}
+  .task-group-label{
+    font-size:11px;color:var(--text3);font-weight:600;margin-bottom:8px;
+    display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:1px;
+  }
+  .task-group-label::before{content:'';width:3px;height:12px;border-radius:2px}
+  .task-group[data-period="morning"] .task-group-label::before{background:var(--orange);box-shadow:0 0 6px rgba(251,191,36,.4)}
+  .task-group[data-period="afternoon"] .task-group-label::before{background:var(--cyan);box-shadow:0 0 6px rgba(14,165,233,.4)}
+  .task-group[data-period="evening"] .task-group-label::before{background:var(--purple);box-shadow:0 0 6px rgba(56,189,248,.4)}
+  .task-item{
+    display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+    border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:3px;
+    border:1px solid transparent;
+  }
+  .task-item:hover{background:var(--glass2);border-color:var(--border)}
+  .task-checkbox{
+    width:20px;height:20px;border:2px solid var(--text3);border-radius:6px;
+    flex-shrink:0;margin-top:1px;transition:all .25s;display:flex;align-items:center;justify-content:center;
+  }
+  .task-item:hover .task-checkbox{border-color:var(--purple)}
+  .task-item.done .task-checkbox{
+    background:linear-gradient(135deg,var(--cyan),var(--purple));border-color:transparent;
+    box-shadow:0 0 10px rgba(14,165,233,.3);
+  }
+  .task-item.done .task-checkbox::after{
+    content:'';width:5px;height:9px;border:2px solid #fff;border-top:0;border-left:0;
+    transform:rotate(45deg) translate(-1px,-1px);
+  }
+  .task-text{font-size:13px;line-height:1.5;flex:1;color:var(--text)}
+  .task-item.done .task-text{color:var(--text3);text-decoration:line-through}
+  .task-tag{font-size:10px;padding:1px 7px;border-radius:4px;font-weight:600;white-space:nowrap;letter-spacing:.5px}
+  .task-tag.urgent{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+  .task-tag.important{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
+  .task-tag.routine{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+  .task-progress{
+    margin-top:14px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:12px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .task-progress .bar-wrap{flex:1;height:8px;background:rgba(14,165,233,.08);border-radius:4px;margin:0 12px;overflow:hidden;position:relative}
+  .task-progress .bar{
+    height:100%;border-radius:4px;transition:width .5s ease;
+    background:linear-gradient(90deg,var(--cyan),var(--purple),#bae6fd);
+    box-shadow:0 0 12px rgba(56,189,248,.4);
+  }
+  .task-progress .count{font-size:13px;color:var(--text2);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .task-progress .count .pct{color:var(--cyan)}
+  .encourage-msg{
+    margin-top:10px;text-align:center;font-size:13px;font-weight:600;
+    transition:opacity .3s;
+  }
+  .encourage-msg.show{opacity:1}
+  .encourage-msg.hide{opacity:0}
+  .voice-card{grid-column:span 1}
+  .voice-area{
+    background:rgba(14,165,233,.04);border-radius:12px;padding:16px;min-height:160px;
+    border:1px dashed var(--border2);font-size:14px;line-height:1.7;color:var(--text);
+    white-space:pre-wrap;word-break:break-all;position:relative;transition:border-color .2s;
+  }
+  .voice-area.empty{color:var(--text3);display:flex;align-items:center;justify-content:center;text-align:center}
+  .voice-area .interim{color:var(--text3);font-style:italic}
+  .mic-btn{
+    display:flex;align-items:center;gap:8px;padding:12px 28px;border:none;border-radius:30px;
+    font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin:14px auto 0;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;
+    box-shadow:0 4px 20px rgba(14,165,233,.25);
+  }
+  .mic-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(14,165,233,.35)}
+  .mic-btn.recording{
+    background:linear-gradient(135deg,var(--red),var(--pink));
+    box-shadow:0 4px 20px rgba(248,113,113,.35);animation:pulse 1.5s infinite;
+  }
+  @keyframes pulse{0%,100%{box-shadow:0 4px 20px rgba(248,113,113,.35)}50%{box-shadow:0 4px 32px rgba(248,113,113,.6)}}
+  .mic-icon{font-size:16px}
+  .voice-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .voice-btn{
+    padding:8px 18px;border:1px solid var(--border2);border-radius:8px;background:var(--glass);color:var(--text2);
+    font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .voice-btn:hover{background:var(--glass2);border-color:var(--purple);color:var(--text)}
+  .voice-btn.primary{
+    background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(56,189,248,.15));
+    border-color:rgba(14,165,233,.3);color:var(--cyan);font-weight:600;
+  }
+  .voice-btn.primary:hover{border-color:var(--cyan);box-shadow:0 0 12px rgba(14,165,233,.2)}
+  .voice-btn:disabled{opacity:.4;cursor:not-allowed}
+  .voice-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:8px}
+  .phase-info{grid-column:span 2}
+  .phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:600px){.phase-grid{grid-template-columns:1fr}}
+  .phase-item{
+    background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:14px;
+    transition:all .2s;
+  }
+  .phase-item:hover{border-color:var(--border2);transform:translateY(-2px)}
+  .phase-item .label{font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .phase-item .value{font-size:13px;font-weight:600;color:var(--text);line-height:1.5}
+  .phase-item .value.red{color:var(--red)}
+  .phase-item .value.green{color:var(--green)}
+  .phase-item .value.orange{color:var(--orange)}
+  .phase-item .value.cyan{color:var(--cyan)}
+  .kpi-card{grid-column:span 2}
+  .kpi-tabs{display:flex;gap:4px;margin-bottom:16px}
+  .kpi-tab{
+    padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;
+    border:1px solid var(--border);
+  }
+  .kpi-tab:hover{color:var(--text);border-color:var(--border2)}
+  .kpi-tab.active{
+    background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
+    color:var(--cyan);border-color:rgba(14,165,233,.3);
+  }
+  .kpi-tab .badge{font-size:10px;background:rgba(14,165,233,.12);color:var(--text2);padding:1px 6px;border-radius:10px;margin-left:4px}
+  .kpi-tab.active .badge{background:rgba(14,165,233,.2);color:var(--cyan)}
+  .kpi-table{width:100%;border-collapse:collapse;font-size:12px}
+  .kpi-table th{
+    background:rgba(14,165,233,.05);color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;
+    border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;font-size:11px;
+  }
+  .kpi-table td{padding:8px 10px;border-bottom:1px solid rgba(14,165,233,.06);color:var(--text)}
+  .kpi-table tr{transition:background .15s}
+  .kpi-table tr:hover td{background:rgba(14,165,233,.04)}
+  .kpi-table .name{font-weight:700;color:var(--text)}
+  .kpi-table .group-tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
+  .kpi-table .group-tag.g1{background:rgba(251,191,36,.12);color:var(--orange)}
+  .kpi-table .group-tag.g2{background:rgba(14,165,233,.12);color:var(--cyan)}
+  .kpi-table .group-tag.g3{background:rgba(52,211,153,.12);color:var(--green)}
+  .kpi-table .level{font-size:10px;color:var(--text3)}
+  .kpi-dimensions{margin-top:14px;padding:12px;background:var(--glass2);border:1px solid var(--border);border-radius:10px}
+  .kpi-dim-title{font-size:11px;color:var(--text3);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+  .kpi-dim-list{display:flex;flex-wrap:wrap;gap:6px}
+  .kpi-dim-item{
+    background:rgba(14,165,233,.05);border:1px solid var(--border);border-radius:8px;padding:5px 10px;
+    font-size:12px;display:flex;align-items:center;gap:6px;transition:all .15s;
+  }
+  .kpi-dim-item:hover{border-color:var(--purple);background:rgba(56,189,248,.05)}
+  .kpi-dim-item .score{font-weight:800;color:var(--cyan)}
+  .kpi-dim-item .target{color:var(--text3);font-size:11px}
+  .notes-card{grid-column:span 2}
+  .notes-area{
+    width:100%;min-height:70px;border:1px solid var(--border);border-radius:10px;
+    padding:12px;font-size:13px;font-family:inherit;resize:vertical;color:var(--text);
+    background:rgba(14,165,233,.04);transition:all .2s;
+  }
+  .notes-area:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+  .notes-area::placeholder{color:var(--text3)}
+  .toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:rgba(255,255,255,.95);border:1px solid var(--border2);color:var(--text);
+    padding:10px 24px;border-radius:30px;font-size:14px;font-weight:500;
+    opacity:0;transition:all .3s;z-index:999;pointer-events:none;
+    backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(14,165,233,.15);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .celebration{
+    position:fixed;inset:0;z-index:998;pointer-events:none;
+    display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;
+  }
+  .celebration.show{opacity:1}
+  .celebration .text{
+    font-size:32px;font-weight:800;text-align:center;
+    background:linear-gradient(135deg,var(--cyan),var(--purple),#bae6fd);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    text-shadow:0 0 40px rgba(56,189,248,.3);
+  }
+  .celebration .sub{font-size:16px;color:var(--text2);margin-top:8px;text-align:center}
+  .energy-bar{
+    display:flex;align-items:center;gap:8px;margin-top:12px;
+  }
+  .energy-label{font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap}
+  .energy-track{flex:1;height:6px;background:rgba(14,165,233,.08);border-radius:3px;overflow:hidden}
+  .energy-fill{height:100%;border-radius:3px;transition:width .5s;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+  .energy-val{font-size:12px;font-weight:700;color:var(--cyan);font-variant-numeric:tabular-nums}
+  .horoscope-card{grid-column:span 1}
+  .horo-rating{font-size:16px;margin-bottom:8px;letter-spacing:1px}
+  .horo-text{font-size:13px;line-height:1.7;color:var(--text)}
+  .horo-meta{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .horo-meta-item{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px}
+  .horo-meta-item .val{color:var(--cyan);font-weight:600}
+  .holiday-card{grid-column:span 1}
+  .holiday-list{display:flex;flex-direction:column;gap:10px}
+  .holiday-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;transition:all .2s}
+  .holiday-item:hover{border-color:var(--border2);transform:translateX(4px)}
+  .holiday-item .emoji{font-size:24px;flex-shrink:0}
+  .holiday-item .info{flex:1}
+  .holiday-item .name{font-size:13px;font-weight:600;color:var(--text)}
+  .holiday-item .date{font-size:11px;color:var(--text3);margin-top:2px}
+  .holiday-item .countdown{text-align:right;flex-shrink:0}
+  .holiday-item .days{font-size:22px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums;line-height:1}
+  .holiday-item .days-label{font-size:10px;color:var(--text3);margin-top:2px}
+  .holiday-item.imminent{border-color:rgba(248,113,113,.2);background:rgba(248,113,113,.04)}
+  .holiday-item.imminent .days{color:var(--red)}
+  .auto-badge{font-size:10px;color:var(--text3);font-weight:500;margin-left:auto;padding:2px 8px;background:var(--glass2);border:1px solid var(--border);border-radius:8px}
+  .intel-card{grid-column:span 2}
+  .intel-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+  .intel-tab{
+    padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;
+    border:1px solid var(--border);display:flex;align-items:center;gap:6px;
+  }
+  .intel-tab:hover{color:var(--text);border-color:var(--border2)}
+  .intel-tab.active{
+    background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
+    color:var(--cyan);border-color:rgba(14,165,233,.3);
+  }
+  .intel-tab .dot-new{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 2s infinite}
+  .rule-list{display:flex;flex-direction:column;gap:12px}
+  .rule-item{
+    padding:14px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:12px;
+    transition:all .2s;border-left:3px solid var(--purple);
+  }
+  .rule-item:hover{border-color:var(--border2);border-left-color:var(--cyan);transform:translateX(2px)}
+  .rule-item .rule-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+  .rule-item .rule-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.4}
+  .rule-item .rule-date{font-size:10px;color:var(--text3);white-space:nowrap;padding:2px 8px;background:var(--glass);border-radius:6px;flex-shrink:0}
+  .rule-item .rule-body{font-size:12px;line-height:1.7;color:var(--text2)}
+  .rule-item .rule-body strong{color:var(--cyan);font-weight:600}
+  .rule-item .rule-body .warn{color:var(--red);font-weight:600}
+  .rule-item .rule-source{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+  .rule-item .rule-source a{color:var(--cyan);text-decoration:none;word-break:break-all}
+  .rule-item .rule-source a:hover{text-decoration:underline}
+  .rule-item .rule-tag{
+    display:inline-block;font-size:10px;padding:1px 8px;border-radius:4px;font-weight:600;margin-right:6px;
+  }
+  .rule-tag.critical{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+  .rule-tag.warning{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
+  .rule-tag.info{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+  .advice-box{
+    padding:16px 18px;background:linear-gradient(135deg,rgba(56,189,248,.06),rgba(14,165,233,.04));
+    border:1px solid var(--border2);border-radius:12px;margin-top:14px;
+  }
+  .advice-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .advice-head .icon{font-size:18px}
+  .advice-head .title{font-size:14px;font-weight:700;color:var(--text)}
+  .advice-head .date-tag{font-size:10px;color:var(--text3);margin-left:auto;padding:2px 8px;background:var(--glass);border-radius:6px}
+  .advice-body{font-size:13px;line-height:1.8;color:var(--text)}
+  .advice-body .tip{display:flex;gap:8px;margin-bottom:6px}
+  .advice-body .tip-num{flex-shrink:0;width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .advice-body .tip-text{flex:1}
+  .advice-body .tip-text strong{color:var(--cyan)}
+
+  /* ===== KPI Settlement ===== */
+  .settle-card{grid-column:span 2}
+  .settle-tabs{display:flex;gap:4px;margin-bottom:16px}
+  .settle-tab{
+    padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;
+    border:1px solid var(--border);
+  }
+  .settle-tab:hover{color:var(--text);border-color:var(--border2)}
+  .settle-tab.active{
+    background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
+    color:var(--cyan);border-color:rgba(14,165,233,.3);
+  }
+  .settle-table{width:100%;border-collapse:collapse;font-size:12px}
+  .settle-table th{
+    background:rgba(14,165,233,.05);color:var(--text3);font-weight:600;padding:8px 6px;text-align:center;
+    border-bottom:1px solid var(--border);white-space:nowrap;font-size:11px;
+  }
+  .settle-table th:first-child{text-align:left}
+  .settle-table td{padding:6px;text-align:center;border-bottom:1px solid rgba(14,165,233,.06)}
+  .settle-table td:first-child{text-align:left;font-weight:600}
+  .settle-table .name-cell{font-weight:700;color:var(--text);min-width:60px}
+  .settle-input{
+    width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;
+    font-size:12px;text-align:center;background:var(--glass);color:var(--text);
+    transition:all .2s;
+  }
+  .settle-input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 2px rgba(14,165,233,.15)}
+  .settle-total{font-weight:800;color:var(--cyan);font-size:14px}
+  .settle-rating{
+    display:inline-block;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:700;
+  }
+  .settle-rating.A{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+  .settle-rating.B{background:rgba(14,165,233,.15);color:var(--cyan);border:1px solid rgba(14,165,233,.3)}
+  .settle-rating.C{background:rgba(251,191,36,.15);color:var(--orange);border:1px solid rgba(251,191,36,.3)}
+  .settle-rating.D{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+  .settle-rating.E{background:rgba(107,114,128,.15);color:#6b7280;border:1px solid rgba(107,114,128,.3)}
+  .settle-actions{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .settle-btn{
+    padding:10px 24px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;
+  }
+  .settle-btn.primary{
+    background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;
+    box-shadow:0 4px 16px rgba(14,165,233,.25);
+  }
+  .settle-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,233,.35)}
+  .settle-btn.secondary{
+    background:var(--glass);color:var(--text2);border:1px solid var(--border);
+  }
+  .settle-btn.secondary:hover{background:var(--glass2);border-color:var(--border2)}
+  .settle-summary{
+    margin-top:14px;padding:14px 18px;background:var(--glass2);border:1px solid var(--border);border-radius:12px;
+    display:none;
+  }
+  .settle-summary.show{display:block}
+  .settle-summary .title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px}
+  .settle-summary .stats{display:flex;gap:20px;flex-wrap:wrap}
+  .settle-summary .stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .settle-summary .stat .num{font-size:24px;font-weight:800;color:var(--cyan)}
+  .settle-summary .stat .label{font-size:11px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>富贵每日工作手册</h1>
+    <div class="date" id="todayDate"></div>
+    <div class="greeting" id="greetingText"></div>
+  </div>
+  <div class="header-right">
+    <span class="phase-tag"><span class="dot"></span>合规止血 + 新号重建期</span>
+    <span class="streak-badge" id="streakBadge"><span class="fire">&#x1F525;</span> <span id="streakNum">0</span> 天连击</span>
+  </div>
+</div>
+
+<!-- Quote Banner -->
+<div class="quote-banner">
+  <span class="q-icon">&#x1F4AC;</span>
+  <div class="q-text" id="quoteText"></div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- ===== Tasks ===== -->
+  <div class="card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x26A1;</span> 今日待办<span class="auto-badge">基于岗位自动生成</span></div>
+
+    <!-- Mood -->
+    <div class="mood-row">
+      <span class="mood-label">今日状态</span>
+      <div class="mood-options">
+        <div class="mood-btn" data-mood="fire" onclick="selectMood('fire')">&#x1F525;</div>
+        <div class="mood-btn" data-mood="good" onclick="selectMood('good')">&#x1F60A;</div>
+        <div class="mood-btn" data-mood="ok" onclick="selectMood('ok')">&#x1F610;</div>
+        <div class="mood-btn" data-mood="tired" onclick="selectMood('tired')">&#x1F634;</div>
+        <div class="mood-btn" data-mood="stress" onclick="selectMood('stress')">&#x1F624;</div>
+      </div>
+    </div>
+
+    <div class="task-group" data-period="morning">
+      <div class="task-group-label">晨间 · 09:00-12:00</div>
+    </div>
+    <div class="task-group" data-period="afternoon">
+      <div class="task-group-label">午后 · 13:30-18:00</div>
+    </div>
+    <div class="task-group" data-period="evening">
+      <div class="task-group-label">晚间 · 19:00-21:00</div>
+    </div>
+
+    <div class="task-progress">
+      <span class="count" id="progressText">0 / 0</span>
+      <div class="bar-wrap"><div class="bar" id="progressBar" style="width:0%"></div></div>
+      <span class="count"><span class="pct" id="progressPercent">0%</span></span>
+    </div>
+    <div class="encourage-msg" id="encourageMsg"></div>
+
+    <!-- Energy -->
+    <div class="energy-bar">
+      <span class="energy-label">今日能量</span>
+      <div class="energy-track"><div class="energy-fill" id="energyFill" style="width:0%"></div></div>
+      <span class="energy-val" id="energyVal">0</span>
+    </div>
+  </div>
+
+  <!-- ===== Voice ===== -->
+  <div class="card voice-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F399;&#xFE0F;</span> 语音录入</div>
+    <div class="voice-area empty" id="voiceArea">
+      点击下方按钮开始语音录入<br>说出今天的情况、问题和安排
+    </div>
+    <div class="voice-controls">
+      <button class="mic-btn" id="micBtn" onclick="toggleVoice()">
+        <span class="mic-icon">&#x1F3A4;</span>
+        <span id="micLabel">开始录音</span>
+      </button>
+    </div>
+    <div class="voice-controls" style="margin-top:10px">
+      <button class="voice-btn" onclick="clearVoice()">清空</button>
+      <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
+    </div>
+    <div class="voice-hint">复制后粘贴给AI，自动生成工作计划</div>
+  </div>
+
+  <!-- ===== Horoscope ===== -->
+  <div class="card horoscope-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x264F;</span> 天蝎座今日运势</div>
+    <div class="horo-rating" id="horoRating"></div>
+    <div class="horo-text" id="horoText"></div>
+    <div class="horo-meta">
+      <div class="horo-meta-item">&#x1F3A8; 幸运色 <span class="val" id="horoColor"></span></div>
+      <div class="horo-meta-item">&#x1F522; 幸运数 <span class="val" id="horoNum"></span></div>
+      <div class="horo-meta-item">&#x1F9ED; 宜 <span class="val" id="horoGood"></span></div>
+      <div class="horo-meta-item">&#x1F6AB; 忌 <span class="val" id="horoBad"></span></div>
+    </div>
+  </div>
+
+  <!-- ===== Holiday Countdown ===== -->
+  <div class="card holiday-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F3D6;&#xFE0F;</span> 假期倒计时</div>
+    <div class="holiday-list" id="holidayList"></div>
+  </div>
+
+  <!-- ===== Industry Intelligence ===== -->
+  <div class="card intel-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4E1;</span> 行业风向 · 视频号旅游</div>
+    <div class="intel-tabs">
+      <button class="intel-tab active" onclick="switchIntelTab(event,'rules')"><span class="dot-new"></span>规则速报</button>
+      <button class="intel-tab" onclick="switchIntelTab(event,'advice')">今日建议</button>
+    </div>
+    <div id="intelContent"></div>
+  </div>
+
+  <!-- ===== Phase Info ===== -->
+  <div class="card phase-info">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F3AF;</span> 当前重点</div>
+    <div class="phase-grid">
+      <div class="phase-item">
+        <div class="label">核心任务</div>
+        <div class="value orange">用个人微信号注册不认证新号，从零重建30个干净账号</div>
+      </div>
+      <div class="phase-item">
+        <div class="label">止血动作</div>
+        <div class="value red">旧账号每天隐藏10-15条违规视频，逐步清理</div>
+      </div>
+      <div class="phase-item">
+        <div class="label">内容方向</div>
+        <div class="value green">真实旅游体验 + 中老年实用攻略，杜绝模板化</div>
+      </div>
+      <div class="phase-item">
+        <div class="label">团队规模</div>
+        <div class="value cyan">3个运营组(14人) + 3组长 + 销转部6人 = 23人</div>
+      </div>
+      <div class="phase-item">
+        <div class="label">关键指标</div>
+        <div class="value">新号冷启动播放量 > 旧号当前水平</div>
+      </div>
+      <div class="phase-item">
+        <div class="label">注意事项</div>
+        <div class="value red">不可用同一企业主体注册新号！申诉仅1次</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KPI ===== -->
+  <div class="card kpi-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CA;</span> 团队KPI考核 · 8月</div>
+    <div class="kpi-tabs">
+      <button class="kpi-tab active" onclick="switchKpiTab(event,'ops')">运营组员 <span class="badge">14</span></button>
+      <button class="kpi-tab" onclick="switchKpiTab(event,'leader')">运营组长 <span class="badge">3</span></button>
+      <button class="kpi-tab" onclick="switchKpiTab(event,'sales')">销转部 <span class="badge">6</span></button>
+    </div>
+    <div id="kpiContent"></div>
+  </div>
+
+  <!-- ===== KPI Settlement ===== -->
+  <div class="card settle-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4B0;</span> KPI结算 · 打分算评级</div>
+    <div class="settle-tabs">
+      <button class="settle-tab active" onclick="switchSettleTab(event,'ops')">运营组员</button>
+      <button class="settle-tab" onclick="switchSettleTab(event,'leader')">运营组长</button>
+      <button class="settle-tab" onclick="switchSettleTab(event,'sales')">销转部</button>
+    </div>
+    <div id="settleContent"></div>
+    <div class="settle-summary" id="settleSummary">
+      <div class="title">结算汇总</div>
+      <div class="stats" id="settleStats"></div>
+    </div>
+    <div class="settle-actions">
+      <button class="settle-btn secondary" onclick="resetSettle()">重置打分</button>
+      <button class="settle-btn primary" onclick="calcSettle()">计算评级</button>
+    </div>
+  </div>
+
+  <!-- ===== Notes ===== -->
+  <div class="card notes-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4DD;</span> 快速备注</div>
+    <textarea class="notes-area" id="notesArea" placeholder="随手记一些想法、问题、待跟进事项..." oninput="saveNotes()"></textarea>
+  </div>
+
+</div>
+
+<!-- Celebration overlay -->
+<div class="celebration" id="celebration">
+  <div>
+    <div class="text">&#x1F389; 全部完成！</div>
+    <div class="sub" id="celebrationSub">今天的事干完了，富贵你牛逼</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Date =====
+const now = new Date();
+const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+document.getElementById('todayDate').textContent = todayStr + ' ' + days[now.getDay()];
+
+// ===== Greeting =====
+const hour = now.getHours();
+let greeting = '';
+if(hour < 9) greeting = '早安，富贵。今天又是战斗的一天';
+else if(hour < 12) greeting = '上午好，保持节奏';
+else if(hour < 14) greeting = '午安，吃了吗';
+else if(hour < 18) greeting = '下午好，继续推进';
+else greeting = '晚上好，收尾复盘';
+document.getElementById('greetingText').textContent = greeting;
+
+// ===== Quotes =====
+const QUOTES = [
+  '低谷期不是终点，是<strong>重建的起点</strong>。139个号倒下了，30个干净号会站起来。',
+  '不要用战术上的勤奋掩盖战略上的懒惰。今天的关键决策是：<strong>新号注册推进了几步？</strong>',
+  '合规不是枷锁，是<strong>长期主义的护城河</strong>。现在吃的苦，是以后少走的弯路。',
+  '团队不需要保姆，需要<strong>清晰的指令和明确的标准</strong>。今天站会你说清楚了吗？',
+  '数据不会骗人。零播放不是运气差，是<strong>方法没对</strong>。换思路，不换努力。',
+  '中老年用户要的不是花哨，是<strong>信任感</strong>。每条视频都在积累信任或消耗信任。',
+  '操盘手的价值不在执行，在<strong>判断</strong>。今天你做了几个关键判断？',
+];
+const dayIndex = (now.getDate() + now.getMonth()) % QUOTES.length;
+document.getElementById('quoteText').innerHTML = QUOTES[dayIndex];
+
+// ===== Tasks =====
+function generateTasks(){
+  const dow = now.getDay();
+  const isMonthEnd = now.getDate() >= 27;
+  const morning = [
+    {text:'检查昨日57个在更账号发布情况，标记零播放账号', tag:'routine'},
+    {text:'查看测试新号冷启动进度（好友互动数、播放量）', tag:'urgent'},
+    {text:'检查是否有账号收到平台违规/限流通知', tag:'important'},
+  ];
+  if(dow === 1) morning.push({text:'周一站会：回顾上周数据 + 分配本周各组任务', tag:'important'});
+  else if(dow === 3) morning.push({text:'周中KPI进度检查：各组完成率是否过半', tag:'important'});
+  else if(dow === 5) morning.push({text:'整理本周数据汇总，准备周报', tag:'routine'});
+  else if(isMonthEnd) morning.push({text:'月末KPI预评估：哪些人达标、哪些需谈话', tag:'important'});
+  else morning.push({text:'确认今日3个运营组选题方向并分配任务', tag:'routine'});
+  const afternoon = [
+    {text:'审核今日待发布视频：标题、口播脚本、标签合规', tag:'urgent'},
+    {text:'跟进新号注册进度（个人微信号，不认证）', tag:'urgent'},
+    {text:'运营组15分钟站会：同步数据 + 选题 + 问题反馈', tag:'routine'},
+  ];
+  if(dow === 2) afternoon.push({text:'抽查剪辑素材质量 + 审核本周选题池补充', tag:'important'});
+  else if(dow === 4) afternoon.push({text:'逐条检查视频文案是否命中违禁词清单', tag:'important'});
+  else if(dow === 5) afternoon.push({text:'审核下周选题方向，提前备好脚本', tag:'important'});
+  else afternoon.push({text:'抽查剪辑团队素材质量，确认符合真实体验方向', tag:'routine'});
+  const evening = [
+    {text:'复盘今日各账号播放表现，记录测试新号数据变化', tag:'routine'},
+    {text:'检查是否有账号异常（限流加重、突然零播放）', tag:'urgent'},
+  ];
+  if(dow === 5) evening.push({text:'本周总结：数据变化 + 新号进度 + 下周计划', tag:'important'});
+  else if(isMonthEnd) evening.push({text:'月末团队一对一谈话准备：谁需要重点关注', tag:'important'});
+  else evening.push({text:'更新明日重点待办事项', tag:'important'});
+  evening.push({text:'整理今日语音记录，发给AI生成明日工作计划', tag:'routine'});
+  return {morning, afternoon, evening};
+}
+const TASKS = generateTasks();
+function getTaskKey(){ return 'zhibiao_tasks_' + todayStr; }
+function loadTaskStates(){
+  const saved = localStorage.getItem(getTaskKey());
+  if(saved){ try{ return JSON.parse(saved); }catch(e){} }
+  return {};
+}
+function renderTasks(){
+  const states = loadTaskStates();
+  let total=0, done=0;
+  ['morning','afternoon','evening'].forEach(period=>{
+    const container = document.querySelector('.task-group[data-period="'+period+'"]');
+    container.querySelectorAll('.task-item').forEach(el=>el.remove());
+    TASKS[period].forEach((task, i)=>{
+      const id = period+'_'+i;
+      const isDone = states[id] === true;
+      if(isDone) done++;
+      total++;
+      const el = document.createElement('div');
+      el.className = 'task-item' + (isDone ? ' done' : '');
+      el.innerHTML = '<div class="task-checkbox"></div><span class="task-text">'+task.text+'</span><span class="task-tag '+task.tag+'">'+(task.tag==='urgent'?'紧急':task.tag==='important'?'重要':'日常')+'</span>';
+      el.onclick = function(){ toggleTask(id); };
+      container.appendChild(el);
+    });
+  });
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  document.getElementById('progressText').textContent = done + ' / ' + total;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPercent').textContent = pct + '%';
+  document.getElementById('energyFill').style.width = pct + '%';
+  document.getElementById('energyVal').textContent = pct;
+  const msg = document.getElementById('encourageMsg');
+  let enc = '';
+  if(pct === 0) enc = '开始吧，先干掉第一条';
+  else if(pct < 30) enc = '不错的开始，保持节奏';
+  else if(pct < 50) enc = '已经过半路程的三分之一了';
+  else if(pct < 70) enc = '过半了，势头正好';
+  else if(pct < 100) enc = '快收尾了，别松懈';
+  else enc = '全部搞定！';
+  msg.textContent = enc;
+  msg.style.color = pct === 100 ? 'var(--green)' : pct >= 50 ? 'var(--cyan)' : 'var(--text2)';
+  if(pct === 100 && total > 0){ showCelebration(); updateStreak(true); }
+  else { updateStreak(false); }
+}
+function toggleTask(id){
+  const states = loadTaskStates();
+  states[id] = !states[id];
+  localStorage.setItem(getTaskKey(), JSON.stringify(states));
+  renderTasks();
+}
+
+// ===== Celebration =====
+let celebrated = false;
+function showCelebration(){
+  if(celebrated) return;
+  celebrated = true;
+  const subs = ['今天的事干完了，富贵你牛逼','效率拉满，早点休息','又消灭一个工作日， Respect','全部清零，该陪家人了'];
+  document.getElementById('celebrationSub').textContent = subs[Math.floor(Math.random()*subs.length)];
+  const cel = document.getElementById('celebration');
+  cel.classList.add('show');
+  setTimeout(function(){ cel.classList.remove('show'); }, 3500);
+}
+
+// ===== Streak =====
+function updateStreak(allDone){
+  const streakKey = 'zhibiao_streak';
+  const streakData = JSON.parse(localStorage.getItem(streakKey) || '{"count":0,"lastDate":""}');
+  if(allDone){
+    if(streakData.lastDate !== todayStr){
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yStr = yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
+      if(streakData.lastDate === yStr || streakData.count === 0){ streakData.count = streakData.count + 1; }
+      else { streakData.count = 1; }
+      streakData.lastDate = todayStr;
+      localStorage.setItem(streakKey, JSON.stringify(streakData));
+    }
+  }
+  document.getElementById('streakNum').textContent = streakData.count;
+}
+function loadStreak(){
+  const streakData = JSON.parse(localStorage.getItem('zhibiao_streak') || '{"count":0,"lastDate":""}');
+  document.getElementById('streakNum').textContent = streakData.count;
+}
+
+// ===== Mood =====
+function selectMood(mood){
+  document.querySelectorAll('.mood-btn').forEach(function(el){ el.classList.remove('selected'); });
+  document.querySelector('.mood-btn[data-mood="'+mood+'"]').classList.add('selected');
+  localStorage.setItem('zhibiao_mood_' + todayStr, mood);
+  const moodMsgs = {fire:'状态拉满，今天多推进点关键决策',good:'心情不错，节奏稳住',ok:'平平淡淡也是真，先干完晨间任务',tired:'有点累，挑重点的先做',stress:'压力大的话，先深呼吸。问题一个一个拆'};
+  showToast(moodMsgs[mood]);
+}
+function loadMood(){
+  const saved = localStorage.getItem('zhibiao_mood_' + todayStr);
+  if(saved){
+    const btn = document.querySelector('.mood-btn[data-mood="'+saved+'"]');
+    if(btn) btn.classList.add('selected');
+  }
+}
+
+// ===== Notes =====
+function loadNotes(){
+  const saved = localStorage.getItem('zhibiao_notes_' + todayStr);
+  if(saved) document.getElementById('notesArea').value = saved;
+}
+function saveNotes(){
+  localStorage.setItem('zhibiao_notes_' + todayStr, document.getElementById('notesArea').value);
+}
+
+// ===== Voice =====
+let recognition = null;
+let isRecording = false;
+let finalText = '';
+function initVoice(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ document.getElementById('micBtn').disabled = true; document.getElementById('micLabel').textContent = '浏览器不支持'; return; }
+  recognition = new SR();
+  recognition.lang = 'zh-CN';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = function(event){
+    let interim = '';
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      const transcript = event.results[i][0].transcript;
+      if(event.results[i].isFinal){ finalText += transcript; } else { interim += transcript; }
+    }
+    updateVoiceDisplay(finalText, interim);
+  };
+  recognition.onerror = function(event){
+    if(event.error === 'not-allowed'){ showToast('请允许浏览器使用麦克风'); }
+    else if(event.error !== 'no-speech'){ showToast('语音识别出错：' + event.error); }
+  };
+  recognition.onend = function(){ if(isRecording){ try{ recognition.start(); }catch(e){} } };
+}
+function toggleVoice(){
+  if(!recognition){ initVoice(); }
+  if(!recognition) return;
+  if(isRecording){
+    isRecording = false;
+    recognition.stop();
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micLabel').textContent = '开始录音';
+  } else {
+    isRecording = true;
+    finalText = '';
+    try{ recognition.start(); }catch(e){ showToast('请稍后重试'); isRecording = false; return; }
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('micLabel').textContent = '停止录音';
+    updateVoiceDisplay('', '');
+  }
+}
+function updateVoiceDisplay(finalT, interimT){
+  const area = document.getElementById('voiceArea');
+  const text = finalT + interimT;
+  if(!text.trim()){ area.classList.add('empty'); area.innerHTML = '点击下方按钮开始语音录入<br>说出今天的情况、问题和安排'; }
+  else { area.classList.remove('empty'); area.innerHTML = finalT + '<span class="interim">' + interimT + '</span>'; }
+}
+function clearVoice(){ finalText = ''; updateVoiceDisplay('', ''); showToast('已清空'); }
+function copyVoice(){
+  const text = finalText.trim();
+  if(!text){ showToast('没有可复制的内容'); return; }
+  const copyContent = '[富贵今日语音记录 '+todayStr+']\n\n'+text+'\n\n---\n请根据以上内容，帮我整理：\n1. 今日完成事项总结\n2. 发现的问题和风险\n3. 明日工作计划（按优先级排序）';
+  navigator.clipboard.writeText(copyContent).then(function(){ showToast('已复制！粘贴给AI即可生成计划'); }).catch(function(){
+    const ta = document.createElement('textarea');
+    ta.value = copyContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已复制！粘贴给AI即可生成计划');
+  });
+}
+
+// ===== Toast =====
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// ===== Auto-save voice =====
+setInterval(function(){ if(finalText){ localStorage.setItem('zhibiao_voice_' + todayStr, finalText); } }, 5000);
+function loadSavedVoice(){
+  const saved = localStorage.getItem('zhibiao_voice_' + todayStr);
+  if(saved){ finalText = saved; updateVoiceDisplay(finalText, ''); }
+}
+
+// ===== KPI Data =====
+const KPI_DATA = {
+  ops: {
+    people: [
+      {name:'许嵩玲',level:'P1',group:'郑艳彬组',gClass:'g1',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'刘良勉',level:'P1',group:'郑艳彬组',gClass:'g1',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'李爽',level:'P2',group:'郑艳彬组',gClass:'g1',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'陈栩',level:'P2',group:'李晗星组',gClass:'g2',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'黄钦林',level:'P2',group:'李晗星组',gClass:'g2',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'陈林霞',level:'P2',group:'李晗星组',gClass:'g2',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'陈清林',level:'P1',group:'李晗星组',gClass:'g2',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'周津',level:'P1',group:'李晗星组',gClass:'g2',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'潘敏娟',level:'P1',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'吴威锦',level:'P1',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'王霖',level:'P2',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'吴雪琦',level:'P1',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'卢东鸿',level:'P1',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+      {name:'林智杰',level:'P1',group:'陈薇婷组',gClass:'g3',innovate:8,daily:4,monthly:104,avgView:800,interact:'2.5%',leads:200},
+    ],
+    dimensions: [
+      {name:'内容改造推进',score:15,target:'>=8条'},
+      {name:'标题不重复',score:10,target:'0重复'},
+      {name:'违规清理',score:10,target:'>=100%'},
+      {name:'有效更新量',score:15,target:'月104条'},
+      {name:'条均播放量',score:15,target:'>=800'},
+      {name:'互动率',score:10,target:'>=2.5%'},
+      {name:'线索贡献',score:10,target:'月200条'},
+      {name:'组长评分',score:15,target:'综合'},
+    ],
+    columns:['姓名','职级','组别','改造','日更','月更','条均','互动','线索']
+  },
+  leader: {
+    people: [
+      {name:'陈薇婷',level:'P2',group:'运营一组',gClass:'g3',innovate:8,help:'>=100%',meeting:26},
+      {name:'李晗星',level:'P2',group:'运营二组',gClass:'g2',innovate:8,help:'>=100%',meeting:26},
+      {name:'郑艳彬',level:'P1',group:'运营三组',gClass:'g1',innovate:8,help:'>=100%',meeting:26},
+    ],
+    dimensions: [
+      {name:'内容改造推进',score:30,target:'>=8条'},
+      {name:'帮带落后组员',score:10,target:'排名升>=1'},
+      {name:'早晚会执行',score:10,target:'26场'},
+      {name:'组员平均分',score:40,target:'均分x40%'},
+      {name:'主管评分',score:10,target:'富贵打分'},
+    ],
+    columns:['姓名','职级','负责组','改造','帮带','早晚会']
+  },
+  sales: {
+    people: [
+      {name:'胡亮',level:'P5',leads:100,archive:'>=95%',deal:10,convert:'>=10%'},
+      {name:'谢敏慧',level:'P5',leads:100,archive:'>=95%',deal:10,convert:'>=10%'},
+      {name:'郑廷钰',level:'P5',leads:80,archive:'>=95%',deal:8,convert:'>=10%'},
+      {name:'谈波',level:'P5',leads:100,archive:'>=95%',deal:10,convert:'>=10%'},
+      {name:'王洲',level:'P1',leads:100,archive:'>=95%',deal:10,convert:'>=10%'},
+      {name:'陈锐',level:'P2',leads:50,archive:'>=95%',deal:5,convert:'>=10%'},
+    ],
+    dimensions: [
+      {name:'有效线索数',score:20,target:'>=100条'},
+      {name:'建档完整率',score:15,target:'>=95%'},
+      {name:'有效成交',score:25,target:'普列>=10单'},
+      {name:'转化率',score:25,target:'>=10%'},
+      {name:'主管评分',score:15,target:'富贵打分'},
+    ],
+    columns:['姓名','职级','线索','建档率','成交(单)','转化率']
+  }
+};
+function switchKpiTab(evt, tab){
+  document.querySelectorAll('.kpi-tab').forEach(function(el){ el.classList.remove('active'); });
+  evt.target.closest('.kpi-tab').classList.add('active');
+  renderKpi(tab);
+}
+function renderKpi(tab){
+  const data = KPI_DATA[tab];
+  const container = document.getElementById('kpiContent');
+  let html = '<table class="kpi-table"><thead><tr>';
+  data.columns.forEach(function(col){ html += '<th>' + col + '</th>'; });
+  html += '</tr></thead><tbody>';
+  data.people.forEach(function(p){
+    html += '<tr>';
+    if(tab==='ops'){
+      html += '<td class="name">'+p.name+'</td><td class="level">'+p.level+'</td>';
+      html += '<td><span class="group-tag '+p.gClass+'">'+p.group+'</span></td>';
+      html += '<td>'+p.innovate+'</td><td>'+p.daily+'</td><td>'+p.monthly+'</td>';
+      html += '<td>'+p.avgView+'</td><td>'+p.interact+'</td><td>'+p.leads+'</td>';
+    } else if(tab==='leader'){
+      html += '<td class="name">'+p.name+'</td><td class="level">'+p.level+'</td>';
+      html += '<td><span class="group-tag '+p.gClass+'">'+p.group+'</span></td>';
+      html += '<td>'+p.innovate+'</td><td>'+p.help+'</td><td>'+p.meeting+'</td>';
+    } else if(tab==='sales'){
+      html += '<td class="name">'+p.name+'</td><td class="level">'+p.level+'</td>';
+      html += '<td>'+p.leads+'</td><td>'+p.archive+'</td><td>'+p.deal+'</td><td>'+p.convert+'</td>';
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  html += '<div class="kpi-dimensions"><div class="kpi-dim-title">考核维度（满分100）</div><div class="kpi-dim-list">';
+  data.dimensions.forEach(function(d){
+    html += '<div class="kpi-dim-item"><span class="score">'+d.score+'分</span> '+d.name+' <span class="target">'+d.target+'</span></div>';
+  });
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+// ===== Scorpio Horoscope =====
+const HOROSCOPES = [
+  {rating:'\u2B50\u2B50\u2B50\u2B50\u2B50', text:'今天直觉格外敏锐，适合做关键决策。新号布局、选题方向，相信第一判断。团队沟通顺畅，趁势推进。', color:'酒红', num:'9', good:'决断', bad:'犹豫'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'执行力拉满的一天。把拖了几天的旧号清理动作落实下去，下午效率最高。', color:'玫红', num:'7', good:'清理', bad:'拖延'},
+  {rating:'\u2B50\u2B50\u2B50', text:'稳住节奏，不急于求成。今天适合梳理流程和文档，把经验沉淀下来给团队复用。', color:'藏蓝', num:'3', good:'梳理', bad:'冒进'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'贵人运不错，可能收到有价值的行业信息或人脉资源。多跟同行交流，少闷头干。', color:'金色', num:'6', good:'社交', bad:'封闭'},
+  {rating:'\u2B50\u2B50\u2B50', text:'情绪略有波动，遇到零播放别急眼。数据起伏是正常的，关键看趋势不是单天。', color:'墨绿', num:'2', good:'复盘', bad:'冲动'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50\u2B50', text:'今天灵感爆发，适合策划新选题和内容方向。中老年用户喜欢什么，你今天特别有感觉。', color:'紫色', num:'8', good:'策划', bad:'执行琐事'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'团队管理运佳。站会上把标准说清楚，执行力会超出预期。今天适合一对一谈话。', color:'橙色', num:'5', good:'沟通', bad:'独断'},
+  {rating:'\u2B50\u2B50\u2B50', text:'今天适合处理细节和合规问题。逐条检查视频文案、标签，虽然枯燥但能排雷。', color:'灰色', num:'4', good:'排查', bad:'扩张'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'财运小旺，可能有新的变现思路或合作机会。留意身边不起眼的信息。', color:'棕色', num:'1', good:'谈判', bad:'大方'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50\u2B50', text:'状态满分日。重要会议、关键决策、新号注册都安排在今天，事半功倍。', color:'正红', num:'9', good:'出击', bad:'浪费'},
+  {rating:'\u2B50\u2B50\u2B50', text:'需要耐心的一天。新号冷启动需要时间，别天天盯数据。做该做的，等结果来。', color:'深蓝', num:'7', good:'等待', bad:'焦虑'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'学习运旺。今天适合研究竞品账号、行业案例，能发现新的内容打法。', color:'青色', num:'3', good:'学习', bad:'重复'},
+  {rating:'\u2B50\u2B50\u2B50', text:'健康提醒：久坐伤腰。今天每隔一小时站起来活动下，身体是革命的本钱。', color:'绿色', num:'6', good:'休息', bad:'熬夜'},
+  {rating:'\u2B50\u2B50\u2B50\u2B50', text:'人际关系运佳。今天适合跟组长单独聊，了解团队真实想法和困难。', color:'粉色', num:'2', good:'倾听', bad:'说教'},
+];
+function renderHoroscope(){
+  const idx = (now.getDate() + now.getMonth() * 31) % HOROSCOPES.length;
+  const h = HOROSCOPES[idx];
+  document.getElementById('horoRating').textContent = h.rating;
+  document.getElementById('horoText').textContent = h.text;
+  document.getElementById('horoColor').textContent = h.color;
+  document.getElementById('horoNum').textContent = h.num;
+  document.getElementById('horoGood').textContent = h.good;
+  document.getElementById('horoBad').textContent = h.bad;
+}
+
+// ===== Holiday Countdown =====
+const HOLIDAYS = [
+  {name:'中秋节', start:'2026-09-25', end:'2026-09-27', days:3, emoji:'\u{1F96E}'},
+  {name:'国庆节', start:'2026-10-01', end:'2026-10-07', days:7, emoji:'\u{1F389}'},
+  {name:'元旦',   start:'2027-01-01', end:'2027-01-03', days:3, emoji:'\u{1F38A}'},
+];
+function renderHolidays(){
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const upcoming = HOLIDAYS.filter(function(h){ return new Date(h.start) >= today; }).slice(0, 3);
+  const list = document.getElementById('holidayList');
+  if(upcoming.length === 0){ list.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:20px">暂无近期假期数据</div>'; return; }
+  let html = '';
+  upcoming.forEach(function(h){
+    const diff = Math.ceil((new Date(h.start) - today) / (1000*60*60*24));
+    const isImminent = diff <= 7;
+    html += '<div class="holiday-item'+(isImminent?' imminent':'')+'">';
+    html += '<span class="emoji">'+h.emoji+'</span>';
+    html += '<div class="info"><div class="name">'+h.name+' \u00B7 '+h.days+'天假</div>';
+    html += '<div class="date">'+h.start.replace(/-/g,'/')+' ~ '+h.end.replace(/-/g,'/')+'</div></div>';
+    html += '<div class="countdown"><div class="days">'+diff+'</div><div class="days-label">天后</div></div>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+// ===== Industry Intelligence =====
+const RULES = [
+  {level:'critical', date:'2026-05', title:'出镜人强制人脸核验', body:'2026年5月新规：所有镜头前出镜口播人员必须通过平台官方私信完成<strong>人脸识别核验</strong>，并提交剪辑界面截图、原始素材及脚本等原创证明。严禁"一人多号"矩阵式霸屏。<span class="warn">首次违规封禁30天，重复违规永久封号并关联实名黑名单。</span>', source:'微望互动罗彦分享（2026年Q2平台新规解析）', url:'https://www.weiwanghd.com/news/233.html'},
+  {level:'critical', date:'2026-Q2', title:'算法权重大重构：评论>停留>转发>关注>完播', body:'完播率权重从最高降到<strong>10%</strong>。新权重：有效评论(30%) > 停留时长(25%) > 转发分享(20%) > 关注转化(15%) > 完播率(10%)。<span class="warn">完播率60%但评论率<3%的视频，到5000播放量后彻底停推。</span>平台不再纵容"看完全篇却毫无启发"的内容。', source:'微望互动罗彦分享（实测数据警示）', url:'https://www.weiwanghd.com/news/233.html'},
+  {level:'critical', date:'2026-Q2', title:'AI查重率升至98%：同质化模板直接降权50-80%', body:'平台AI查重系统升级，<strong>查重率提升至98%以上</strong>。严禁批量AI生成、同质化模板、纯搬运切片。<span class="warn">违规内容初始流量池直接削减50%-80%，账号陷入3-7天无推流观察期。</span>AI痕迹过重或缺乏真实场景的内容被认定为"垃圾信息"。', source:'微望互动罗彦分享', url:'https://www.weiwanghd.com/news/233.html'},
+  {level:'warning', date:'2026-06', title:'全链路切断私域引流', body:'严禁在<strong>视频画面、评论区、主页简介、背景图</strong>中展示微信号、二维码，或使用"加我领资料""私我"等诱导词。旅游行业不可绑企微，需通过直播间联系商家卡片、公众号跳转等合规路径转化。', source:'微望互动罗彦分享 / 视频号旅游行业公约', url:'https://www.weiwanghd.com/news/233.html'},
+  {level:'warning', date:'2026-03~09', title:'旅游广告专项整治：绝对化用语罚款20-100万', body:'2026年3月-9月，市场监管总局开展半年广告乱象整治，旅游行业为重点领域。<span class="warn">禁止使用"国家级""最高级""最佳""第一""唯一""全网最低价"等绝对化用语。</span>口播与字幕需同步合规，禁止口播夸大、字幕藏小字。违规主体纳入旅游市场黑名单。', source:'今日头条 / 文旅监管通报', url:'https://www.toutiao.com/article/7627687165677273635/'},
+  {level:'info', date:'2026-06', title:'旅游类目定向邀约准入：需双证+责任险+保证金', body:'视频号旅行社线路类目为<strong>定向邀约准入</strong>，必须走"企业蓝V→小店开通→定向报白→缴保→类目开通"闭环。境内游保证金1万元，出境游2万元。无资质个人可通过"选品联盟"分销同程旅行等官方产品，无需报白。', source:'新浪财经 / 同程文旅', url:'https://cj.sina.com.cn/articles/view/7857141524/1d452771401901v2qa'},
+  {level:'warning', date:'2026-06', title:'多地文旅局严查无证线上招徕', body:'宁武县、黄冈市等地文旅局发布通知：<strong>未取得旅行社业务经营许可证的单位和个人，一律不得通过线上渠道发布旅游招徕信息</strong>。以"旅游咨询""研学活动"名义变相经营也属违规。线上宣传内容必须与线下合同完全一致。', source:'宁武县文旅局 / 黄冈市文旅局', url:'https://www.toutiao.com/article/7652367063490593321/'},
+  {level:'info', date:'2026-04', title:'网红/达人合作必须标注"广告"', body:'旅行社与网红合作推广旅游产品，内容必须<strong>显著标明"广告"</strong>。行程、价格、退改政策必须真实准确。禁止刷赞、刷粉、刷播放等流量造假。游客必须与旅行社签正规合同，禁止网红个人私下收款。', source:'中阳县文旅局（2026年4月21日）', url:'http://sxzhongyang.gov.cn/xxgk/jgsz/zcbm/whhlvyouju/wljzcwj/202605/t20260527_2035720.shtml'},
+];
+const ADVICES = [
+  {title:'评论区运营是新战场', tips:['<strong>算法评论权重占30%</strong>，是完播率的3倍。每条视频结尾设计一个"让中老年人忍不住评论"的问题，比如"你去过新疆吗？最想去看什么"','运营组每天花15分钟<strong>回复评论区前10条留言</strong>，有效评论越多系统越推流。别只发视频不管评论区','在评论区主动<strong>提一个问题</strong>（如"大家觉得几月去最合适"），引导用户互动，拉高评论率']},
+  {title:'内容从"完播率思维"切换到"互动率思维"', tips:['别再只追求"前3秒钩子+快节奏"，<strong>现在要的是用户看完愿意评论、愿意转发给朋友</strong>','中老年用户转发率天然高于年轻人。多做"转发给老伙计看看""转到相亲相爱一家人群"这类<strong>社交货币型内容</strong>','每条视频至少留一个"信息缺口"——比如"这条专列途经3个省，你知道是哪3个吗"——<strong>让用户忍不住在评论区找答案</strong>']},
+  {title:'真实体验内容是唯一出路', tips:['平台AI查重率98%+，<strong>模板化批量生产等于自杀</strong>。所有运营组必须停止套模板，改为真实旅游体验+实用攻略','多拍<strong>实景素材</strong>：专列上的真实画面、游客真实反馈、沿途风景实拍。AI痕迹过重直接被判定为垃圾信息','每条视频的标题、口播脚本、画面构图都要<strong>差异化</strong>。同一个选题，5个号要出5个不同角度的内容']},
+  {title:'新号冷启动要靠社交关系链', tips:['视频号推荐逻辑是<strong>社交关系链优先</strong>，不是抖音的算法优先。新号发的内容先推给微信好友，好友互动后才进推荐池','新号注册后第一步不是发视频，是<strong>加好友、加群、让好友关注</strong>。每个新号至少先积累50个好友互动','让团队所有人的微信号都关注新号，<strong>每条新视频发布后第一时间点赞+评论+转发</strong>，帮新号过冷启动']},
+  {title:'合规变现路径：选品联盟分销', tips:['旧主体被关联限流，新号暂时不能报白开店。但可以通过<strong>选品联盟分销同程旅行的旅游产品</strong>，无需资质、无需保证金','分销模式适合<strong>过渡期</strong>：新号先挂同程产品赚佣金，等新主体干净了再走报白流程自建小店','直播间挂载旅游商品链接时，<strong>标题规范要写"目的地+天数+特色"</strong>，详情页必须标注费用包含/不含、退改政策']},
+  {title:'中老年旅游内容选题方向', tips:['银发旅游是2026年热门赛道。<strong>"带爸妈去XX""中老年跟团避坑"</strong>这类选题天然吸引子女代为咨询','专列旅游内容重点拍<strong>沿途风景+车厢生活+导游服务</strong>，展示"这不是普通旅行，是移动的酒店"','选题紧扣季节：<strong>秋季推银杏/红叶/秋收主题专列</strong>，冬季推温泉/暖冬南方线路。时效性选题点击率高30%+']},
+  {title:'团队管理抓手：从数据驱动转向内容驱动', tips:['旧号被限流，<strong>条均播放量KPI暂时不现实</strong>。8月KPI应重点考核内容改造推进数、标题不重复率、违规清理完成率','每周安排一次<strong>选题共创会</strong>：3个组长+剪辑代表一起头脑风暴，避免各组选题撞车','建立<strong>素材共享库</strong>：真实拍摄的专列/景区素材分类存放，各组按需取用，减少重复拍摄成本']},
+];
+function switchIntelTab(evt, tab){
+  document.querySelectorAll('.intel-tab').forEach(function(el){ el.classList.remove('active'); });
+  evt.target.closest('.intel-tab').classList.add('active');
+  renderIntel(tab);
+}
+function renderIntel(tab){
+  const container = document.getElementById('intelContent');
+  if(tab === 'rules'){
+    let html = '<div class="rule-list">';
+    RULES.forEach(function(r){
+      const tagText = r.level==='critical'?'紧急':r.level==='warning'?'注意':'参考';
+      html += '<div class="rule-item" style="border-left-color:'+(r.level==='critical'?'var(--red)':r.level==='warning'?'var(--orange)':'var(--green)')+'">';
+      html += '<div class="rule-head"><div class="rule-title"><span class="rule-tag '+r.level+'">'+tagText+'</span>'+r.title+'</div>';
+      html += '<div class="rule-date">'+r.date+'</div></div>';
+      html += '<div class="rule-body">'+r.body+'</div>';
+      html += '<div class="rule-source">\u{1F4CE} 来源：<a href="'+r.url+'" target="_blank">'+r.source+'</a></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:12px;padding:10px 14px;background:var(--glass2);border:1px dashed var(--border2);border-radius:10px;font-size:12px;color:var(--text3);text-align:center">以上规则基于全网公开信息整理，建议定期核对视频号官方公告。<br>点击来源链接可查看原文。</div>';
+    container.innerHTML = html;
+  } else {
+    const idx = (now.getDay()) % ADVICES.length;
+    const a = ADVICES[idx];
+    let html = '<div class="advice-box"><div class="advice-head"><span class="icon">\u{1F4A1}</span><span class="title">'+a.title+'</span><span class="date-tag">'+todayStr+' · 每日轮换</span></div><div class="advice-body">';
+    a.tips.forEach(function(tip, i){
+      html += '<div class="tip"><span class="tip-num">'+(i+1)+'</span><span class="tip-text">'+tip+'</span></div>';
+    });
+    html += '</div></div>';
+    html += '<div style="margin-top:14px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.7"><strong style="color:var(--cyan)">结合全网经验总结：</strong>保游网黄钦提出"内容漏斗"模型——<strong>引起注意→建立认同→推动行动</strong>。旅企应将公域"流量"沉淀为私域"留量"。旅行社通过"纯玩团实录"系列内容展示真实旅行体验，2026年纯玩团市场占比已从58%升至72%，消费者对品质旅行需求强烈。</div>';
+    html += '<div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center">建议来源：保游网黄钦分享 / yunyingbu.com运营研究 / 全网旅游视频号实战经验</div>';
+    container.innerHTML = html;
+  }
+}
+
+// ===== KPI Settlement =====
+let settleTab = 'ops';
+let settleScores = {};
+
+function switchSettleTab(evt, tab){
+  document.querySelectorAll('.settle-tab').forEach(function(el){ el.classList.remove('active'); });
+  evt.target.closest('.settle-tab').classList.add('active');
+  settleTab = tab;
+  renderSettle(tab);
+}
+
+function renderSettle(tab){
+  const data = KPI_DATA[tab];
+  const container = document.getElementById('settleContent');
+  const dims = data.dimensions;
+  const savedKey = 'zhibiao_settle_' + tab + '_' + todayStr;
+  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+
+  let html = '<table class="settle-table"><thead><tr>';
+  html += '<th>姓名</th>';
+  dims.forEach(function(d){ html += '<th title="'+d.target+'">'+d.name+'<br><span style="font-weight:400;color:var(--text3)">('+d.score+')</span></th>'; });
+  html += '<th>总分</th><th>评级</th>';
+  html += '</tr></thead><tbody>';
+
+  data.people.forEach(function(p){
+    const personScores = saved[p.name] || {};
+    let total = 0;
+    dims.forEach(function(d){ total += (parseFloat(personScores[d.name]) || 0); });
+
+    html += '<tr>';
+    html += '<td class="name-cell">'+p.name+'</td>';
+    dims.forEach(function(d){
+      const val = personScores[d.name] || '';
+      html += '<td><input class="settle-input" type="number" min="0" max="'+d.score+'" step="0.1" data-person="'+p.name+'" data-dim="'+d.name+'" data-max="'+d.score+'" value="'+val+'" onchange="onSettleChange(this)"></td>';
+    });
+    html += '<td class="settle-total" id="total_'+p.name+'">'+(total > 0 ? total.toFixed(1) : '-')+'</td>';
+    html += '<td id="rating_'+p.name+'">'+(total > 0 ? getRating(total) : '-')+'</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  // Update summary
+  updateSettleSummary(tab);
+}
+
+function onSettleChange(input){
+  const person = input.dataset.person;
+  const dim = input.dataset.dim;
+  const max = parseFloat(input.dataset.max);
+  let val = parseFloat(input.value);
+  if(isNaN(val) || val < 0) val = 0;
+  if(val > max) val = max;
+  input.value = val;
+
+  // Save
+  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
+  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+  if(!saved[person]) saved[person] = {};
+  saved[person][dim] = val;
+  localStorage.setItem(savedKey, JSON.stringify(saved));
+
+  // Recalc total
+  const data = KPI_DATA[settleTab];
+  const dims = data.dimensions;
+  let total = 0;
+  dims.forEach(function(d){ total += (parseFloat(saved[person][d.name]) || 0); });
+
+  document.getElementById('total_'+person).textContent = total.toFixed(1);
+  document.getElementById('rating_'+person).innerHTML = getRating(total);
+
+  updateSettleSummary(settleTab);
+}
+
+function getRating(score){
+  let cls = '', label = '';
+  if(score >= 90){ cls = 'A'; label = 'A 优秀'; }
+  else if(score >= 80){ cls = 'B'; label = 'B 良好'; }
+  else if(score >= 70){ cls = 'C'; label = 'C 合格'; }
+  else if(score >= 60){ cls = 'D'; label = 'D 待改进'; }
+  else { cls = 'E'; label = 'E 不合格'; }
+  return '<span class="settle-rating '+cls+'">'+label+'</span>';
+}
+
+function calcSettle(){
+  const data = KPI_DATA[settleTab];
+  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
+  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+  let allFilled = true;
+
+  data.people.forEach(function(p){
+    let total = 0;
+    data.dimensions.forEach(function(d){
+      const val = parseFloat((saved[p.name] || {})[d.name]) || 0;
+      total += val;
+      if(val === 0 && d.score > 0) allFilled = false;
+    });
+    document.getElementById('total_'+p.name).textContent = total.toFixed(1);
+    document.getElementById('rating_'+p.name).innerHTML = getRating(total);
+  });
+
+  updateSettleSummary(settleTab);
+  showToast('评级计算完成');
+}
+
+function updateSettleSummary(tab){
+  const data = KPI_DATA[tab];
+  const savedKey = 'zhibiao_settle_' + tab + '_' + todayStr;
+  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+  const summary = document.getElementById('settleSummary');
+  const stats = document.getElementById('settleStats');
+
+  let totals = [];
+  let ratingCount = {A:0, B:0, C:0, D:0, E:0};
+  let hasAnyScore = false;
+
+  data.people.forEach(function(p){
+    let total = 0;
+    data.dimensions.forEach(function(d){ total += (parseFloat((saved[p.name] || {})[d.name]) || 0); });
+    if(total > 0){
+      hasAnyScore = true;
+      totals.push(total);
+      if(total >= 90) ratingCount.A++;
+      else if(total >= 80) ratingCount.B++;
+      else if(total >= 70) ratingCount.C++;
+      else if(total >= 60) ratingCount.D++;
+      else ratingCount.E++;
+    }
+  });
+
+  if(!hasAnyScore){ summary.classList.remove('show'); return; }
+  summary.classList.add('show');
+
+  const avg = totals.length > 0 ? (totals.reduce(function(a,b){ return a+b; }, 0) / totals.length).toFixed(1) : 0;
+  const max = totals.length > 0 ? Math.max.apply(null, totals).toFixed(1) : 0;
+  const min = totals.length > 0 ? Math.min.apply(null, totals).toFixed(1) : 0;
+
+  let html = '';
+  html += '<div class="stat"><div class="num">'+avg+'</div><div class="label">平均分</div></div>';
+  html += '<div class="stat"><div class="num">'+max+'</div><div class="label">最高分</div></div>';
+  html += '<div class="stat"><div class="num">'+min+'</div><div class="label">最低分</div></div>';
+  html += '<div class="stat"><div class="num" style="color:var(--green)">'+ratingCount.A+'</div><div class="label">A优秀</div></div>';
+  html += '<div class="stat"><div class="num" style="color:var(--cyan)">'+ratingCount.B+'</div><div class="label">B良好</div></div>';
+  html += '<div class="stat"><div class="num" style="color:var(--orange)">'+ratingCount.C+'</div><div class="label">C合格</div></div>';
+  html += '<div class="stat"><div class="num" style="color:var(--red)">'+(ratingCount.D+ratingCount.E)+'</div><div class="label">D/E待改进</div></div>';
+  stats.innerHTML = html;
+}
+
+function resetSettle(){
+  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
+  localStorage.removeItem(savedKey);
+  renderSettle(settleTab);
+  showToast('已重置打分');
+}
+
+// ===== Init =====
+renderTasks();
+loadNotes();
+loadSavedVoice();
+initVoice();
+renderKpi('ops');
+renderIntel('rules');
+loadMood();
+loadStreak();
+renderHoroscope();
+renderHolidays();
+renderSettle('ops');
+
+// greeting toast
+setTimeout(function(){
+  const h = now.getHours();
+  let g = '';
+  if(h < 9) g = '早安富贵，新的一天开始了';
+  else if(h < 12) g = '上午好富贵';
+  else if(h < 14) g = '中午好富贵';
+  else if(h < 18) g = '下午好富贵';
+  else g = '晚上好富贵';
+  showToast(g);
+}, 500);
+</script>
+</body>
+</html>
