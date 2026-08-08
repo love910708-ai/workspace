@@ -2607,22 +2607,6 @@ function closeExtractModal(){
   if(m) m.remove();
 }
 
-function copyExtractInfo(productId, format){
-  var p = PRODUCTS.find(function(x){ return x.id === productId; });
-  if(!p) return;
-  var text = buildExtractText(p, format);
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){
-      showToast('已复制到剪贴板');
-      closeExtractModal();
-    }).catch(function(){
-      fallbackCopy(text);
-    });
-  } else {
-    fallbackCopy(text);
-  }
-}
-
 function fallbackCopy(text){
   var ta = document.createElement('textarea');
   ta.value = text;
@@ -2693,120 +2677,136 @@ function buildExtractText(p, format){
   return lines.join('\n');
 }
 
+function wrapTextLines(ctx, text, maxWidth){
+  var lines = [];
+  var chars = text.split('');
+  var line = '';
+  for(var i = 0; i < chars.length; i++){
+    var test = line + chars[i];
+    if(ctx.measureText(test).width > maxWidth && line.length > 0){
+      lines.push(line);
+      line = chars[i];
+    } else {
+      line = test;
+    }
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+
 function generateCardImage(p){
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 2;
-  
-  // Card dimensions
-  var width = 375;
+  var width = 400;
   var lineHeight = 22;
   var padding = 20;
+  var maxWidth = width - padding * 2;
   var headerHeight = 60;
   var footerHeight = 40;
-  
-  // Build content lines
   var regionLabel = p.region === 'hn' ? '\u6e56\u5357\u51fa\u53d1' : '\u798f\u5efa\u51fa\u53d1';
-  var contentLines = [];
-  
-  // Title
-  contentLines.push({text: regionLabel + ' | ' + p.name, size: 16, bold: true, color: '#333'});
-  if(p.desc) contentLines.push({text: p.desc, size: 13, bold: false, color: '#666'});
-  contentLines.push({text: '', size: 10});
-  
-  // Price
+
+  // Build raw content lines
+  var rawLines = [];
+  rawLines.push({text: regionLabel + ' | ' + p.name, size: 16, bold: true, color: '#333'});
+  if(p.desc) rawLines.push({text: p.desc, size: 13, bold: false, color: '#666'});
+  rawLines.push({text: '', size: 10});
   if(p.prices){
-    contentLines.push({text: '\u3010\u4ef7\u683c\u3011', size: 14, bold: true, color: '#e74c3c'});
-    contentLines.push({text: p.prices, size: 13, bold: false, color: '#e74c3c'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u4ef7\u683c\u3011', size: 14, bold: true, color: '#e74c3c'});
+    rawLines.push({text: p.prices, size: 13, bold: false, color: '#e74c3c'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Itinerary
   if(p.days > 0 || p.dest){
-    contentLines.push({text: '\u3010\u884c\u7a0b\u3011', size: 14, bold: true, color: '#3498db'});
-    if(p.days > 0) contentLines.push({text: '  '+p.days+'\u5929\u884c\u7a0b', size: 13, color: '#555'});
-    if(p.dest) contentLines.push({text: '  \u76ee\u7684\u5730\uff1a'+p.dest, size: 13, color: '#555'});
-    if(p.transport) contentLines.push({text: '  \u4ea4\u901a\uff1a'+p.transport, size: 13, color: '#555'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u884c\u7a0b\u3011', size: 14, bold: true, color: '#3498db'});
+    if(p.days > 0) rawLines.push({text: '  '+p.days+'\u5929\u884c\u7a0b', size: 13, color: '#555'});
+    if(p.dest) rawLines.push({text: '  \u76ee\u7684\u5730\uff1a'+p.dest, size: 13, color: '#555'});
+    if(p.transport) rawLines.push({text: '  \u4ea4\u901a\uff1a'+p.transport, size: 13, color: '#555'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Meals
   if(p.meals || p.mealsIncluded !== undefined){
-    contentLines.push({text: '\u3010\u7528\u9910\u3011', size: 14, bold: true, color: '#3498db'});
-    contentLines.push({text: '  '+(p.mealsIncluded ? '\u542b\u9910' : '\u4e0d\u542b\u9910/\u81ea\u7406'), size: 13, color: '#555'});
-    if(p.meals) contentLines.push({text: '  '+p.meals, size: 12, color: '#777'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u7528\u9910\u3011', size: 14, bold: true, color: '#3498db'});
+    rawLines.push({text: '  '+(p.mealsIncluded ? '\u542b\u9910' : '\u4e0d\u542b\u9910/\u81ea\u7406'), size: 13, color: '#555'});
+    if(p.meals) rawLines.push({text: '  '+p.meals, size: 12, color: '#777'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Fees
   if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
-    contentLines.push({text: '\u3010\u8d39\u7528\u3011', size: 14, bold: true, color: '#3498db'});
-    if(p.ticketPrice) contentLines.push({text: '  \u95e8\u7968\uff1a'+p.ticketPrice, size: 13, color: '#555'});
-    if(p.shopping !== undefined) contentLines.push({text: '  \u8d2d\u7269\uff1a'+p.shopping, size: 13, color: '#555'});
-    if(p.selfPay !== undefined) contentLines.push({text: '  \u81ea\u8d39\uff1a'+p.selfPay, size: 13, color: '#555'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u8d39\u7528\u3011', size: 14, bold: true, color: '#3498db'});
+    if(p.ticketPrice) rawLines.push({text: '  \u95e8\u7968\uff1a'+p.ticketPrice, size: 13, color: '#555'});
+    if(p.shopping !== undefined) rawLines.push({text: '  \u8d2d\u7269\uff1a'+p.shopping, size: 13, color: '#555'});
+    if(p.selfPay !== undefined) rawLines.push({text: '  \u81ea\u8d39\uff1a'+p.selfPay, size: 13, color: '#555'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Age
   if(p.ageLimit){
-    contentLines.push({text: '\u3010\u5e74\u9f84\u3011'+p.ageLimit, size: 13, color: '#555'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u5e74\u9f84\u3011'+p.ageLimit, size: 13, color: '#555'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Highlights
   if(p.highlights){
-    contentLines.push({text: '\u3010\u666f\u70b9\u4eae\u70b9\u3011', size: 14, bold: true, color: '#3498db'});
-    contentLines.push({text: '  '+p.highlights, size: 13, color: '#555'});
-    contentLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u666f\u70b9\u4eae\u70b9\u3011', size: 14, bold: true, color: '#3498db'});
+    rawLines.push({text: '  '+p.highlights, size: 13, color: '#555'});
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Dates
   if(p.dates && p.dates.length > 0){
     var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
     if(future.length > 0){
-      contentLines.push({text: '\u3010\u8fd1\u671f\u73ed\u671f\u3011', size: 14, bold: true, color: '#3498db'});
-      contentLines.push({text: '  '+future.join('\u3001'), size: 13, color: '#555'});
-      contentLines.push({text: '', size: 10});
+      rawLines.push({text: '\u3010\u8fd1\u671f\u73ed\u671f\u3011', size: 14, bold: true, color: '#3498db'});
+      rawLines.push({text: '  '+future.join('\u3001'), size: 13, color: '#555'});
+      rawLines.push({text: '', size: 10});
     }
   }
-  
-  // Sell points
   if(p.sellPoints && p.sellPoints.length > 0){
-    contentLines.push({text: '\u3010\u63a8\u8350\u7406\u7531\u3011', size: 14, bold: true, color: '#27ae60'});
+    rawLines.push({text: '\u3010\u63a8\u8350\u7406\u7531\u3011', size: 14, bold: true, color: '#27ae60'});
     var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
-    sps.forEach(function(sp){ contentLines.push({text: '  \u2705 '+sp, size: 13, color: '#555'}); });
-    contentLines.push({text: '', size: 10});
+    sps.forEach(function(sp){ rawLines.push({text: '  \u2705 '+sp, size: 13, color: '#555'}); });
+    rawLines.push({text: '', size: 10});
   }
-  
-  // Footer
-  contentLines.push({text: '\u4e13\u5217\u65c5\u6e38\uff0c\u540d\u989d\u6709\u9650\uff0c\u6b22\u8fce\u54a8\u8be2\uff01', size: 13, bold: true, color: '#e74c3c'});
-  
+  rawLines.push({text: '\u4e13\u5217\u65c5\u6e38\uff0c\u540d\u989d\u6709\u9650\uff0c\u6b22\u8fce\u54a8\u8be2\uff01', size: 13, bold: true, color: '#e74c3c'});
+
+  // Wrap long lines
+  ctx.font = '13px Arial, sans-serif';
+  var contentLines = [];
+  rawLines.forEach(function(item){
+    if(!item.text){ contentLines.push(item); return; }
+    ctx.font = (item.bold ? 'bold ' : '') + item.size + 'px Arial, sans-serif';
+    var mw = maxWidth - (item.text.indexOf('  ') === 0 ? 10 : 0);
+    if(ctx.measureText(item.text).width <= mw){
+      contentLines.push(item);
+    } else {
+      var wrapped = wrapTextLines(ctx, item.text, mw);
+      wrapped.forEach(function(wl){
+        contentLines.push({text: wl, size: item.size, bold: item.bold, color: item.color});
+      });
+    }
+  });
+
   // Calculate height
   var contentHeight = contentLines.reduce(function(sum, line){ return sum + lineHeight; }, 0);
-  var height = headerHeight + contentHeight + footerHeight;
-  
+  var height = headerHeight + contentHeight + footerHeight + 10;
+
   // Set canvas size
   canvas.width = width * dpr;
   canvas.height = height * dpr;
   canvas.style.width = width + 'px';
   canvas.style.height = height + 'px';
   ctx.scale(dpr, dpr);
-  
-  // Background gradient
+
+  // Background
   var gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, '#f8f9fa');
-  gradient.addColorStop(1, '#e9ecef');
+  gradient.addColorStop(0, '#fff5f5');
+  gradient.addColorStop(1, '#fff0f0');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
-  
-  // Header bar
-  ctx.fillStyle = '#3498db';
+
+  // Header
+  var hGrad = ctx.createLinearGradient(0, 0, width, 0);
+  hGrad.addColorStop(0, '#e74c3c');
+  hGrad.addColorStop(1, '#c0392b');
+  ctx.fillStyle = hGrad;
   ctx.fillRect(0, 0, width, headerHeight);
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 18px Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('\u4ea7\u54c1\u4fe1\u606f\u5361\u7247', width/2, headerHeight/2 + 6);
-  
+
   // Content
   ctx.textAlign = 'left';
   var y = headerHeight + padding;
@@ -2814,48 +2814,61 @@ function generateCardImage(p){
     if(line.text){
       ctx.font = (line.bold ? 'bold ' : '') + line.size + 'px Arial, sans-serif';
       ctx.fillStyle = line.color || '#333';
-      ctx.fillText(line.text, padding, y);
+      var xOff = padding + (line.text.indexOf('  ') === 0 ? 10 : 0);
+      ctx.fillText(line.text, xOff, y);
     }
     y += lineHeight;
   });
-  
-  // Footer bar
-  ctx.fillStyle = '#3498db';
+
+  // Footer
+  var fGrad = ctx.createLinearGradient(0, 0, width, 0);
+  fGrad.addColorStop(0, '#e74c3c');
+  fGrad.addColorStop(1, '#c0392b');
+  ctx.fillStyle = fGrad;
   ctx.fillRect(0, height - footerHeight, width, footerHeight);
   ctx.fillStyle = '#fff';
   ctx.font = '12px Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('\u5fd7\u7235\u00b7\u6bcf\u65e5\u5de5\u4f5c\u624b\u518c', width/2, height - footerHeight/2 + 4);
-  
-  // Show image modal
+
   showCardImageModal(canvas.toDataURL('image/png'));
 }
 
 function showCardImageModal(imageUrl){
+  var old = document.getElementById('cardImageModal');
+  if(old) old.remove();
   var modal = document.createElement('div');
   modal.id = 'cardImageModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;flex-direction:column;';
-  
   var img = document.createElement('img');
   img.src = imageUrl;
-  img.style.cssText = 'max-width:90%;max-height:70%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);';
-  
+  img.style.cssText = 'max-width:90%;max-height:70vh;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);';
   var hint = document.createElement('div');
   hint.textContent = '\u957f\u6309\u56fe\u7247\u4fdd\u5b58\u5230\u624b\u673a\u56fe\u5e93';
-  hint.style.cssText = 'color:#fff;margin-top:20px;font-size:14px;text-align:center;';
-  
+  hint.style.cssText = 'color:#fff;margin-top:16px;font-size:14px;text-align:center;';
+  var saveBtn = document.createElement('button');
+  saveBtn.textContent = '\u4fdd\u5b58\u5230\u76f8\u518c';
+  saveBtn.style.cssText = 'margin-top:10px;padding:10px 24px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;';
+  saveBtn.onclick = function(){
+    var a = document.createElement('a');
+    a.href = imageUrl;
+    a.download = '\u4ea7\u54c1\u5361\u7247_' + new Date().getTime() + '.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
   var closeBtn = document.createElement('button');
   closeBtn.textContent = '\u5173\u95ed';
-  closeBtn.style.cssText = 'margin-top:15px;padding:10px 30px;background:#3498db;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;';
+  closeBtn.style.cssText = 'margin-top:10px;padding:10px 24px;background:#555;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;';
   closeBtn.onclick = function(){ modal.remove(); };
-  
   modal.appendChild(img);
   modal.appendChild(hint);
+  modal.appendChild(saveBtn);
   modal.appendChild(closeBtn);
   modal.onclick = function(e){ if(e.target === modal) modal.remove(); };
-  
   document.body.appendChild(modal);
 }
+
 
 function copyExtractInfo(productId, format){
   var p = PRODUCTS.find(function(x){ return x.id === productId; });
