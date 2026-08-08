@@ -590,6 +590,23 @@
   }
   .search-input:focus{outline:none;border-color:var(--cyan)}
   .product-filter-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+
+/* Extract Modal */
+.extract-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9998}
+#extractModal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#extractModal .extract-modal{pointer-events:auto;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:16px;width:90%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.3)}
+.extract-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.extract-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}
+.extract-close{font-size:22px;cursor:pointer;color:var(--text3);line-height:1}
+.extract-body{flex:1;overflow-y:auto;padding:16px 20px}
+.extract-section{margin-bottom:12px;padding:10px 12px;background:rgba(14,165,233,0.04);border-radius:8px}
+.extract-label{font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:6px}
+.extract-price{font-size:15px;font-weight:700;color:var(--red);padding:2px 0}
+.extract-footer{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+.extract-btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.extract-btn.primary{background:var(--cyan);color:#fff}
+.extract-btn.secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
+.extract-btn:hover{opacity:0.85}
 </style>
 </head>
 <body>
@@ -1710,26 +1727,248 @@ function downloadTemplate(){
 
 // ===== Product Database =====
 var PRODUCTS = [
-  {id:'hn1',name:'南北疆专列19日游',region:'hn',days:19,dest:'新疆',keywords:['南北疆','新疆','专列','19日','天山'],desc:'南北疆全景专列，途经天山、喀什、吐鲁番等经典景点'},
-  {id:'hn2',name:'东北+漠河专列15日游',region:'hn',days:15,dest:'东北',keywords:['东北','漠河','专列','15日'],desc:'东北全景+漠河北极村，感受最北端风光'},
-  {id:'hn3',name:'云南全景+泸沽湖16日游',region:'hn',days:16,dest:'云南',keywords:['云南','泸沽湖','专列','16日','全景'],desc:'云南全景环线含泸沽湖，大理丽江一网打尽'},
-  {id:'hn4',name:'解码西域天山行',region:'hn',days:0,dest:'新疆',keywords:['天山','西域','新疆','解码'],desc:'深度天山线路，解码西域风情'},
-  {id:'hn5',name:'额济纳专列12日游',region:'hn',days:12,dest:'额济纳',keywords:['额济纳','专列','12日','胡杨'],desc:'额济纳胡杨林专列，秋季金色盛宴'},
-  {id:'hn6',name:'甘青专列12日游',region:'hn',days:12,dest:'甘青',keywords:['甘青','甘肃','青海','专列','12日'],desc:'甘青大环线专列，青海湖、敦煌莫高窟'},
-  {id:'hn7',name:'探秘东极专列',region:'hn',days:0,dest:'东北',keywords:['东极','专列','探秘','抚远'],desc:'探秘中国最东端，迎接第一缕阳光'},
-  {id:'hn8',name:'探秘东极专列·沅湘阁版',region:'hn',days:0,dest:'东北',keywords:['东极','专列','沅湘阁','探秘'],desc:'沅湘阁定制版东极专列'},
-  {id:'hn9',name:'南北疆双层专列',region:'hn',days:0,dest:'新疆',keywords:['南北疆','双层','专列','新疆'],desc:'双层观景专列畅游南北疆'},
-  {id:'hn10',name:'藏地时光11日游',region:'hn',days:11,dest:'西藏',keywords:['西藏','藏地','专列','11日'],desc:'雪域高原深度体验'},
-  {id:'hn11',name:'新疆软卧19日游',region:'hn',days:19,dest:'新疆',keywords:['新疆','软卧','专列','19日'],desc:'新疆全景软卧专列，舒适出行'},
-  {id:'fj1',name:'天边北国·探秘东极',region:'fj',days:0,dest:'东北',keywords:['东极','北国','天边','探秘'],desc:'福建出发探秘东极线路'},
-  {id:'fj2',name:'常规版探秘东极',region:'fj',days:0,dest:'东北',keywords:['东极','常规','探秘'],desc:'标准版东极探秘行程'},
-  {id:'fj3',name:'大河之南号·南北疆17日游',region:'fj',days:17,dest:'新疆',keywords:['南北疆','大河之南','17日','新疆'],desc:'大河之南号南北疆全景17日'},
-  {id:'fj4',name:'疆山如画18日游',region:'fj',days:18,dest:'新疆',keywords:['新疆','疆山如画','18日'],desc:'新疆全景18日深度游'},
-  {id:'fj5',name:'额济纳+宁夏11日游',region:'fj',days:11,dest:'额济纳',keywords:['额济纳','宁夏','11日','胡杨'],desc:'额济纳胡杨林+宁夏沙坡头'},
-  {id:'fj6',name:'云南全景+泸沽湖16日游',region:'fj',days:16,dest:'云南',keywords:['云南','泸沽湖','16日','全景'],desc:'福建版云南全景含泸沽湖'},
-  {id:'fj7',name:'云南全景+泸沽湖15日游',region:'fj',days:15,dest:'云南',keywords:['云南','泸沽湖','15日','全景'],desc:'福建版云南全景15日精华'},
-  {id:'fj8',name:'潇湘号·新疆全景',region:'fj',days:0,dest:'新疆',keywords:['新疆','潇湘号','全景'],desc:'潇湘号新疆全景专列'},
-  {id:'fj9',name:'东北直达专列',region:'fj',days:0,dest:'东北',keywords:['东北','直达','专列'],desc:'福建直达东北专列线路'}
+  {id:'hn1',name:'南北疆专列19日游',region:'hn',days:19,dest:'新疆',
+   keywords:['南北疆','新疆','专列','19日','天山','喀纳斯','喀什','帕米尔'],
+   desc:'南北疆全景专列19日，涵盖喀纳斯、禾木、赛里木湖、那拉提、喀什老城、帕米尔高原',
+   prices:'硬卧上4699/中5599/下6499 | 儿童(6岁以下)2599 | 单房差900',
+   dates:['2026-08-18','2026-09-18'],
+   meals:'含列车及陆地部分用餐',mealsIncluded:false,
+   transport:'专列硬卧，当地空调大巴',
+   highlights:'喀纳斯+禾木+赛里木湖+那拉提+喀什老城+帕米尔高原+天山神秘大峡谷+香妃园',
+   sellPoints:'南北疆全线一次游遍，专列直达免去长途大巴',
+   ageLimit:'65岁以上需陪同，80岁以上谢绝',shopping:'玉店/驼绒/维药/同仁堂',
+   selfPay:'五彩滩150/图瓦家访100/喀纳斯游船120/骑马160/独库公路500/喀赞其180',
+   ticketPrice:'60岁以下1558/60-69岁1190/70岁以上695'},
+  {id:'hn2',name:'东北+漠河专列15日游',region:'hn',days:15,dest:'东北',
+   keywords:['东北','漠河','专列','15日','北极村','哈尔滨','长白山','找北'],
+   desc:'东北三省+漠河北极村全线，哈尔滨、镜泊湖、长白山、丹东鸭绿江',
+   prices:'硬卧上2999/中3699/下4399 | 软卧上5399/下5999 | 儿童(6岁以下)1580 | 单房差100/晚',
+   dates:['2026-07-12','2026-08-09','2026-09-06'],
+   meals:'含列车及陆地部分用餐',mealsIncluded:false,
+   transport:'专列硬卧/软卧可选，当地空调大巴',
+   highlights:'北极村+漠河极光+镜泊湖+长白山天池+五大连池+沈阳故宫+鸭绿江断桥',
+   sellPoints:'东北三省+中国最北漠河，一次出行游遍东北，价格亲民2999元起',
+   ageLimit:'详见供应商要求',shopping:'详见行程',
+   selfPay:'沈阳+丹东2日游298/纯玩升级+400',
+   ticketPrice:'60岁以下1712/60-69岁1277/70岁以上1155'},
+  {id:'hn3',name:'云南全景+泸沽湖全软卧16日',region:'hn',days:16,dest:'云南',
+   keywords:['云南','泸沽湖','专列','16日','全景','大理','丽江','西双版纳','腾冲'],
+   desc:'云南全景环线含泸沽湖，大理丽江西双版纳一网打尽，全软卧舒适出行',
+   prices:'软卧上5099/下5599 | 儿童(6岁以下)1580 | 单房差600 | 厦漳泉+200',
+   dates:['2026-10-18'],
+   meals:'落地全面含餐！9早17正，8大特色餐：景颇族手抓饭/傈僳族土锅子/摩梭走婚宴/高原药膳/纳西族土鸡火锅/白族跳菜/傣族孔雀宴/雨林象餐',mealsIncluded:true,
+   transport:'全软卧空调直达专列，全程不换车不换铺',
+   highlights:'泸沽湖+玉龙雪山+大理古城+洱海+西双版纳野象谷+腾冲温泉+瑞丽',
+   sellPoints:'全软卧+落地含餐8大特色餐，含泸沽湖+腾冲滇西线，A/B线可选',
+   ageLimit:'详见供应商要求',shopping:'万亩茶园/高原药材',
+   selfPay:'篝火晚会/澜沧江游船280/昆明石林一日游198',
+   ticketPrice:'A线60岁以下1380/60-69岁1045/70以上717 | B线60岁以下1160/60-69岁910/70以上667'},
+  {id:'hn4',name:'潇湘府·解码西域天山行19日',region:'hn',days:19,dest:'新疆',
+   keywords:['天山','西域','新疆','解码','潇湘府','豪华','帕米尔','塔县'],
+   desc:'潇湘号豪华专列天山行，独立卫浴3人间，9晚高端酒店+4个高规格特色餐',
+   prices:'独立卫浴3人间(2人住)19999 | 8周岁以下19999/8周岁以上29999 | 包房62999 | 单房差5300',
+   dates:['2026-08-19','2026-09-19'],
+   meals:'全程含餐！专列7早10正+陆地7早25正 | 餐标80-150元 | 特色餐：布尔津冷水鱼/烤全羊/喀什清真餐/塔县牦牛肉火锅',mealsIncluded:true,
+   transport:'潇湘号豪华专列（独立卫浴3人间），9晚高端酒店',
+   highlights:'喀纳斯+禾木+赛里木湖+那拉提+帕米尔高原+塔县+喀什老城+天山天池',
+   sellPoints:'潇湘号豪华专列独立卫浴，9晚高端酒店(锦江/希尔顿/万达)，4个高规格特色餐，含帕米尔高原/塔县',
+   ageLimit:'65岁以上需陪同，70岁以上需体检报告，80岁以上谢绝',shopping:'详见行程',
+   selfPay:'详见行程',ticketPrice:'详见行程',
+   special:'需办理电子边境通行证'},
+  {id:'hn5',name:'额济纳专列12日游',region:'hn',days:12,dest:'额济纳',
+   keywords:['额济纳','专列','12日','胡杨','秋色','嘉峪关','宁夏'],
+   desc:'额济纳胡杨林专列12日，秋季金色盛宴，0购物0自费纯玩品质',
+   prices:'硬卧上3299/中3899/下4499 | 软卧上4599/下5199 | 四人间4599 | 儿童(6岁以下)1380 | 单房差600',
+   dates:['2026-10-08'],
+   meals:'含6早9正 | 4个特色餐：烤全羊/嘉峪关汽锅鸡/黄河大鲤鱼/中卫烩小吃',mealsIncluded:true,
+   transport:'专列硬卧/软卧可选，当地空调大巴',
+   highlights:'额济纳胡杨林+黑水城+怪树林+居延海+嘉峪关+沙坡头+中卫',
+   sellPoints:'0购物0自费纯玩！10月胡杨林最美秋色，4个特色餐，赠送红丝巾/矿泉水/生日礼品',
+   ageLimit:'70岁以上需陪同+半年内体检报告，80岁以上谢绝',shopping:'无(0购物)',
+   selfPay:'无(0自费)',
+   ticketPrice:'60岁以下1857/60-69岁1414/70岁以上1229'},
+  {id:'hn6',name:'甘青专列12日游',region:'hn',days:12,dest:'甘青',
+   keywords:['甘青','甘肃','青海','专列','12日','敦煌','莫高窟','青海湖','茶卡','丝路'],
+   desc:'千年古丝路甘青专列12日，0购物0自费，含敦煌莫高窟+青海湖+茶卡盐湖',
+   prices:'硬卧上3299/中3899/下4499 | 软卧上4599/下5199 | 四人间4599 | 儿童(6岁以下)1380 | 单房差600',
+   dates:['2026-10-08'],
+   meals:'含6早11正 | 6个特色餐：烤全羊/嘉峪关汽锅鸡/互助土族特色餐/敦煌焖饼/中卫烩小吃/黄河大鲤鱼',mealsIncluded:true,
+   transport:'专列硬卧/软卧可选，当地空调大巴',
+   highlights:'敦煌莫高窟+鸣沙山月牙泉+嘉峪关+青海湖+茶卡盐湖+张掖七彩丹霞+塔尔寺',
+   sellPoints:'0购物0自费！千年古丝路主题，6个特色餐，莫高窟B类票限量安排',
+   ageLimit:'70岁以上需陪同+半年内体检报告，80岁以上谢绝',shopping:'无(0购物)',
+   selfPay:'无(0自费)',
+   ticketPrice:'60岁以下1676/60-69岁1031/70岁以上1031 | 莫高窟A类票另补'},
+  {id:'hn7',name:'探秘东极专列17日(常规版)',region:'hn',days:17,dest:'东北',
+   keywords:['东极','专列','探秘','抚远','黑瞎子岛','红海滩','17日','常规'],
+   desc:'探秘中国东极抚远+黑瞎子岛，全软卧专列17日，含红海滩+长白山+丹东',
+   prices:'软卧上6999/下7699 | 儿童(6岁以下)2699 | 单房差800',
+   dates:['2026-08-01','2026-10-09'],
+   meals:'含7早11正',mealsIncluded:true,
+   transport:'全软卧专列，当地空调大巴',
+   highlights:'抚远东极阁日出+黑瞎子岛+红海滩+哈尔滨+长白山天池+丹东鸭绿江+沈阳故宫',
+   sellPoints:'探秘中国最东端，全软卧舒适出行，含黑瞎子岛深度游',
+   ageLimit:'70岁以上需陪同+半年内体检报告',shopping:'哈尔滨特产/长白山人参鹿茸/朝鲜特产(各40分钟)',
+   selfPay:'冰雪艺术馆200/长白山民俗园150/鸭绿江游船+朝鲜歌舞260',
+   ticketPrice:'60岁以下1202/60-69岁850/70岁以上667'},
+  {id:'hn8',name:'探秘东极专列·沅湘阁体验版17日',region:'hn',days:17,dest:'东北',
+   keywords:['东极','专列','沅湘阁','探秘','抚远','体验版','升级'],
+   desc:'沅湘阁体验版东极专列17日，比常规版服务升级，全空调软卧',
+   prices:'软卧上7499/下8199 | 儿童(6岁以下)2699 | 单房差800',
+   dates:['2026-08-01','2026-10-09'],
+   meals:'含7早11正',mealsIncluded:true,
+   transport:'全空调软卧专列(沅湘阁体验版升级)，当地空调大巴',
+   highlights:'抚远东极阁日出+黑瞎子岛+红海滩+哈尔滨+长白山天池+丹东鸭绿江+沈阳故宫',
+   sellPoints:'沅湘阁体验版升级服务，比常规版更高标准，全空调软卧',
+   ageLimit:'70岁以上需陪同+半年内体检报告',shopping:'哈尔滨特产/长白山人参鹿茸/朝鲜特产(各40分钟)',
+   selfPay:'冰雪艺术馆200/长白山民俗园150/鸭绿江游船+朝鲜歌舞260',
+   ticketPrice:'60岁以下1202/60-69岁850/70岁以上667'},
+  {id:'hn9',name:'南北疆网红双层专列16日',region:'hn',days:16,dest:'新疆',
+   keywords:['南北疆','双层','专列','新疆','网红','双层卧铺','16日','江西'],
+   desc:'网红双层专列畅游南北疆16日，多种房型可选，4个班期暑期秋季任选',
+   prices:'双层硬卧六人间上4299/中5299/下6099 | 四人间上5299/下6099 | 双层软卧四人间上6599/下7299 | 两人间9299 | 儿童(6岁以下)1980 | 单房差600',
+   dates:['2026-07-05','2026-07-29','2026-08-22','2026-09-15'],
+   meals:'含列车及陆地部分用餐 | 特色餐：九碗三行子',mealsIncluded:false,
+   transport:'网红双层专列(六人间/四人间/软卧四人间/两人间)，当地空调大巴',
+   highlights:'天山天池+喀纳斯+禾木+赛里木湖+那拉提+喀什老城+帕米尔高原+维吾尔族家访',
+   sellPoints:'网红双层专列体验！多种房型选择，4个班期可选，含维吾尔族家访+歌舞剧',
+   ageLimit:'65岁以上需陪同(子女签字)，80岁以上谢绝',shopping:'地毯厂/棉花基地/维药厂(90分钟)/玉店/驼绒/同仁堂(各90分钟)',
+   selfPay:'五彩滩150/图瓦家访100/游船120/喀赞其198/骑马160/歌舞水果宴268',
+   ticketPrice:'60岁以下1481/60-69岁1026/70岁以上473',
+   special:'含南昌-乌鲁木齐往返Z36次 | 薰衣草花期6-8月中旬'},
+  {id:'hn10',name:'藏地时光有氧列车11日',region:'hn',days:11,dest:'西藏',
+   keywords:['西藏','藏地','有氧列车','11日','拉萨','林芝','布达拉宫','羊湖','小团'],
+   desc:'有氧列车进藏11日，25人精致小包团，全程0自费，含4个藏区特色餐',
+   prices:'硬卧上4399/中4899/下5399 | 单房差550',
+   dates:['2026-09-07'],
+   meals:'含6早9正 | 餐标20元 | 4个特色餐：鲁朗石锅鸡/藏香猪浓汤锅/烤羊藏餐宴/牦牛肉汤锅',mealsIncluded:true,
+   transport:'有氧列车(高原专用供氧)，拉萨首夜有氧住宿，全程准四酒店',
+   highlights:'布达拉宫+大昭寺+巴松措+鲁朗林海+雅鲁藏布江+羊卓雍措+尼洋阁',
+   sellPoints:'有氧列车进藏安全放心！25人小团+全程0自费+4个藏区特色餐+赠羊湖旅拍3张照片',
+   ageLimit:'70周岁以下健康者；70岁以上需家人陪同；75岁以上谢绝；高血压/心脏病/哮喘/中风谢绝',shopping:'藏药博览中心/藏饰博物馆/牦牛乳业/藏民家访(绝无强制消费)',
+   selfPay:'无(全程0自费)',
+   ticketPrice:'60岁以下630/60-69岁646/70岁以上430 | 布达拉宫讲解器50/巴松措观光车45',
+   special:'拉萨首夜有氧住宿 | 赠哈达/集体彩照/金刚结/矿泉水/生日礼品/羊湖旅拍'},
+  {id:'hn11',name:'新疆软卧直达专列19日(沅湘阁)',region:'hn',days:19,dest:'新疆',
+   keywords:['新疆','软卧','专列','19日','沅湘阁','大海道','全景','广州'],
+   desc:'沅湘阁体验版新疆全软卧直达19日，4个班期6-9月，含哈密大海道+帕米尔高原',
+   prices:'软卧上9699/下10699 | 儿童(6岁以下)3599 | 单房差1000',
+   dates:['2026-06-22','2026-07-11','2026-08-19','2026-09-19'],
+   meals:'含列车及陆地部分用餐 | 3个特色餐：九碗三行子/新疆大盘鸡/布尔津冷水鱼宴',mealsIncluded:false,
+   transport:'全空调软卧直达专列(沅湘阁体验版)，广州白云站始发',
+   highlights:'哈密大海道+天山天池+喀纳斯+禾木+赛里木湖+那拉提+帕米尔高原+塔县+喀什老城',
+   sellPoints:'沅湘阁体验版！全软卧直达4个班期，特别含哈密大海道+帕米尔高原，广州始发',
+   ageLimit:'65岁以上需陪同(子女签字)，70岁以上需体检报告，80岁以上谢绝',shopping:'玉店/驼绒/维药/同仁堂(各90分钟)',
+   selfPay:'五彩滩150/图瓦家访100/喀纳斯游船120/骑马160/独库公路500/喀赞其180',
+   ticketPrice:'60岁以下1558/60-69岁1198/70岁以上713',
+   special:'需办理电子边境通行证 | 广州白云站始发'},
+  {id:'fj1',name:'天边北国·探秘东极(豪华潇湘号)17日',region:'fj',days:17,dest:'东北',
+   keywords:['东极','北国','天边','探秘','潇湘号','豪华','抚远','17日'],
+   desc:'新南方快车潇湘号豪华专列17日，含KTV/麻将/医务室，多档次房型可选',
+   prices:'软卧上6999/下7699 | 儿童(6岁以下)2699 | 单房差800',
+   dates:['2026-08-01','2026-10-09'],
+   meals:'专列不含餐(有盒饭) | 当地7早11正 | 正餐十人一桌八菜一汤',mealsIncluded:false,
+   transport:'新南方快车潇湘号豪华专列，多功能娱乐车厢(KTV/麻将/医务室)',
+   highlights:'抚远东极广场+黑瞎子岛+黑河中俄边境+长白山天池+红海滩+鸭绿江+沈阳故宫',
+   sellPoints:'潇湘号豪华专列，车厢豪华装修，一趟火车游遍东北三省',
+   ageLimit:'70岁以上需家属陪同',shopping:'详见行程',selfPay:'详见行程',
+   ticketPrice:'详见行程',
+   special:'潇湘府独立卫浴2人间/蒸湘院2人间/沅湘阁4人间可选'},
+  {id:'fj2',name:'东极抚远专列17日(常规版)',region:'fj',days:17,dest:'东北',
+   keywords:['东极','常规','探秘','抚远','17日','经济'],
+   desc:'常规版东极抚远专列17日，标准空调专列，性价比之选',
+   prices:'软卧上6999/下7699 | 儿童(6岁以下)2699 | 单房差800',
+   dates:['2026-08-01','2026-10-09'],
+   meals:'全程7早11正 | 专列不含餐(有餐车盒饭)',mealsIncluded:false,
+   transport:'空调旅游专列(常规列车)，全程空调卧铺',
+   highlights:'抚远东极广场+黑瞎子岛+黑河+长白山天池+红海滩+鸭绿江+沈阳故宫',
+   sellPoints:'与豪华版相同路线，标准空调专列，性价比选择',
+   ageLimit:'详见供应商要求',shopping:'详见行程',selfPay:'详见行程',
+   ticketPrice:'详见行程'},
+  {id:'fj3',name:'大河之南号·南北疆17日游',region:'fj',days:17,dest:'新疆',
+   keywords:['南北疆','大河之南','17日','新疆','全含','独立卫浴','豪华'],
+   desc:'大河之南号特色旅游列车南北疆17日，全列独立卫浴，所有门票全含！',
+   prices:'4人间上19999/下21999 | 3人间上27999/下29999 | 2人间45999 | 儿童(6岁以下)4人间6999/3人间9999/2人间15999',
+   dates:['2026-09-11'],
+   meals:'全含！陆地10早22正+列车5早8正 | 餐标50-120元 | 特色餐：烤全羊/布尔津冷水鱼/锡伯特色餐/喀什清真餐/塔县牦牛肉火锅',mealsIncluded:true,
+   transport:'大河之南号特色旅游列车，全列独立卫浴，2/3/4人间可选，KTV/麻将/专用餐车',
+   highlights:'喀纳斯+禾木+赛里木湖+那拉提+巴音布鲁克+帕米尔高原+塔县+喀什+天山峡谷+独库公路',
+   sellPoints:'全含产品！所有门票+景交全含无需另付！全列独立卫浴新疆最高配置！5星酒店+特色餐',
+   ageLimit:'80岁以上谢绝，65岁以上需家属陪同',shopping:'无(全含产品)',selfPay:'无(全含产品)',
+   ticketPrice:'全含！所有门票+景区交通全含',
+   special:'郑州/洛阳出发 | 含塔县/帕米尔高原'},
+  {id:'fj4',name:'疆山如画南北疆专列18日(特价)',region:'fj',days:18,dest:'新疆',
+   keywords:['新疆','疆山如画','18日','特价','南北疆','便宜'],
+   desc:'疆山如画特价版18日，硬卧最低3999元起，南北疆全景一次游遍',
+   prices:'硬卧六人间上3999/中4999/下5999 | 优享四人间中7199/下8199 | 软卧四人间上8299/下9299 | 儿童(6岁以下)2780 | 单房差900 | 厦漳泉+300',
+   dates:['2026-07-25','2026-08-22'],
+   meals:'火车上不含餐(有餐车) | 早餐酒店含 | 特色餐：新疆大盘鸡/喀什清真餐/九碗三行子/布尔津冷水鱼宴',mealsIncluded:false,
+   transport:'空调旅游专列(直达新疆)，硬卧6人间/优享4人间/软卧4人间',
+   highlights:'喀纳斯+禾木+赛里木湖+那拉提+巴音布鲁克+帕米尔+喀什+天山峡谷+大海道+兰州水墨丹霞',
+   sellPoints:'特价版！硬卧最低3999元起！南北疆全景18天含兰州段，价格门槛最低',
+   ageLimit:'详见供应商要求',shopping:'地毯厂/棉花基地/维药厂/玉店/驼绒/同仁堂(各90分钟)',
+   selfPay:'五彩滩150/图瓦家访100/歌舞水果宴268/喀赞其198/那拉提骑马160',
+   ticketPrice:'详见行程',
+   special:'可选独库公路穿越：北段498/中南段700'},
+  {id:'fj5',name:'额济纳+宁夏直达专列11日',region:'fj',days:11,dest:'额济纳',
+   keywords:['额济纳','宁夏','11日','胡杨','沙坡头','秋季'],
+   desc:'额济纳胡杨林+宁夏沙坡头11日，10月黄金观赏期，防风沙头巾赠送',
+   prices:'硬卧六人间上3399/中3799/下4199 | 软卧上4899/下5299 | 四人间中4399/下4799 | 儿童(6岁以下)980/(6-14岁)1780 | 单房差500',
+   dates:['2026-10-14'],
+   meals:'火车不含餐(有餐车) | 当地正餐十人一桌八菜一汤 | 早餐酒店含',mealsIncluded:false,
+   transport:'空调直达专列，全程不换车不换铺，配备餐车',
+   highlights:'额济纳胡杨林(一道桥至八道桥)+居延海日出+黑水城+沙坡头+通湖草原+水洞沟+六盘山+须弥山石窟',
+   sellPoints:'10月胡杨林最佳观赏期！宁夏+额济纳连线，行程紧凑11天，赠送防风沙头巾',
+   ageLimit:'详见供应商要求',shopping:'详见行程',selfPay:'详见行程',
+   ticketPrice:'按年龄分档收费(60以下/60-64/65-69/70+)'},
+  {id:'fj6',name:'云南全景+泸沽湖全软卧16日',region:'fj',days:16,dest:'云南',
+   keywords:['云南','泸沽湖','16日','全景','软卧','大理','丽江','版纳'],
+   desc:'福建版云南全景+泸沽湖16日，全软卧+落地含餐8大特色餐',
+   prices:'软卧上5099/下5599 | 儿童(6岁以下)1580 | 单房差600 | 厦漳泉+200',
+   dates:['2026-10-18'],
+   meals:'落地全面含餐！9早17正 | 特色餐：景颇族手抓饭/傈僳族土锅子/摩梭走婚宴/高原药膳/纳西族土鸡火锅/白族跳菜/傣族孔雀宴/雨林象餐',mealsIncluded:true,
+   transport:'全软卧空调直达专列，全程不换车不换铺',
+   highlights:'泸沽湖+玉龙雪山+大理古城+洱海+西双版纳+腾冲+瑞丽+芒市',
+   sellPoints:'全软卧+落地含餐8大特色餐，含泸沽湖+腾冲滇西线，A/B线可选',
+   ageLimit:'详见供应商要求',shopping:'万亩茶园/高原药材',
+   selfPay:'篝火晚会/澜沧江游船280/昆明石林一日游198',
+   ticketPrice:'详见行程'},
+  {id:'fj7',name:'云南全景+泸沽湖全软卧15日',region:'fj',days:15,dest:'云南',
+   keywords:['云南','泸沽湖','15日','全景','软卧'],
+   desc:'福建版云南全景+泸沽湖15日，与16日版同路线同价格，仅少1天更紧凑',
+   prices:'软卧上5099/下5599 | 儿童(6岁以下)1580 | 单房差600 | 厦漳泉+200',
+   dates:['2026-10-18'],
+   meals:'落地全面含餐！9早17正 | 8大特色餐(同16日版)',mealsIncluded:true,
+   transport:'全软卧空调直达专列，全程不换车不换铺',
+   highlights:'泸沽湖+玉龙雪山+大理古城+洱海+西双版纳+腾冲+瑞丽',
+   sellPoints:'与16日版内容/价格完全一致，仅少1天行程更紧凑',
+   ageLimit:'详见供应商要求',shopping:'万亩茶园/高原药材',
+   selfPay:'篝火晚会/澜沧江游船280',ticketPrice:'详见行程'},
+  {id:'fj8',name:'潇湘号·南北疆全景19日(繁体入境版)',region:'fj',days:19,dest:'新疆',
+   keywords:['新疆','潇湘号','全景','19日','繁体','入境','港澳台','全含','高端'],
+   desc:'潇湘号豪华专列南北疆全景19日，繁体版面向境外游客，所有门票全含',
+   prices:'潇湘府(独立卫浴大床)59999 | 蒸湘院上45999/下42999 | 沅湘阁28999 | 儿童8岁以下(潇湘府19999/蒸湘院8999/沅湘阁4999)',
+   dates:['2026-06-22','2026-08-19','2026-09-19'],
+   meals:'全含！陆地9早25正+专列7早10正 | 潇湘府餐标100/蒸湘院80/沅湘阁60 | 特色餐100-150',mealsIncluded:true,
+   transport:'南方列车潇湘号豪华专列，潇湘府/蒸湘院/沅湘阁三档可选，KTV/麻将/专用餐车',
+   highlights:'喀纳斯+禾木+赛里木湖+那拉提+巴音布鲁克+帕米尔+塔县+喀什+大海道+重庆中转',
+   sellPoints:'潇湘号最豪华专列！三档车型选择，19天最全行程，含哈密大海道+重庆中转，全含无隐性消费',
+   ageLimit:'65岁以上需家属陪同，80岁以上谢绝',shopping:'无(全含)',selfPay:'无(全含)',
+   ticketPrice:'全含！所有门票全含',
+   special:'繁体版行程说明 | 含重庆中转 | 高端酒店(福朋喜来登/希尔顿/锦江)'},
+  {id:'fj9',name:'北极光专列·东北五省15日环游',region:'fj',days:15,dest:'东北',
+   keywords:['东北','直达','专列','15日','北极光','漠河','呼伦贝尔','长白山','五省'],
+   desc:'北极光专列畅游东北五省15日，含北极村+呼伦贝尔+长白山+红海滩，硬卧3399起',
+   prices:'硬卧上3399/中3899/下4399 | 软卧上5699/下6199 | 四人间中4899/下5399 | 儿童(6岁以下)1580/(6-14岁)2580 | 厦漳泉+200 | +400升级纯玩团',
+   dates:['2026-08-16'],
+   meals:'火车不含餐(有餐车) | 当地6早10正 | 特色餐：山海关御膳宴/满洲八大碗/东北铁锅炖/朝鲜风味餐/饺子宴',mealsIncluded:false,
+   transport:'空调直达旅游专列，硬卧/软卧/四人间可选，全程不换车不换铺',
+   highlights:'北极村/漠河+呼伦贝尔草原+满洲里国门+长白山天池+红海滩+山海关+沈阳故宫+鸭绿江',
+   sellPoints:'东北五省一网打尽！硬卧3399起+可选纯玩团(+400全程0购物)+升级1晚四星+赠草原烤全羊',
+   ageLimit:'70岁以上建议60岁以下成人陪同',shopping:'常规团有购物店(各40分钟) | 纯玩团无购物',
+   selfPay:'北戴河海上观光120/冰雪艺术馆200/漠河游船200/满洲里民俗300/长白山满族风情园150/鸭绿江游船260',
+   ticketPrice:'60岁以下1354/60-64岁930/65-69岁817/70以上558',
+   special:'已获国铁集团竞价成功 | 赠贝壳钥匙扣/红丝巾/哈达/草原奶酪/长白山人参'}
 ];
 
 var schedules = JSON.parse(localStorage.getItem('zhibiao_schedules') || '[]');
@@ -1761,42 +2000,124 @@ function renderProduct(tab){
 function doProductQA(){
   var query = document.getElementById('qaInput').value.trim();
   if(!query){ showToast('请输入问题'); return; }
-  var results = [];
   var q = query.toLowerCase();
-  PRODUCTS.forEach(function(p){
-    var score = 0;
-    p.keywords.forEach(function(kw){
-      if(q.indexOf(kw.toLowerCase()) >= 0) score += 2;
-    });
-    if(q.indexOf(p.region) >= 0) score += 1;
-    if(q.indexOf(p.dest.toLowerCase()) >= 0) score += 2;
-    if(p.days > 0 && q.indexOf(p.days) >= 0) score += 1;
-    if(q.indexOf(p.name.toLowerCase()) >= 0) score += 3;
-    if(score > 0) results.push({product:p, score:score});
-  });
-  results.sort(function(a,b){ return b.score - a.score; });
   var rContainer = document.getElementById('qaResult');
-  if(results.length === 0){
-    rContainer.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">未找到相关产品，试试换个关键词<br><span style="font-size:12px">可用关键词：新疆、东北、云南、额济纳、西藏、甘青、专列等</span></div>';
+  var intentScores = {general:0,meal:0,price:0,date:0,transport:0,age:0,shop:0,selfpay:0,ticket:0,highlight:0,sell:0,compare:0};
+  var mealKw = ['含餐','用餐','餐','吃','饭','食','餐标','特色餐','早餐','正餐','美食'];
+  for(var i=0;i<mealKw.length;i++){if(q.indexOf(mealKw[i])>=0)intentScores.meal+=3;}
+  var priceKw = ['多少钱','价格','价位','费用','报价','收费','几元','贵不贵','便宜'];
+  for(var i=0;i<priceKw.length;i++){if(q.indexOf(priceKw[i])>=0)intentScores.price+=3;}
+  var dateKw = ['什么时候出发','出发','班期','日期','哪天','几号','时间','出发时间'];
+  for(var i=0;i<dateKw.length;i++){if(q.indexOf(dateKw[i])>=0)intentScores.date+=3;}
+  var destKw = ['去哪里','去哪','目的地','到哪里','去哪玩','线路','路线'];
+  for(var i=0;i<destKw.length;i++){if(q.indexOf(destKw[i])>=0)intentScores.highlight+=2;}
+  var transKw = ['交通','怎么坐','火车','车型','列车','铺位','房型','卧铺','软卧','硬卧'];
+  for(var i=0;i<transKw.length;i++){if(q.indexOf(transKw[i])>=0)intentScores.transport+=3;}
+  var ageKw = ['年龄','老人','岁','岁以','陪同','限制','能不能去','可以去吗','身体'];
+  for(var i=0;i<ageKw.length;i++){if(q.indexOf(ageKw[i])>=0)intentScores.age+=3;}
+  var shopKw = ['购物','买东西','购物店','有没有购物','强制消费','消费'];
+  for(var i=0;i<shopKw.length;i++){if(q.indexOf(shopKw[i])>=0)intentScores.shop+=3;}
+  var spKw = ['自费','另付','额外','还要花钱','自费项目'];
+  for(var i=0;i<spKw.length;i++){if(q.indexOf(spKw[i])>=0)intentScores.selfpay+=3;}
+  var tkKw = ['门票','景区门票','门票多少','门票费'];
+  for(var i=0;i<tkKw.length;i++){if(q.indexOf(tkKw[i])>=0)intentScores.ticket+=3;}
+  var hlKw = ['景点','玩什么','有什么好玩','亮点','特色','包含哪些','行程','安排'];
+  for(var i=0;i<hlKw.length;i++){if(q.indexOf(hlKw[i])>=0)intentScores.highlight+=2;}
+  var slKw = ['卖点','优势','为什么','推荐理由','好在哪','值得'];
+  for(var i=0;i<slKw.length;i++){if(q.indexOf(slKw[i])>=0)intentScores.sell+=3;}
+  var cpKw = ['对比','区别','哪个','比较','推荐','适合','选哪'];
+  for(var i=0;i<cpKw.length;i++){if(q.indexOf(cpKw[i])>=0)intentScores.compare+=3;}
+  var maxIntent='general',maxScore=0;
+  for(var k in intentScores){if(intentScores[k]>maxScore){maxScore=intentScores[k];maxIntent=k;}}
+  var results=[];
+  PRODUCTS.forEach(function(p){
+    var score=0;
+    p.keywords.forEach(function(kw){if(q.indexOf(kw.toLowerCase())>=0)score+=2;});
+    if(q.indexOf(p.region)>=0)score+=1;
+    if(q.indexOf(p.dest.toLowerCase())>=0)score+=2;
+    if(p.days>0&&q.indexOf(String(p.days))>=0)score+=1;
+    if(q.indexOf(p.name.toLowerCase())>=0)score+=3;
+    if(score>0)results.push({product:p,score:score});
+  });
+  results.sort(function(a,b){return b.score-a.score;});
+  var isSpecific=maxIntent!=='general'&&maxScore>0;
+  var showList=(results.length>0)&&(!isSpecific||maxIntent==='compare'||maxIntent==='highlight');
+  if(results.length===0&&!isSpecific){
+    rContainer.innerHTML='<div style="color:var(--text3);text-align:center;padding:20px">未找到相关产品，试试换个关键词<br><span style="font-size:12px">可用关键词：新疆、东北、云南、额济纳、西藏、甘青、专列等</span></div>';
     return;
   }
-  var html = '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">找到 '+results.length+' 个相关产品：</div>';
-  results.slice(0,5).forEach(function(r){
-    var p = r.product;
-    var regionLabel = p.region === 'hn' ? '湖南' : '福建';
-    html += '<div class="qa-item">';
-    html += '<div class="qa-name"><span class="product-region '+p.region+'">'+regionLabel+'</span> '+p.name+'</div>';
-    html += '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.desc+'</div>';
-    html += '<div style="font-size:11px;color:var(--text3);margin-top:4px">';
-    if(p.days > 0) html += '行程'+p.days+'天 | ';
-    html += '目的地：'+p.dest;
-    var pSchedules = schedules.filter(function(s){ return s.productId === p.id; });
-    if(pSchedules.length > 0){
-      html += ' | 近期班期：'+pSchedules.map(function(s){ return s.date; }).sort().slice(0,3).join('、');
+  var html='';
+  if(maxIntent==='meal'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🍽️ 各产品用餐情况：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:13px;color:'+(p.mealsIncluded?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(p.mealsIncluded?'✅ 含餐':'⚠️ 部分含餐/不含餐')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.meals||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='price'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">💰 各产品价格信息：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:var(--orange);margin-top:4px;font-weight:600">'+(p.prices||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='date'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">📅 各产品出发班期：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      if(p.dates&&p.dates.length>0){var sorted=p.dates.slice().sort();
+        html+='<div style="margin-top:4px">';
+        sorted.forEach(function(dt){var isPast=dt<todayStr;
+          html+='<span style="display:inline-block;padding:2px 8px;margin:2px;border-radius:10px;font-size:11px;background:'+(isPast?'var(--glass)':'rgba(14,165,233,.15)')+';color:'+(isPast?'var(--text3)':'var(--cyan)')+';font-weight:'+(isPast?'400':'600')+'">'+dt.replace(/-/g,'/')+(isPast?' (已过)':'')+'</span>';});
+        html+='</div>';}else{html+='<div style="font-size:12px;color:var(--text3);margin-top:4px">暂无固定班期</div>';}
+      html+='</div>';ct++;});
+  }else if(maxIntent==='transport'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🚂 各产品交通/房型：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.transport||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='age'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">👴 各产品年龄要求：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ageLimit||'详见供应商要求')+'</div></div>';ct++;});
+  }else if(maxIntent==='shop'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🛒 各产品购物安排：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      var hasShop=p.shopping&&p.shopping.indexOf('无')===0;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:'+(hasShop?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(hasShop?'✅ 无购物':'⚠️ 有购物店')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.shopping||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='selfpay'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">💳 各产品自费项目：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      var noSP=p.selfPay&&p.selfPay.indexOf('无')===0;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:'+(noSP?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(noSP?'✅ 无自费':'⚠️ 有自费项目')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.selfPay||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='ticket'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🎫 各产品门票费用：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ticketPrice||'详见行程')+'</div></div>';ct++;});
+  }else if(maxIntent==='sell'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">⭐ 各产品核心卖点：</div>';
+    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:12px;color:var(--orange);margin-top:4px;font-weight:600">'+(p.sellPoints||'')+'</div></div>';ct++;});
+  }else{
+    if(results.length>0){
+      html+='<div style="font-size:12px;color:var(--text3);margin-bottom:10px">找到 '+results.length+' 个相关产品：</div>';
+      results.slice(0,5).forEach(function(r){
+        var p=r.product;var regionLabel=p.region==='hn'?'湖南':'福建';
+        html+='<div class="qa-item"><div class="qa-name"><span class="product-region '+p.region+'">'+regionLabel+'</span> '+p.name+'</div>';
+        html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.desc+'</div>';
+        html+='<div style="font-size:11px;color:var(--text3);margin-top:4px">';
+        if(p.days>0)html+='行程'+p.days+'天 | ';
+        html+='目的地：'+p.dest;
+        if(p.dates&&p.dates.length>0){var future=p.dates.filter(function(d){return d>=todayStr;}).sort();
+          if(future.length>0)html+=' | 近期班期：'+future.slice(0,3).join('、');}
+        html+='</div></div>';});
     }
-    html += '</div></div>';
-  });
-  rContainer.innerHTML = html;
+  }
+  rContainer.innerHTML=html;
 }
 
 function renderProductCalendar(container){
@@ -1819,11 +2140,31 @@ function renderProductCalendar(container){
   for(var d = 1; d <= lastDay.getDate(); d++){
     var dateStr = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     var daySchedules = schedules.filter(function(s){ return s.date === dateStr; });
+    var dayDepartures = PRODUCTS.filter(function(p){ return p.dates && p.dates.indexOf(dateStr) >= 0; });
     var isToday = dateStr === todayStr;
     var cls = 'cal-day' + (isToday ? ' today' : '');
-    html += '<div class="'+cls+'" onclick="showDayDetail(\''+dateStr+'\')">';
+    html += '<div class="'+cls+'" onclick="showCalDayDetail(\''+dateStr+'\')">';
     html += '<div class="day-num">'+d+'</div>';
-    if(daySchedules.length > 0){
+    if(dayDepartures.length > 0){
+      html += '<div class="day-dots">';
+      dayDepartures.forEach(function(p){
+        html += '<div class="day-dot '+p.region+'" title="'+p.name+'"></div>';
+      });
+      daySchedules.forEach(function(s){
+        var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+        html += '<div class="day-dot '+(prod ? prod.region : '')+'" title="'+(prod ? prod.name : '')+'"></div>';
+      });
+      html += '</div>';
+      html += '<div class="day-tours">';
+      dayDepartures.forEach(function(p){
+        html += '<div style="color:'+(p.region==='hn'?'var(--orange)':'var(--cyan)')+'">'+p.name.substring(0,6)+'</div>';
+      });
+      daySchedules.forEach(function(s){
+        var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+        if(prod) html += '<div style="color:'+(prod.region==='hn'?'var(--orange)':'var(--cyan)')+'">'+prod.name.substring(0,6)+'</div>';
+      });
+      html += '</div>';
+    } else if(daySchedules.length > 0){
       html += '<div class="day-dots">';
       daySchedules.forEach(function(s){
         var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
@@ -1860,9 +2201,10 @@ function renderProductList(container){
     html += '<span class="product-region '+p.region+'">'+regionLabel+'</span>';
     html += '<span class="product-name">'+p.name+'</span>';
     html += '<span class="product-meta">'+(p.days > 0 ? p.days+'天' : '')+' '+p.dest+'</span>';
+    html += '<button class="product-extract-btn" onclick="showExtractModal(''' + p.id + ''')">提炼</button>';
     html += '</div>';
   });
-  html += '</div>';
+    html += '</div>';
   container.innerHTML = html;
 }
 
@@ -2085,6 +2427,7 @@ function renderMemoryCalendar(){
       var color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--cyan)' : pct > 0 ? 'var(--orange)' : 'var(--text3)';
       html += '<div style="font-size:10px;font-weight:700;color:' + color + '">' + mem.done + '/' + mem.total + '</div>';
       if(pct >= 80) html += '<div style="font-size:10px;color:var(--green)">&#x2B50;</div>';
+      var moodVal = localStorage.getItem('zhibiao_mood_' + ds);var moodEmojis = {fire:'\u{1F525}',good:'\u{1F60A}',ok:'\u{1F610}',tired:'\u{1F634}',stress:'\u{1F624}'};if(moodVal && moodEmojis[moodVal]) html += '<div style="font-size:14px;margin-top:2px">' + moodEmojis[moodVal] + '</div>';
     }
     html += '</div>';
   }
@@ -2117,6 +2460,205 @@ function showMemoryDay(dateStr){
   if(mem.notes) html += '<div style="margin-top:6px;padding:8px 12px;background:var(--glass);border-radius:8px;font-size:12px;color:var(--text2)"><strong>备注：</strong>' + mem.notes + '</div>';
   html += '</div></div>';
   detail.innerHTML = html;
+}
+
+function showCalDayDetail(dateStr){
+  var dayDepartures = PRODUCTS.filter(function(p){ return p.dates && p.dates.indexOf(dateStr) >= 0; });
+  var daySchedules = schedules.filter(function(s){ return s.date === dateStr; });
+  var detail = document.getElementById('memoryDayDetail');
+  if(dayDepartures.length === 0 && daySchedules.length === 0){
+    detail.innerHTML = '<div class="memory-day-detail"><div class="detail-date">'+dateStr+'</div><div class="detail-tasks" style="color:var(--text3)">当天没有出发班期</div></div>';
+    return;
+  }
+  var html = '<div class="memory-day-detail"><div class="detail-date">'+dateStr+' 出发班期</div><div class="detail-tasks">';
+  dayDepartures.forEach(function(p){
+    var regionLabel = p.region === 'hn' ? '湖南' : '福建';
+    html += '<div style="padding:6px 0;border-bottom:1px solid var(--border)"><strong style="color:'+(p.region==='hn'?'var(--orange)':'var(--cyan)')+'">'+p.name+'</strong> ('+regionLabel+')';
+    if(p.days > 0) html += ' - '+p.days+'天';
+    if(p.desc) html += '<br><span style="color:var(--text3)">'+p.desc+'</span>';
+    html += '</div>';
+  });
+  daySchedules.forEach(function(s){
+    var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+    if(prod){
+      var regionLabel = prod.region === 'hn' ? '湖南' : '福建';
+      html += '<div style="padding:6px 0;border-bottom:1px solid var(--border)"><strong>'+prod.name+'</strong> ('+regionLabel+')';
+      if(prod.days > 0) html += ' - '+prod.days+'天';
+      html += '<br><span style="color:var(--text3)">'+prod.desc+'</span>';
+      html += ' <span style="color:var(--red);cursor:pointer;font-size:11px;margin-left:8px" onclick="removeSchedule(\''+s.productId+'\',\''+dateStr+'\')">删除</span></div>';
+    }
+  });
+  html += '</div></div>';
+  detail.innerHTML = html;
+}
+
+function showExtractModal(productId){
+  var p = PRODUCTS.find(function(x){ return x.id === productId; });
+  if(!p) return;
+  var regionLabel = p.region === 'hn' ? '湖南' : '福建';
+  var html = '<div class="extract-overlay" onclick="closeExtractModal()"></div>';
+  html += '<div class="extract-modal">';
+  html += '<div class="extract-head"><div class="extract-title"><span class="product-region '+p.region+'">'+regionLabel+'</span> '+p.name+'</div>';
+  html += '<span class="extract-close" onclick="closeExtractModal()">&times;</span></div>';
+  html += '<div class="extract-body" id="extractBody">';
+  if(p.desc) html += '<div style="color:var(--text2);margin-bottom:10px;font-size:13px">'+p.desc+'</div>';
+  if(p.prices && p.prices.length > 0){
+    html += '<div class="extract-section"><div class="extract-label">价格信息</div>';
+    p.prices.forEach(function(pr){
+      var priceText = pr.type ? pr.type+'：' : '';
+      if(pr.lower) priceText += '下铺'+pr.lower+'元';
+      if(pr.upper) priceText += (pr.lower ? ' / ' : '')+'上铺'+pr.upper+'元';
+      if(!pr.lower && !pr.upper && pr.price) priceText += pr.price+'元';
+      html += '<div class="extract-price">'+priceText+'</div>';
+    });
+    html += '</div>';
+  }
+  if(p.days > 0 || p.dest){
+    html += '<div class="extract-section"><div class="extract-label">行程信息</div>';
+    if(p.days > 0) html += '<div>行程天数：<strong>'+p.days+'天</strong></div>';
+    if(p.dest) html += '<div>目的地：<strong>'+p.dest+'</strong></div>';
+    if(p.transport) html += '<div>交通方式：'+p.transport+'</div>';
+    if(p.ageLimit) html += '<div>年龄限制：'+p.ageLimit+'</div>';
+    html += '</div>';
+  }
+  if(p.meals || p.mealsIncluded !== undefined){
+    html += '<div class="extract-section"><div class="extract-label">用餐信息</div>';
+    html += '<div>含餐：'+(p.mealsIncluded ? '<span style="color:var(--green)">是</span>' : '<span style="color:var(--orange)">不含/自理</span>')+'</div>';
+    if(p.meals) html += '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.meals+'</div>';
+    html += '</div>';
+  }
+  if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
+    html += '<div class="extract-section"><div class="extract-label">费用说明</div>';
+    if(p.ticketPrice) html += '<div>门票：'+p.ticketPrice+'</div>';
+    if(p.shopping !== undefined) html += '<div>购物店：'+p.shopping+'</div>';
+    if(p.selfPay !== undefined) html += '<div>自费项目：'+p.selfPay+'</div>';
+    html += '</div>';
+  }
+  if(p.highlights){
+    html += '<div class="extract-section"><div class="extract-label">行程亮点</div>';
+    html += '<div style="font-size:12px;color:var(--text2)">'+p.highlights+'</div></div>';
+  }
+  if(p.dates && p.dates.length > 0){
+    var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
+    if(future.length > 0){
+      html += '<div class="extract-section"><div class="extract-label">近期班期</div>';
+      html += '<div style="font-size:12px;color:var(--cyan)">'+future.slice(0,6).join('、')+(future.length > 6 ? ' 等'+future.length+'个班期' : '')+'</div></div>';
+    }
+  }
+  if(p.sellPoints && p.sellPoints.length > 0){
+    html += '<div class="extract-section"><div class="extract-label">推荐理由</div>';
+    var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
+    sps.forEach(function(sp){ html += '<div style="font-size:12px;padding:2px 0">✅ '+sp+'</div>'; });
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div class="extract-footer">';
+  html += '<button class="extract-btn secondary" onclick="copyExtractInfo(\''+p.id+'\',\'text\')">复制文字版</button>';
+  html += '<button class="extract-btn primary" onclick="copyExtractInfo(\''+p.id+'\',\'card\')">复制卡片版</button>';
+  html += '</div></div>';
+  var existing = document.getElementById('extractModal');
+  if(existing) existing.remove();
+  var modal = document.createElement('div');
+  modal.id = 'extractModal';
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+
+function closeExtractModal(){
+  var m = document.getElementById('extractModal');
+  if(m) m.remove();
+}
+
+function copyExtractInfo(productId, format){
+  var p = PRODUCTS.find(function(x){ return x.id === productId; });
+  if(!p) return;
+  var text = buildExtractText(p, format);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('已复制到剪贴板');
+      closeExtractModal();
+    }).catch(function(){
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); showToast('已复制到剪贴板'); }
+  catch(e){ showToast('复制失败，请手动复制'); }
+  document.body.removeChild(ta);
+  closeExtractModal();
+}
+
+function buildExtractText(p, format){
+  var regionLabel = p.region === 'hn' ? '湖南出发' : '福建出发';
+  var lines = [];
+  lines.push(regionLabel + ' | ' + p.name);
+  if(p.desc) lines.push(p.desc);
+  lines.push('');
+  if(p.prices && p.prices.length > 0){
+    lines.push('【价格】');
+    p.prices.forEach(function(pr){
+      var t = pr.type ? pr.type+'：' : '';
+      if(pr.lower) t += '下铺'+pr.lower+'元';
+      if(pr.upper) t += (pr.lower ? ' / ' : '')+'上铺'+pr.upper+'元';
+      if(!pr.lower && !pr.upper && pr.price) t += pr.price+'元';
+      lines.push('  ' + t);
+    });
+    lines.push('');
+  }
+  if(p.days > 0 || p.dest){
+    lines.push('【行程】');
+    if(p.days > 0) lines.push('  '+p.days+'天行程');
+    if(p.dest) lines.push('  目的地：'+p.dest);
+    if(p.transport) lines.push('  交通：'+p.transport);
+    lines.push('');
+  }
+  if(p.meals || p.mealsIncluded !== undefined){
+    lines.push('【用餐】');
+    lines.push('  '+(p.mealsIncluded ? '含餐' : '不含餐/自理'));
+    if(p.meals) lines.push('  '+p.meals);
+    lines.push('');
+  }
+  if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
+    lines.push('【费用】');
+    if(p.ticketPrice) lines.push('  门票：'+p.ticketPrice);
+    if(p.shopping !== undefined) lines.push('  购物：'+p.shopping);
+    if(p.selfPay !== undefined) lines.push('  自费：'+p.selfPay);
+    lines.push('');
+  }
+  if(p.ageLimit){
+    lines.push('【年龄】'+p.ageLimit);
+    lines.push('');
+  }
+  if(p.highlights){
+    lines.push('【亮点】');
+    lines.push('  '+p.highlights);
+    lines.push('');
+  }
+  if(p.dates && p.dates.length > 0){
+    var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
+    if(future.length > 0){
+      lines.push('【近期班期】');
+      lines.push('  '+future.join('、'));
+      lines.push('');
+    }
+  }
+  if(p.sellPoints && p.sellPoints.length > 0){
+    lines.push('【推荐理由】');
+    var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
+    sps.forEach(function(sp){ lines.push('  ✅ '+sp); });
+    lines.push('');
+  }
+  lines.push('专列旅游，名额有限，欢迎咨询！');
+  return lines.join('\n');
 }
 
 // ===== Init =====
