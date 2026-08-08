@@ -1999,36 +1999,44 @@ function renderProduct(tab){
 
 function doProductQA(){
   var query = document.getElementById('qaInput').value.trim();
-  if(!query){ showToast('请输入问题'); return; }
+  if(!query){ showToast('\u8bf7\u8f93\u5165\u95ee\u9898'); return; }
   var q = query.toLowerCase();
   var rContainer = document.getElementById('qaResult');
-  var intentScores = {general:0,meal:0,price:0,date:0,transport:0,age:0,shop:0,selfpay:0,ticket:0,highlight:0,sell:0,compare:0};
-  var mealKw = ['含餐','用餐','餐','吃','饭','食','餐标','特色餐','早餐','正餐','美食'];
+
+  // ===== Step 1: Intent detection =====
+  var intentScores = {general:0,meal:0,price:0,date:0,transport:0,age:0,shop:0,selfpay:0,ticket:0,highlight:0,sell:0,compare:0,lodge:0};
+  var mealKw = ['\u542b\u9910','\u7528\u9910','\u9910','\u5403','\u996d','\u98df','\u9910\u6807','\u7279\u8272\u9910','\u65e9\u9910','\u6b63\u9910','\u7f8e\u98df'];
   for(var i=0;i<mealKw.length;i++){if(q.indexOf(mealKw[i])>=0)intentScores.meal+=3;}
-  var priceKw = ['多少钱','价格','价位','费用','报价','收费','几元','贵不贵','便宜'];
+  var priceKw = ['\u591a\u5c11\u94b1','\u4ef7\u683c','\u4ef7\u4f4d','\u8d39\u7528','\u62a5\u4ef7','\u6536\u8d39','\u51e0\u5143','\u8d35\u4e0d\u8d35','\u4fbf\u5b9c'];
   for(var i=0;i<priceKw.length;i++){if(q.indexOf(priceKw[i])>=0)intentScores.price+=3;}
-  var dateKw = ['什么时候出发','出发','班期','日期','哪天','几号','时间','出发时间'];
+  var dateKw = ['\u4ec0\u4e48\u65f6\u5019\u51fa\u53d1','\u51fa\u53d1','\u73ed\u671f','\u65e5\u671f','\u54ea\u5929','\u51e0\u53f7','\u65f6\u95f4','\u51fa\u53d1\u65f6\u95f4'];
   for(var i=0;i<dateKw.length;i++){if(q.indexOf(dateKw[i])>=0)intentScores.date+=3;}
-  var destKw = ['去哪里','去哪','目的地','到哪里','去哪玩','线路','路线'];
+  var destKw = ['\u53bb\u54ea\u91cc','\u53bb\u54ea','\u76ee\u7684\u5730','\u5230\u54ea\u91cc','\u53bb\u54ea\u73a9','\u7ebf\u8def','\u8def\u7ebf'];
   for(var i=0;i<destKw.length;i++){if(q.indexOf(destKw[i])>=0)intentScores.highlight+=2;}
-  var transKw = ['交通','怎么坐','火车','车型','列车','铺位','房型','卧铺','软卧','硬卧'];
+  var transKw = ['\u4ea4\u901a','\u600e\u4e48\u5750','\u706b\u8f66','\u8f66\u578b','\u5217\u8f66','\u94fa\u4f4d','\u623f\u578b','\u5367\u94fa','\u8f6f\u5367','\u786c\u5367'];
   for(var i=0;i<transKw.length;i++){if(q.indexOf(transKw[i])>=0)intentScores.transport+=3;}
-  var ageKw = ['年龄','老人','岁','岁以','陪同','限制','能不能去','可以去吗','身体'];
+  var ageKw = ['\u5e74\u9f84','\u8001\u4eba','\u5c81','\u5c81\u4ee5','\u9644\u540c','\u9650\u5236','\u80fd\u4e0d\u80fd\u53bb','\u53ef\u4ee5\u53bb\u5417','\u8eab\u4f53'];
   for(var i=0;i<ageKw.length;i++){if(q.indexOf(ageKw[i])>=0)intentScores.age+=3;}
-  var shopKw = ['购物','买东西','购物店','有没有购物','强制消费','消费'];
+  var shopKw = ['\u8d2d\u7269','\u4e70\u4e1c\u897f','\u8d2d\u7269\u5e97','\u6709\u6ca1\u6709\u8d2d\u7269','\u5f3a\u5236\u6d88\u8d39','\u6d88\u8d39'];
   for(var i=0;i<shopKw.length;i++){if(q.indexOf(shopKw[i])>=0)intentScores.shop+=3;}
-  var spKw = ['自费','另付','额外','还要花钱','自费项目'];
+  var spKw = ['\u81ea\u8d39','\u53e6\u4ed8','\u989d\u5916','\u8fd8\u8981\u82b1\u94b1','\u81ea\u8d39\u9879\u76ee'];
   for(var i=0;i<spKw.length;i++){if(q.indexOf(spKw[i])>=0)intentScores.selfpay+=3;}
-  var tkKw = ['门票','景区门票','门票多少','门票费'];
+  var tkKw = ['\u95e8\u7968','\u666f\u533a\u95e8\u7968','\u95e8\u7968\u591a\u5c11','\u95e8\u7968\u8d39'];
   for(var i=0;i<tkKw.length;i++){if(q.indexOf(tkKw[i])>=0)intentScores.ticket+=3;}
-  var hlKw = ['景点','玩什么','有什么好玩','亮点','特色','包含哪些','行程','安排'];
+  var hlKw = ['\u666f\u70b9','\u73a9\u4ec0\u4e48','\u6709\u4ec0\u4e48\u597d\u73a9','\u4eae\u70b9','\u7279\u8272','\u5305\u542b\u54ea\u4e9b','\u884c\u7a0b','\u5b89\u6392'];
   for(var i=0;i<hlKw.length;i++){if(q.indexOf(hlKw[i])>=0)intentScores.highlight+=2;}
-  var slKw = ['卖点','优势','为什么','推荐理由','好在哪','值得'];
+  var slKw = ['\u5356\u70b9','\u4f18\u52bf','\u4e3a\u4ec0\u4e48','\u63a8\u8350\u7406\u7531','\u597d\u5728\u54ea','\u503c\u5f97'];
   for(var i=0;i<slKw.length;i++){if(q.indexOf(slKw[i])>=0)intentScores.sell+=3;}
-  var cpKw = ['对比','区别','哪个','比较','推荐','适合','选哪'];
+  var cpKw = ['\u5bf9\u6bd4','\u533a\u522b','\u54ea\u4e2a','\u6bd4\u8f83','\u63a8\u8350','\u9002\u5408','\u9009\u54ea'];
   for(var i=0;i<cpKw.length;i++){if(q.indexOf(cpKw[i])>=0)intentScores.compare+=3;}
+  // NEW: lodging/accommodation intent
+  var lodgeKw = ['\u4f4f','\u4f4f\u5bbf','\u9152\u5e97','\u5bbe\u9986','\u8f66\u4e0a','\u5367\u94fa\u4e0a','\u7761\u8f66\u4e0a','\u5f00\u623f','\u623f\u95f4','\u5927\u5e8a\u623f','\u6807\u51c6\u95f4'];
+  for(var i=0;i<lodgeKw.length;i++){if(q.indexOf(lodgeKw[i])>=0)intentScores.lodge+=3;}
+
   var maxIntent='general',maxScore=0;
   for(var k in intentScores){if(intentScores[k]>maxScore){maxScore=intentScores[k];maxIntent=k;}}
+
+  // ===== Step 2: Match products by name/dest/keywords =====
   var results=[];
   PRODUCTS.forEach(function(p){
     var score=0;
@@ -2040,85 +2048,144 @@ function doProductQA(){
     if(score>0)results.push({product:p,score:score});
   });
   results.sort(function(a,b){return b.score-a.score;});
+
+  // ===== Step 3: Full-text search fallback =====
+  // If no products matched by name/dest, search ALL text fields of ALL products
+  var fullTextResults=[];
+  if(results.length===0){
+    var searchFields=['name','desc','transport','meals','highlights','sellPoints','prices','ageLimit','shopping','selfPay','ticketPrice','special'];
+    PRODUCTS.forEach(function(p){
+      var score=0;
+      var queryWords=q.split(/[\s,;,\u3001\uff0c]+/).filter(function(w){return w.length>=1;});
+      queryWords.forEach(function(w){
+        searchFields.forEach(function(f){
+          if(p[f]&&String(p[f]).toLowerCase().indexOf(w)>=0) score+=2;
+        });
+        // Also search dates
+        if(p.dates){
+          p.dates.forEach(function(d){if(d.indexOf(w)>=0)score+=1;});
+        }
+      });
+      if(score>0)fullTextResults.push({product:p,score:score});
+    });
+    fullTextResults.sort(function(a,b){return b.score-a.score;});
+  }
+
+  // ===== Step 4: Determine which products to show =====
   var isSpecific=maxIntent!=='general'&&maxScore>0;
-  var showList=(results.length>0)&&(!isSpecific||maxIntent==='compare'||maxIntent==='highlight');
-  if(results.length===0&&!isSpecific){
-    rContainer.innerHTML='<div style="color:var(--text3);text-align:center;padding:20px">未找到相关产品，试试换个关键词<br><span style="font-size:12px">可用关键词：新疆、东北、云南、额济纳、西藏、甘青、专列等</span></div>';
+  var displayProducts=[];
+
+  if(isSpecific&&results.length===0){
+    // Specific intent but no name-matched products: show ALL products with relevant field info
+    displayProducts=PRODUCTS.map(function(p){return {product:p,score:1};});
+  }else if(results.length>0){
+    displayProducts=results;
+  }else if(fullTextResults.length>0){
+    displayProducts=fullTextResults;
+  }
+
+  if(displayProducts.length===0){
+    rContainer.innerHTML='<div style="color:var(--text3);text-align:center;padding:20px">\u672a\u627e\u5230\u76f8\u5173\u4ea7\u54c1\uff0c\u8bd5\u8bd5\u6362\u4e2a\u5173\u952e\u8bcd<br><span style="font-size:12px">\u53ef\u7528\u5173\u952e\u8bcd\uff1a\u65b0\u7586\u3001\u4e1c\u5317\u3001\u4e91\u5357\u3001\u989d\u6d4e\u7eb3\u3001\u897f\u85cf\u3001\u7518\u9752\u3001\u4e13\u5217\u7b49</span></div>';
     return;
   }
+
+  // ===== Step 5: Render answer based on intent =====
   var html='';
+  var ct=0;
+
   if(maxIntent==='meal'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🍽️ 各产品用餐情况：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83c\udf7d\ufe0f \u5404\u4ea7\u54c1\u7528\u9910\u60c5\u51b5\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:13px;color:'+(p.mealsIncluded?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(p.mealsIncluded?'✅ 含餐':'⚠️ 部分含餐/不含餐')+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.meals||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:13px;color:'+(p.mealsIncluded?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(p.mealsIncluded?'\u2705 \u542b\u9910':'\u26a0\ufe0f \u90e8\u5206\u542b\u9910/\u4e0d\u542b\u9910')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.meals||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='price'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">💰 各产品价格信息：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\udcb0 \u5404\u4ea7\u54c1\u4ef7\u683c\u4fe1\u606f\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:var(--orange);margin-top:4px;font-weight:600">'+(p.prices||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:var(--orange);margin-top:4px;font-weight:600">'+(p.prices||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='date'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">📅 各产品出发班期：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\udcc5 \u5404\u4ea7\u54c1\u51fa\u53d1\u73ed\u671f\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
       if(p.dates&&p.dates.length>0){var sorted=p.dates.slice().sort();
         html+='<div style="margin-top:4px">';
         sorted.forEach(function(dt){var isPast=dt<todayStr;
-          html+='<span style="display:inline-block;padding:2px 8px;margin:2px;border-radius:10px;font-size:11px;background:'+(isPast?'var(--glass)':'rgba(14,165,233,.15)')+';color:'+(isPast?'var(--text3)':'var(--cyan)')+';font-weight:'+(isPast?'400':'600')+'">'+dt.replace(/-/g,'/')+(isPast?' (已过)':'')+'</span>';});
-        html+='</div>';}else{html+='<div style="font-size:12px;color:var(--text3);margin-top:4px">暂无固定班期</div>';}
+          html+='<span style="display:inline-block;padding:2px 8px;margin:2px;border-radius:10px;font-size:11px;background:'+(isPast?'var(--glass)':'rgba(14,165,233,.15)')+';color:'+(isPast?'var(--text3)':'var(--cyan)')+';font-weight:'+(isPast?'400':'600')+'">'+dt.replace(/-/g,'/')+(isPast?' (\u5df2\u8fc7)':'')+'</span>';});
+        html+='</div>';}else{html+='<div style="font-size:12px;color:var(--text3);margin-top:4px">\u6682\u65e0\u56fa\u5b9a\u73ed\u671f</div>';}
       html+='</div>';ct++;});
   }else if(maxIntent==='transport'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🚂 各产品交通/房型：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\ude82 \u5404\u4ea7\u54c1\u4ea4\u901a/\u623f\u578b\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.transport||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.transport||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
+  }else if(maxIntent==='lodge'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83c\udfe8 \u5404\u4ea7\u54c1\u4f4f\u5bbf\u5b89\u6392\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      var lodgeInfo=p.transport||'';
+      if(p.prices&&p.prices.indexOf('\u5355\u623f\u5dee')>=0){
+        var match=p.prices.match(/\u5355\u623f\u5dee(\d+)/);
+        if(match)lodgeInfo+='\uff1b\u5355\u623f\u5dee'+match[1]+'\u5143';
+      }
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(lodgeInfo||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='age'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">👴 各产品年龄要求：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\udc74 \u5404\u4ea7\u54c1\u5e74\u9f84\u8981\u6c42\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ageLimit||'详见供应商要求')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ageLimit||'\u8be6\u89c1\u4f9b\u5e94\u5546\u8981\u6c42')+'</div></div>';ct++;});
   }else if(maxIntent==='shop'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🛒 各产品购物安排：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
-      var hasShop=p.shopping&&p.shopping.indexOf('无')===0;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\uded2 \u5404\u4ea7\u54c1\u8d2d\u7269\u5b89\u6392\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
+      var hasShop=p.shopping&&p.shopping.indexOf('\u65e0')===0;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:'+(hasShop?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(hasShop?'✅ 无购物':'⚠️ 有购物店')+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.shopping||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:'+(hasShop?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(hasShop?'\u2705 \u65e0\u8d2d\u7269':'\u26a0\ufe0f \u6709\u8d2d\u7269\u5e97')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.shopping||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='selfpay'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">💳 各产品自费项目：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
-      var noSP=p.selfPay&&p.selfPay.indexOf('无')===0;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\udcb3 \u5404\u4ea7\u54c1\u81ea\u8d39\u9879\u76ee\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
+      var noSP=p.selfPay&&p.selfPay.indexOf('\u65e0')===0;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:'+(noSP?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(noSP?'✅ 无自费':'⚠️ 有自费项目')+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.selfPay||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:'+(noSP?'var(--green)':'var(--orange)')+';margin-top:4px;font-weight:600">'+(noSP?'\u2705 \u65e0\u81ea\u8d39':'\u26a0\ufe0f \u6709\u81ea\u8d39\u9879\u76ee')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.selfPay||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='ticket'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">🎫 各产品门票费用：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83c\udfab \u5404\u4ea7\u54c1\u95e8\u7968\u8d39\u7528\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
-      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ticketPrice||'详见行程')+'</div></div>';ct++;});
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+(p.ticketPrice||'\u8be6\u89c1\u884c\u7a0b')+'</div></div>';ct++;});
   }else if(maxIntent==='sell'){
-    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">⭐ 各产品核心卖点：</div>';
-    var ct=0;results.forEach(function(r){if(ct>=8)return;var p=r.product;
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\u2b50 \u5404\u4ea7\u54c1\u6838\u5fc3\u5356\u70b9\uff1a</div>';
+    displayProducts.forEach(function(r){if(ct>=10)return;var p=r.product;
       html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
       html+='<div style="font-size:12px;color:var(--orange);margin-top:4px;font-weight:600">'+(p.sellPoints||'')+'</div></div>';ct++;});
+  }else if(maxIntent==='compare'){
+    html+='<div style="font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:10px">\ud83d\udd04 \u4ea7\u54c1\u5bf9\u6bd4\uff1a</div>';
+    var compareList=displayProducts.slice(0,5);
+    compareList.forEach(function(r){var p=r.product;
+      html+='<div class="qa-item"><div class="qa-name">'+p.name+'</div>';
+      html+='<div style="font-size:11px;color:var(--text3);margin-top:4px">\u884c\u7a0b'+(p.days||'?')+'\u5929 | \u76ee\u7684\u5730\uff1a'+p.dest+'</div>';
+      html+='<div style="font-size:12px;color:var(--orange);margin-top:4px">'+(p.prices||'')+'</div>';
+      html+='<div style="font-size:12px;color:var(--text2);margin-top:2px">'+(p.transport||'')+'</div></div>';});
   }else{
-    if(results.length>0){
-      html+='<div style="font-size:12px;color:var(--text3);margin-bottom:10px">找到 '+results.length+' 个相关产品：</div>';
-      results.slice(0,5).forEach(function(r){
-        var p=r.product;var regionLabel=p.region==='hn'?'湖南':'福建';
+    // General / highlight / fallback
+    if(displayProducts.length>0){
+      var label=fullTextResults.length>0&&results.length===0?'\u5168\u6587\u641c\u7d22\u627e\u5230 '+displayProducts.length+' \u4e2a\u76f8\u5173\u4ea7\u54c1\uff1a':'\u627e\u5230 '+displayProducts.length+' \u4e2a\u76f8\u5173\u4ea7\u54c1\uff1a';
+      html+='<div style="font-size:12px;color:var(--text3);margin-bottom:10px">'+label+'</div>';
+      displayProducts.slice(0,5).forEach(function(r){
+        var p=r.product;var regionLabel=p.region==='hn'?'\u6e56\u5357':'\u798f\u5efa';
         html+='<div class="qa-item"><div class="qa-name"><span class="product-region '+p.region+'">'+regionLabel+'</span> '+p.name+'</div>';
         html+='<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.desc+'</div>';
         html+='<div style="font-size:11px;color:var(--text3);margin-top:4px">';
-        if(p.days>0)html+='行程'+p.days+'天 | ';
-        html+='目的地：'+p.dest;
+        if(p.days>0)html+='\u884c\u7a0b'+p.days+'\u5929 | ';
+        html+='\u76ee\u7684\u5730\uff1a'+p.dest;
         if(p.dates&&p.dates.length>0){var future=p.dates.filter(function(d){return d>=todayStr;}).sort();
-          if(future.length>0)html+=' | 近期班期：'+future.slice(0,3).join('、');}
+          if(future.length>0)html+=' | \u8fd1\u671f\u73ed\u671f\uff1a'+future.slice(0,3).join('\u3001');}
         html+='</div></div>';});
     }
   }
   rContainer.innerHTML=html;
 }
+
 
 function renderProductCalendar(container){
   var firstDay = new Date(calYear, calMonth, 1);
