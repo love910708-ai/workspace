@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富贵每日工作手册</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>志标·每日工作手册</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   :root{
@@ -29,7 +29,7 @@
     background-size:40px 40px;
   }
   .header{
-    max-width:960px;margin:0 auto 20px;
+    max-width:960px;margin:0 auto 16px;
     background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(14,165,233,.06));
     border:1px solid var(--border2);border-radius:18px;padding:28px 32px;
     backdrop-filter:blur(20px);
@@ -61,8 +61,13 @@
     padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;color:var(--pink);
   }
   .streak-badge .fire{font-size:15px}
+
+  /* ===== Top Row: Horoscope + Holiday ===== */
+  .top-row{
+    max-width:960px;margin:0 auto 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  }
+
   .main{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:768px){.main{grid-template-columns:1fr}}
   .card{
     background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px 24px;
     backdrop-filter:blur(16px);transition:border-color .2s;
@@ -128,6 +133,7 @@
   .task-tag.urgent{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
   .task-tag.important{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
   .task-tag.routine{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+  .task-tag.voice-gen{background:rgba(56,189,248,.12);color:var(--cyan);border:1px solid rgba(56,189,248,.2)}
   .task-progress{
     margin-top:14px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:12px;
     display:flex;justify-content:space-between;align-items:center;
@@ -182,7 +188,6 @@
   .voice-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:8px}
   .phase-info{grid-column:span 2}
   .phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  @media(max-width:600px){.phase-grid{grid-template-columns:1fr}}
   .phase-item{
     background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:14px;
     transition:all .2s;
@@ -267,13 +272,13 @@
   .energy-track{flex:1;height:6px;background:rgba(14,165,233,.08);border-radius:3px;overflow:hidden}
   .energy-fill{height:100%;border-radius:3px;transition:width .5s;background:linear-gradient(90deg,var(--pink),var(--cyan))}
   .energy-val{font-size:12px;font-weight:700;color:var(--cyan);font-variant-numeric:tabular-nums}
-  .horoscope-card{grid-column:span 1}
+  .horoscope-card{}
   .horo-rating{font-size:16px;margin-bottom:8px;letter-spacing:1px}
   .horo-text{font-size:13px;line-height:1.7;color:var(--text)}
   .horo-meta{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
   .horo-meta-item{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px}
   .horo-meta-item .val{color:var(--cyan);font-weight:600}
-  .holiday-card{grid-column:span 1}
+  .holiday-card{}
   .holiday-list{display:flex;flex-direction:column;gap:10px}
   .holiday-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;transition:all .2s}
   .holiday-item:hover{border-color:var(--border2);transform:translateX(4px)}
@@ -335,7 +340,7 @@
   .advice-body .tip-text{flex:1}
   .advice-body .tip-text strong{color:var(--cyan)}
 
-  /* ===== KPI Settlement ===== */
+  /* ===== KPI Settlement (Upload) ===== */
   .settle-card{grid-column:span 2}
   .settle-tabs{display:flex;gap:4px;margin-bottom:16px}
   .settle-tab{
@@ -348,7 +353,27 @@
     background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
     color:var(--cyan);border-color:rgba(14,165,233,.3);
   }
-  .settle-table{width:100%;border-collapse:collapse;font-size:12px}
+  .upload-zone{
+    border:2px dashed var(--border2);border-radius:14px;padding:32px 20px;text-align:center;
+    background:rgba(14,165,233,.03);transition:all .2s;cursor:pointer;
+  }
+  .upload-zone:hover,.upload-zone.dragover{
+    border-color:var(--cyan);background:rgba(14,165,233,.08);
+  }
+  .upload-zone .uz-icon{font-size:36px;margin-bottom:10px;opacity:.6}
+  .upload-zone .uz-text{font-size:14px;color:var(--text2);margin-bottom:6px}
+  .upload-zone .uz-hint{font-size:12px;color:var(--text3)}
+  .upload-zone .uz-actions{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .upload-zone .uz-btn{
+    padding:8px 20px;border:1px solid var(--border2);border-radius:8px;background:var(--glass);
+    color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;
+  }
+  .upload-zone .uz-btn:hover{background:var(--glass2);border-color:var(--purple);color:var(--text)}
+  .upload-zone .uz-btn.primary{
+    background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(56,189,248,.15));
+    border-color:rgba(14,165,233,.3);color:var(--cyan);font-weight:600;
+  }
+  .settle-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px}
   .settle-table th{
     background:rgba(14,165,233,.05);color:var(--text3);font-weight:600;padding:8px 6px;text-align:center;
     border-bottom:1px solid var(--border);white-space:nowrap;font-size:11px;
@@ -357,12 +382,6 @@
   .settle-table td{padding:6px;text-align:center;border-bottom:1px solid rgba(14,165,233,.06)}
   .settle-table td:first-child{text-align:left;font-weight:600}
   .settle-table .name-cell{font-weight:700;color:var(--text);min-width:60px}
-  .settle-input{
-    width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;
-    font-size:12px;text-align:center;background:var(--glass);color:var(--text);
-    transition:all .2s;
-  }
-  .settle-input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 2px rgba(14,165,233,.15)}
   .settle-total{font-weight:800;color:var(--cyan);font-size:14px}
   .settle-rating{
     display:inline-block;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:700;
@@ -372,6 +391,11 @@
   .settle-rating.C{background:rgba(251,191,36,.15);color:var(--orange);border:1px solid rgba(251,191,36,.3)}
   .settle-rating.D{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
   .settle-rating.E{background:rgba(107,114,128,.15);color:#6b7280;border:1px solid rgba(107,114,128,.3)}
+  .settle-input{
+    width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;
+    font-size:12px;text-align:center;background:var(--glass);color:var(--text);transition:all .2s;
+  }
+  .settle-input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 2px rgba(14,165,233,.15)}
   .settle-actions{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
   .settle-btn{
     padding:10px 24px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;
@@ -395,6 +419,61 @@
   .settle-summary .stat{display:flex;flex-direction:column;align-items:center;gap:4px}
   .settle-summary .stat .num{font-size:24px;font-weight:800;color:var(--cyan)}
   .settle-summary .stat .label{font-size:11px;color:var(--text3)}
+  .score-bar{display:inline-block;width:60px;height:6px;background:rgba(14,165,233,.1);border-radius:3px;overflow:hidden;vertical-align:middle;margin-left:4px}
+  .score-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--purple))}
+
+  /* ===== Mobile Responsive ===== */
+  @media(max-width:768px){
+    body{padding:8px;min-height:100vh}
+    .header{padding:16px;border-radius:14px;margin-bottom:10px;gap:10px}
+    .header-left h1{font-size:20px}
+    .header-left .date{font-size:12px}
+    .header-left .greeting{font-size:12px}
+    .header-right{align-items:flex-start}
+    .phase-tag{font-size:11px;padding:4px 10px}
+    .streak-badge{font-size:11px;padding:3px 10px}
+    .quote-banner{padding:12px 16px;margin-bottom:10px}
+    .quote-banner .q-text{font-size:13px}
+    .top-row{gap:10px;margin-bottom:10px}
+    .main{gap:10px}
+    .card{padding:14px 16px;border-radius:12px}
+    .card-title{font-size:14px;margin-bottom:12px}
+    .phase-grid{grid-template-columns:1fr}
+    .phase-info,.kpi-card,.intel-card,.notes-card,.settle-card{grid-column:span 1}
+    .kpi-table,.settle-table{font-size:11px}
+    .kpi-table th,.kpi-table td,.settle-table th,.settle-table td{padding:6px 4px}
+    .horo-text{font-size:12px}
+    .holiday-item .days{font-size:18px}
+    .holiday-item .emoji{font-size:20px}
+    .holiday-item .name{font-size:12px}
+    .voice-area{min-height:120px;font-size:13px;padding:12px}
+    .mic-btn{padding:10px 22px;font-size:13px}
+    .notes-area{min-height:60px;font-size:12px}
+    .upload-zone{padding:20px 14px}
+    .upload-zone .uz-icon{font-size:28px}
+    .upload-zone .uz-text{font-size:13px}
+    .settle-input{width:42px;padding:3px 4px;font-size:11px}
+    .celebration .text{font-size:24px}
+    .celebration .sub{font-size:14px}
+    .settle-actions{justify-content:center}
+    .energy-bar{margin-top:10px}
+    .mood-btn{width:32px;height:32px;font-size:16px}
+    .rule-item{padding:10px 12px}
+    .rule-item .rule-title{font-size:13px}
+    .rule-item .rule-body{font-size:11px}
+    .kpi-dim-item{font-size:11px;padding:4px 8px}
+  }
+  @media(max-width:480px){
+    body{padding:6px}
+    .header{padding:12px;border-radius:12px;margin-bottom:8px}
+    .header-left h1{font-size:18px}
+    .top-row{grid-template-columns:1fr;gap:8px;margin-bottom:8px}
+    .main{gap:8px}
+    .card{padding:12px 14px}
+    .quote-banner{padding:10px 14px;margin-bottom:8px}
+    .settle-table{font-size:10px}
+    .kpi-table{font-size:10px}
+  }
 </style>
 </head>
 <body>
@@ -402,7 +481,7 @@
 <!-- Header -->
 <div class="header">
   <div class="header-left">
-    <h1>富贵每日工作手册</h1>
+    <h1>志标·每日工作手册</h1>
     <div class="date" id="todayDate"></div>
     <div class="greeting" id="greetingText"></div>
   </div>
@@ -418,14 +497,31 @@
   <div class="q-text" id="quoteText"></div>
 </div>
 
+<!-- Top Row: Horoscope + Holiday -->
+<div class="top-row">
+  <div class="card horoscope-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x264F;</span> 天蝎座今日运势</div>
+    <div class="horo-rating" id="horoRating"></div>
+    <div class="horo-text" id="horoText"></div>
+    <div class="horo-meta">
+      <div class="horo-meta-item">&#x1F3A8; 幸运色 <span class="val" id="horoColor"></span></div>
+      <div class="horo-meta-item">&#x1F522; 幸运数 <span class="val" id="horoNum"></span></div>
+      <div class="horo-meta-item">&#x1F9ED; 宜 <span class="val" id="horoGood"></span></div>
+      <div class="horo-meta-item">&#x1F6AB; 忌 <span class="val" id="horoBad"></span></div>
+    </div>
+  </div>
+  <div class="card holiday-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F3D6;&#xFE0F;</span> 假期倒计时</div>
+    <div class="holiday-list" id="holidayList"></div>
+  </div>
+</div>
+
 <!-- Main -->
 <div class="main">
 
   <!-- ===== Tasks ===== -->
   <div class="card">
     <div class="card-title"><span class="accent"></span><span class="icon">&#x26A1;</span> 今日待办<span class="auto-badge">基于岗位自动生成</span></div>
-
-    <!-- Mood -->
     <div class="mood-row">
       <span class="mood-label">今日状态</span>
       <div class="mood-options">
@@ -436,7 +532,6 @@
         <div class="mood-btn" data-mood="stress" onclick="selectMood('stress')">&#x1F624;</div>
       </div>
     </div>
-
     <div class="task-group" data-period="morning">
       <div class="task-group-label">晨间 · 09:00-12:00</div>
     </div>
@@ -446,15 +541,12 @@
     <div class="task-group" data-period="evening">
       <div class="task-group-label">晚间 · 19:00-21:00</div>
     </div>
-
     <div class="task-progress">
       <span class="count" id="progressText">0 / 0</span>
       <div class="bar-wrap"><div class="bar" id="progressBar" style="width:0%"></div></div>
       <span class="count"><span class="pct" id="progressPercent">0%</span></span>
     </div>
     <div class="encourage-msg" id="encourageMsg"></div>
-
-    <!-- Energy -->
     <div class="energy-bar">
       <span class="energy-label">今日能量</span>
       <div class="energy-track"><div class="energy-fill" id="energyFill" style="width:0%"></div></div>
@@ -477,27 +569,9 @@
     <div class="voice-controls" style="margin-top:10px">
       <button class="voice-btn" onclick="clearVoice()">清空</button>
       <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
+      <button class="voice-btn primary" id="extractTaskBtn" onclick="extractTasksFromVoice()" style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(52,211,153,.15));border-color:rgba(16,185,129,.3);color:var(--green)">&#x1F4CB; 提炼为待办</button>
     </div>
-    <div class="voice-hint">复制后粘贴给AI，自动生成工作计划</div>
-  </div>
-
-  <!-- ===== Horoscope ===== -->
-  <div class="card horoscope-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x264F;</span> 天蝎座今日运势</div>
-    <div class="horo-rating" id="horoRating"></div>
-    <div class="horo-text" id="horoText"></div>
-    <div class="horo-meta">
-      <div class="horo-meta-item">&#x1F3A8; 幸运色 <span class="val" id="horoColor"></span></div>
-      <div class="horo-meta-item">&#x1F522; 幸运数 <span class="val" id="horoNum"></span></div>
-      <div class="horo-meta-item">&#x1F9ED; 宜 <span class="val" id="horoGood"></span></div>
-      <div class="horo-meta-item">&#x1F6AB; 忌 <span class="val" id="horoBad"></span></div>
-    </div>
-  </div>
-
-  <!-- ===== Holiday Countdown ===== -->
-  <div class="card holiday-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F3D6;&#xFE0F;</span> 假期倒计时</div>
-    <div class="holiday-list" id="holidayList"></div>
+    <div class="voice-hint">录音后点击「提炼为待办」自动识别工作安排，或复制后粘贴给AI</div>
   </div>
 
   <!-- ===== Industry Intelligence ===== -->
@@ -552,9 +626,9 @@
     <div id="kpiContent"></div>
   </div>
 
-  <!-- ===== KPI Settlement ===== -->
+  <!-- ===== KPI Settlement (Upload) ===== -->
   <div class="card settle-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4B0;</span> KPI结算 · 打分算评级</div>
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4B0;</span> KPI结算 · 上传数据自动算分</div>
     <div class="settle-tabs">
       <button class="settle-tab active" onclick="switchSettleTab(event,'ops')">运营组员</button>
       <button class="settle-tab" onclick="switchSettleTab(event,'leader')">运营组长</button>
@@ -566,8 +640,8 @@
       <div class="stats" id="settleStats"></div>
     </div>
     <div class="settle-actions">
-      <button class="settle-btn secondary" onclick="resetSettle()">重置打分</button>
-      <button class="settle-btn primary" onclick="calcSettle()">计算评级</button>
+      <button class="settle-btn secondary" onclick="resetSettle()">重置数据</button>
+      <button class="settle-btn primary" onclick="exportSettle()">导出结果</button>
     </div>
   </div>
 
@@ -583,11 +657,14 @@
 <div class="celebration" id="celebration">
   <div>
     <div class="text">&#x1F389; 全部完成！</div>
-    <div class="sub" id="celebrationSub">今天的事干完了，富贵你牛逼</div>
+    <div class="sub" id="celebrationSub">今天的事干完了，志标你牛逼</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- SheetJS for Excel parsing -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
 <script>
 // ===== Date =====
@@ -599,7 +676,7 @@ document.getElementById('todayDate').textContent = todayStr + ' ' + days[now.get
 // ===== Greeting =====
 const hour = now.getHours();
 let greeting = '';
-if(hour < 9) greeting = '早安，富贵。今天又是战斗的一天';
+if(hour < 9) greeting = '早安，志标。今天又是战斗的一天';
 else if(hour < 12) greeting = '上午好，保持节奏';
 else if(hour < 14) greeting = '午安，吃了吗';
 else if(hour < 18) greeting = '下午好，继续推进';
@@ -649,30 +726,43 @@ function generateTasks(){
   if(dow === 5) evening.push({text:'本周总结：数据变化 + 新号进度 + 下周计划', tag:'important'});
   else if(isMonthEnd) evening.push({text:'月末团队一对一谈话准备：谁需要重点关注', tag:'important'});
   else evening.push({text:'更新明日重点待办事项', tag:'important'});
-  evening.push({text:'整理今日语音记录，发给AI生成明日工作计划', tag:'routine'});
+  evening.push({text:'整理今日语音记录，提炼明日工作计划', tag:'routine'});
   return {morning, afternoon, evening};
 }
 const TASKS = generateTasks();
+// Extra tasks from voice extraction
+let extraTasks = {morning:[], afternoon:[], evening:[]};
 function getTaskKey(){ return 'zhibiao_tasks_' + todayStr; }
-function loadTaskStates(){
+function getExtraTaskKey(){ return 'zhibiao_extra_tasks_' + todayStr; }
+function getTaskStates(){
   const saved = localStorage.getItem(getTaskKey());
-  if(saved){ try{ return JSON.parse(saved); }catch(e){} }
-  return {};
+  let states = {};
+  if(saved){ try{ states = JSON.parse(saved); }catch(e){} }
+  return states;
+}
+function loadExtraTasks(){
+  const saved = localStorage.getItem(getExtraTaskKey());
+  if(saved){ try{ extraTasks = JSON.parse(saved); }catch(e){} }
+}
+function saveExtraTasks(){
+  localStorage.setItem(getExtraTaskKey(), JSON.stringify(extraTasks));
 }
 function renderTasks(){
-  const states = loadTaskStates();
+  const states = getTaskStates();
   let total=0, done=0;
   ['morning','afternoon','evening'].forEach(period=>{
     const container = document.querySelector('.task-group[data-period="'+period+'"]');
     container.querySelectorAll('.task-item').forEach(el=>el.remove());
-    TASKS[period].forEach((task, i)=>{
+    const allTasks = TASKS[period].concat(extraTasks[period] || []);
+    allTasks.forEach((task, i)=>{
       const id = period+'_'+i;
       const isDone = states[id] === true;
       if(isDone) done++;
       total++;
       const el = document.createElement('div');
       el.className = 'task-item' + (isDone ? ' done' : '');
-      el.innerHTML = '<div class="task-checkbox"></div><span class="task-text">'+task.text+'</span><span class="task-tag '+task.tag+'">'+(task.tag==='urgent'?'紧急':task.tag==='important'?'重要':'日常')+'</span>';
+      const tagLabel = task.tag==='urgent'?'紧急':task.tag==='important'?'重要':task.tag==='voice-gen'?'语音提炼':'日常';
+      el.innerHTML = '<div class="task-checkbox"></div><span class="task-text">'+task.text+'</span><span class="task-tag '+task.tag+'">'+tagLabel+'</span>';
       el.onclick = function(){ toggleTask(id); };
       container.appendChild(el);
     });
@@ -697,10 +787,68 @@ function renderTasks(){
   else { updateStreak(false); }
 }
 function toggleTask(id){
-  const states = loadTaskStates();
+  const states = getTaskStates();
   states[id] = !states[id];
   localStorage.setItem(getTaskKey(), JSON.stringify(states));
   renderTasks();
+}
+
+// ===== Voice-to-Task Extraction =====
+function extractTasksFromVoice(){
+  const text = finalText.trim();
+  if(!text){ showToast('请先录入语音内容'); return; }
+
+  const segments = text.split(/[，。！？；\n,.!?;]+/).map(s=>s.trim()).filter(s=>s.length>=4);
+  const newTasks = [];
+  const usedTexts = new Set();
+
+  // Collect existing task texts to avoid duplicates
+  ['morning','afternoon','evening'].forEach(p=>{
+    TASKS[p].concat(extraTasks[p]||[]).forEach(t=>usedTexts.add(t.text));
+  });
+
+  segments.forEach(seg=>{
+    if(seg.length < 5) return;
+    let tag = 'routine';
+    if(/紧急|马上|立刻|赶紧|尽快|立刻|必须|马上|加急/.test(seg)) tag = 'urgent';
+    else if(/重要|需要|应该|要|得|注意|关注|检查|确认|跟进|处理/.test(seg)) tag = 'important';
+
+    let action = seg;
+    // Add action verbs if missing
+    if(!/跟进|检查|审核|确认|处理|完成|准备|整理|联系|通知|回复|更新|清理|注册|发布|分配|沟通|提醒|回复|汇总|复盘|排查|推进|落实|安排|对接|核实|统计|提交|起草|拟定|协调|督促|跟进/.test(seg)){
+      if(/新号/.test(seg)) action = '跟进' + seg;
+      else if(/数据|播放|播放量/.test(seg)) action = '检查' + seg;
+      else if(/视频|内容|选题|标题/.test(seg)) action = '审核' + seg;
+      else if(/违规|限流|异常/.test(seg)) action = '处理' + seg;
+      else if(/会议|站会|谈话|沟通/.test(seg)) action = '安排' + seg;
+      else if(/KPI|考核|评分/.test(seg)) action = '跟进' + seg;
+      else if(/素材|脚本|文案/.test(seg)) action = '准备' + seg;
+      else action = '处理：' + seg;
+    }
+
+    if(action.length > 50) action = action.substring(0,50);
+    if(!usedTexts.has(action)){
+      usedTexts.add(action);
+      newTasks.push({text:action, tag:tag});
+    }
+  });
+
+  if(newTasks.length === 0){ showToast('未识别到可提炼的工作安排，试试说得更具体'); return; }
+
+  // Smart period assignment
+  const curHour = now.getHours();
+  let targetPeriod;
+  if(curHour < 12) targetPeriod = 'morning';
+  else if(curHour < 18) targetPeriod = 'afternoon';
+  else targetPeriod = 'evening';
+
+  newTasks.forEach(t=>{
+    extraTasks[targetPeriod].push(t);
+  });
+  saveExtraTasks();
+  renderTasks();
+  showToast('已提炼 '+newTasks.length+' 条待办到'+
+    (targetPeriod==='morning'?'晨间':targetPeriod==='afternoon'?'午后':'晚间')+'时段');
 }
 
 // ===== Celebration =====
@@ -708,7 +856,7 @@ let celebrated = false;
 function showCelebration(){
   if(celebrated) return;
   celebrated = true;
-  const subs = ['今天的事干完了，富贵你牛逼','效率拉满，早点休息','又消灭一个工作日， Respect','全部清零，该陪家人了'];
+  const subs = ['今天的事干完了，志标你牛逼','效率拉满，早点休息','又消灭一个工作日，Respect','全部清零，该陪家人了'];
   document.getElementById('celebrationSub').textContent = subs[Math.floor(Math.random()*subs.length)];
   const cel = document.getElementById('celebration');
   cel.classList.add('show');
@@ -814,7 +962,7 @@ function clearVoice(){ finalText = ''; updateVoiceDisplay('', ''); showToast('�
 function copyVoice(){
   const text = finalText.trim();
   if(!text){ showToast('没有可复制的内容'); return; }
-  const copyContent = '[富贵今日语音记录 '+todayStr+']\n\n'+text+'\n\n---\n请根据以上内容，帮我整理：\n1. 今日完成事项总结\n2. 发现的问题和风险\n3. 明日工作计划（按优先级排序）';
+  const copyContent = '[志标今日语音记录 '+todayStr+']\n\n'+text+'\n\n---\n请根据以上内容，帮我整理：\n1. 今日完成事项总结\n2. 发现的问题和风险\n3. 明日工作计划（按优先级排序）';
   navigator.clipboard.writeText(copyContent).then(function(){ showToast('已复制！粘贴给AI即可生成计划'); }).catch(function(){
     const ta = document.createElement('textarea');
     ta.value = copyContent;
@@ -884,7 +1032,7 @@ const KPI_DATA = {
       {name:'帮带落后组员',score:10,target:'排名升>=1'},
       {name:'早晚会执行',score:10,target:'26场'},
       {name:'组员平均分',score:40,target:'均分x40%'},
-      {name:'主管评分',score:10,target:'富贵打分'},
+      {name:'主管评分',score:10,target:'志标打分'},
     ],
     columns:['姓名','职级','负责组','改造','帮带','早晚会']
   },
@@ -902,7 +1050,7 @@ const KPI_DATA = {
       {name:'建档完整率',score:15,target:'>=95%'},
       {name:'有效成交',score:25,target:'普列>=10单'},
       {name:'转化率',score:25,target:'>=10%'},
-      {name:'主管评分',score:15,target:'富贵打分'},
+      {name:'主管评分',score:15,target:'志标打分'},
     ],
     columns:['姓名','职级','线索','建档率','成交(单)','转化率']
   }
@@ -1052,9 +1200,9 @@ function renderIntel(tab){
   }
 }
 
-// ===== KPI Settlement =====
+// ===== KPI Settlement (Upload-based) =====
 let settleTab = 'ops';
-let settleScores = {};
+let settleResults = {}; // {tab: {name: {dims:{dimName:score}, total:n, rating:'A'}}}
 
 function switchSettleTab(evt, tab){
   document.querySelectorAll('.settle-tab').forEach(function(el){ el.classList.remove('active'); });
@@ -1066,65 +1214,175 @@ function switchSettleTab(evt, tab){
 function renderSettle(tab){
   const data = KPI_DATA[tab];
   const container = document.getElementById('settleContent');
-  const dims = data.dimensions;
-  const savedKey = 'zhibiao_settle_' + tab + '_' + todayStr;
-  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+  const savedKey = 'zhibiao_settle_v2_' + tab + '_' + todayStr;
+  const saved = JSON.parse(localStorage.getItem(savedKey) || 'null');
 
-  let html = '<table class="settle-table"><thead><tr>';
-  html += '<th>姓名</th>';
-  dims.forEach(function(d){ html += '<th title="'+d.target+'">'+d.name+'<br><span style="font-weight:400;color:var(--text3)">('+d.score+')</span></th>'; });
-  html += '<th>总分</th><th>评级</th>';
-  html += '</tr></thead><tbody>';
+  if(saved && saved.results){
+    settleResults[tab] = saved.results;
+    renderSettleResults(tab);
+    return;
+  }
 
-  data.people.forEach(function(p){
-    const personScores = saved[p.name] || {};
-    let total = 0;
-    dims.forEach(function(d){ total += (parseFloat(personScores[d.name]) || 0); });
-
-    html += '<tr>';
-    html += '<td class="name-cell">'+p.name+'</td>';
-    dims.forEach(function(d){
-      const val = personScores[d.name] || '';
-      html += '<td><input class="settle-input" type="number" min="0" max="'+d.score+'" step="0.1" data-person="'+p.name+'" data-dim="'+d.name+'" data-max="'+d.score+'" value="'+val+'" onchange="onSettleChange(this)"></td>';
-    });
-    html += '<td class="settle-total" id="total_'+p.name+'">'+(total > 0 ? total.toFixed(1) : '-')+'</td>';
-    html += '<td id="rating_'+p.name+'">'+(total > 0 ? getRating(total) : '-')+'</td>';
-    html += '</tr>';
-  });
-
-  html += '</tbody></table>';
+  // Show upload zone
+  let html = '<div class="upload-zone" id="uploadZone" onclick="document.getElementById(\'fileInput\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="event.preventDefault();this.classList.remove(\'dragover\');handleFileDrop(event)">';
+  html += '<div class="uz-icon">\u{1F4C1}</div>';
+  html += '<div class="uz-text">点击或拖拽上传数据文件</div>';
+  html += '<div class="uz-hint">支持 CSV / Excel (.xlsx) 格式</div>';
+  html += '<div class="uz-actions">';
+  html += '<button class="uz-btn primary" onclick="event.stopPropagation();downloadTemplate()">\u{1F4E5} 下载模板</button>';
+  html += '<button class="uz-btn" onclick="event.stopPropagation();document.getElementById(\'fileInput\').click()">\u{1F4C2} 选择文件</button>';
+  html += '</div></div>';
+  html += '<input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(this)">';
   container.innerHTML = html;
 
-  // Update summary
-  updateSettleSummary(tab);
+  document.getElementById('settleSummary').classList.remove('show');
 }
 
-function onSettleChange(input){
-  const person = input.dataset.person;
-  const dim = input.dataset.dim;
-  const max = parseFloat(input.dataset.max);
-  let val = parseFloat(input.value);
-  if(isNaN(val) || val < 0) val = 0;
-  if(val > max) val = max;
-  input.value = val;
+function handleFileSelect(input){
+  if(input.files && input.files[0]){
+    processFile(input.files[0]);
+  }
+}
+
+function handleFileDrop(event){
+  const files = event.dataTransfer.files;
+  if(files && files[0]){
+    processFile(files[0]);
+  }
+}
+
+function processFile(file){
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+
+  if(ext === 'csv'){
+    reader.onload = function(e){
+      try{
+        const text = e.target.result;
+        const rows = parseCSV(text);
+        calculateScores(rows);
+      }catch(err){
+        showToast('CSV解析失败：'+err.message);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  } else if(ext === 'xlsx' || ext === 'xls'){
+    reader.onload = function(e){
+      try{
+        if(typeof XLSX === 'undefined'){
+          showToast('Excel解析库加载中，请稍后重试');
+          return;
+        }
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type:'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+        calculateScores(rows);
+      }catch(err){
+        showToast('Excel解析失败：'+err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showToast('不支持的文件格式，请上传CSV或Excel文件');
+  }
+}
+
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length < 2) throw new Error('文件内容为空');
+  const headers = lines[0].split(/[,;\t]/).map(h=>h.trim().replace(/^["']|["']$/g,''));
+  const rows = [];
+  for(let i=1; i<lines.length; i++){
+    const vals = lines[i].split(/[,;\t]/).map(v=>v.trim().replace(/^["']|["']$/g,''));
+    const row = {};
+    headers.forEach(function(h, idx){ row[h] = vals[idx] || ''; });
+    rows.push(row);
+  }
+  return rows;
+}
+
+function calculateScores(rows){
+  const tab = settleTab;
+  const data = KPI_DATA[tab];
+  const results = {};
+
+  rows.forEach(function(row){
+    // Find person by name
+    const name = row['姓名'] || row['name'] || '';
+    const person = data.people.find(function(p){ return p.name === name.trim(); });
+    if(!person) return;
+
+    const dimScores = {};
+    let total = 0;
+
+    if(tab === 'ops'){
+      dimScores['内容改造推进'] = calcDimScore(parseFloat(row['内容改造']||row['改造']||0), 8, 15);
+      dimScores['标题不重复'] = parseFloat(row['标题重复']||row['重复']||0) === 0 ? 10 : Math.max(0, 10 - parseFloat(row['标题重复']||row['重复']||0)*2);
+      dimScores['违规清理'] = calcDimScore(parsePercent(row['违规清理']||row['清理']), 100, 10);
+      dimScores['有效更新量'] = calcDimScore(parseFloat(row['月更']||row['更新']||0), 104, 15);
+      dimScores['条均播放量'] = calcDimScore(parseFloat(row['条均']||row['播放']||row['条均播放']||0), 800, 15);
+      dimScores['互动率'] = calcDimScore(parsePercent(row['互动']||row['互动率']||0), 2.5, 10);
+      dimScores['线索贡献'] = calcDimScore(parseFloat(row['线索']||row['线索数']||0), 200, 10);
+      dimScores['组长评分'] = parseFloat(row['组长评分']||row['评分']||0);
+    } else if(tab === 'leader'){
+      dimScores['内容改造推进'] = calcDimScore(parseFloat(row['内容改造']||row['改造']||0), 8, 30);
+      dimScores['帮带落后组员'] = calcDimScore(parseFloat(row['帮带']||row['帮带率']||0), 100, 10);
+      dimScores['早晚会执行'] = calcDimScore(parseFloat(row['早晚会']||row['会议']||0), 26, 10);
+      dimScores['组员平均分'] = calcDimScore(parseFloat(row['组员均分']||row['均分']||0), 100, 40);
+      dimScores['主管评分'] = parseFloat(row['主管评分']||row['评分']||0);
+    } else if(tab === 'sales'){
+      dimScores['有效线索数'] = calcDimScore(parseFloat(row['线索']||row['线索数']||0), 100, 20);
+      dimScores['建档完整率'] = calcDimScore(parsePercent(row['建档率']||row['建档']||0), 95, 15);
+      dimScores['有效成交'] = calcDimScore(parseFloat(row['成交']||row['成交单']||row['成交(单)']||0), 10, 25);
+      dimScores['转化率'] = calcDimScore(parsePercent(row['转化率']||row['转化']||0), 10, 25);
+      dimScores['主管评分'] = parseFloat(row['主管评分']||row['评分']||0);
+    }
+
+    // Sum up
+    data.dimensions.forEach(function(d){
+      total += (dimScores[d.name] || 0);
+    });
+
+    results[person.name] = {
+      dims: dimScores,
+      total: Math.round(total * 10) / 10,
+      rating: getRatingLabel(total)
+    };
+  });
+
+  settleResults[tab] = results;
 
   // Save
-  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
-  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
-  if(!saved[person]) saved[person] = {};
-  saved[person][dim] = val;
-  localStorage.setItem(savedKey, JSON.stringify(saved));
+  const savedKey = 'zhibiao_settle_v2_' + tab + '_' + todayStr;
+  localStorage.setItem(savedKey, JSON.stringify({results: results, time: new Date().toISOString()}));
 
-  // Recalc total
-  const data = KPI_DATA[settleTab];
-  const dims = data.dimensions;
-  let total = 0;
-  dims.forEach(function(d){ total += (parseFloat(saved[person][d.name]) || 0); });
+  renderSettleResults(tab);
+  showToast('已计算 '+Object.keys(results).length+' 人的KPI得分');
+}
 
-  document.getElementById('total_'+person).textContent = total.toFixed(1);
-  document.getElementById('rating_'+person).innerHTML = getRating(total);
+function calcDimScore(actual, target, maxScore){
+  if(isNaN(actual) || actual <= 0) return 0;
+  if(target <= 0) return maxScore;
+  const ratio = Math.min(actual / target, 1);
+  return Math.round(ratio * maxScore * 10) / 10;
+}
 
-  updateSettleSummary(settleTab);
+function parsePercent(val){
+  if(typeof val === 'string'){
+    val = val.replace('%','').trim();
+  }
+  const num = parseFloat(val);
+  if(isNaN(num)) return 0;
+  return num;
+}
+
+function getRatingLabel(score){
+  if(score >= 90) return 'A';
+  if(score >= 80) return 'B';
+  if(score >= 70) return 'C';
+  if(score >= 60) return 'D';
+  return 'E';
 }
 
 function getRating(score){
@@ -1137,54 +1395,63 @@ function getRating(score){
   return '<span class="settle-rating '+cls+'">'+label+'</span>';
 }
 
-function calcSettle(){
-  const data = KPI_DATA[settleTab];
-  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
-  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
-  let allFilled = true;
+function renderSettleResults(tab){
+  const data = KPI_DATA[tab];
+  const container = document.getElementById('settleContent');
+  const results = settleResults[tab] || {};
+  const dims = data.dimensions;
+
+  let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--text3)">已上传数据，自动计算得分如下。<span style="color:var(--cyan);cursor:pointer;margin-left:8px" onclick="renderSettle(\''+tab+'\');delete settleResults[\''+tab+'\'];localStorage.removeItem(\'zhibiao_settle_v2_'+tab+'_'+todayStr+'\')">重新上传</span></div>';
+
+  html += '<table class="settle-table"><thead><tr>';
+  html += '<th>姓名</th>';
+  dims.forEach(function(d){ html += '<th title="'+d.target+'">'+d.name+'<br><span style="font-weight:400;color:var(--text3)">('+d.score+')</span></th>'; });
+  html += '<th>总分</th><th>评级</th>';
+  html += '</tr></thead><tbody>';
 
   data.people.forEach(function(p){
-    let total = 0;
-    data.dimensions.forEach(function(d){
-      const val = parseFloat((saved[p.name] || {})[d.name]) || 0;
-      total += val;
-      if(val === 0 && d.score > 0) allFilled = false;
+    const r = results[p.name];
+    html += '<tr>';
+    html += '<td class="name-cell">'+p.name+'</td>';
+    dims.forEach(function(d){
+      const score = r ? (r.dims[d.name] || 0) : 0;
+      const pct = d.score > 0 ? Math.round(score / d.score * 100) : 0;
+      html += '<td>'+score.toFixed(1)+'<div class="score-bar"><div class="score-bar-fill" style="width:'+pct+'%"></div></div></td>';
     });
-    document.getElementById('total_'+p.name).textContent = total.toFixed(1);
-    document.getElementById('rating_'+p.name).innerHTML = getRating(total);
+    const total = r ? r.total : 0;
+    html += '<td class="settle-total">'+total.toFixed(1)+'</td>';
+    html += '<td>'+(r ? getRating(total) : '-')+'</td>';
+    html += '</tr>';
   });
 
-  updateSettleSummary(settleTab);
-  showToast('评级计算完成');
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  updateSettleSummary(tab);
 }
 
 function updateSettleSummary(tab){
   const data = KPI_DATA[tab];
-  const savedKey = 'zhibiao_settle_' + tab + '_' + todayStr;
-  const saved = JSON.parse(localStorage.getItem(savedKey) || '{}');
+  const results = settleResults[tab] || {};
   const summary = document.getElementById('settleSummary');
   const stats = document.getElementById('settleStats');
 
+  const names = Object.keys(results);
+  if(names.length === 0){ summary.classList.remove('show'); return; }
+  summary.classList.add('show');
+
   let totals = [];
   let ratingCount = {A:0, B:0, C:0, D:0, E:0};
-  let hasAnyScore = false;
 
-  data.people.forEach(function(p){
-    let total = 0;
-    data.dimensions.forEach(function(d){ total += (parseFloat((saved[p.name] || {})[d.name]) || 0); });
-    if(total > 0){
-      hasAnyScore = true;
-      totals.push(total);
-      if(total >= 90) ratingCount.A++;
-      else if(total >= 80) ratingCount.B++;
-      else if(total >= 70) ratingCount.C++;
-      else if(total >= 60) ratingCount.D++;
-      else ratingCount.E++;
-    }
+  names.forEach(function(name){
+    const t = results[name].total;
+    totals.push(t);
+    if(t >= 90) ratingCount.A++;
+    else if(t >= 80) ratingCount.B++;
+    else if(t >= 70) ratingCount.C++;
+    else if(t >= 60) ratingCount.D++;
+    else ratingCount.E++;
   });
-
-  if(!hasAnyScore){ summary.classList.remove('show'); return; }
-  summary.classList.add('show');
 
   const avg = totals.length > 0 ? (totals.reduce(function(a,b){ return a+b; }, 0) / totals.length).toFixed(1) : 0;
   const max = totals.length > 0 ? Math.max.apply(null, totals).toFixed(1) : 0;
@@ -1202,13 +1469,76 @@ function updateSettleSummary(tab){
 }
 
 function resetSettle(){
-  const savedKey = 'zhibiao_settle_' + settleTab + '_' + todayStr;
+  const savedKey = 'zhibiao_settle_v2_' + settleTab + '_' + todayStr;
   localStorage.removeItem(savedKey);
+  delete settleResults[settleTab];
   renderSettle(settleTab);
-  showToast('已重置打分');
+  showToast('已重置');
+}
+
+function exportSettle(){
+  const results = settleResults[settleTab];
+  if(!results || Object.keys(results).length === 0){
+    showToast('暂无数据可导出');
+    return;
+  }
+  const data = KPI_DATA[settleTab];
+  let csv = '姓名,';
+  data.dimensions.forEach(function(d){ csv += d.name+'('+d.score+'),'; });
+  csv += '总分,评级\n';
+  data.people.forEach(function(p){
+    const r = results[p.name];
+    csv += p.name+',';
+    data.dimensions.forEach(function(d){
+      csv += (r ? (r.dims[d.name]||0).toFixed(1) : '0')+',';
+    });
+    csv += (r ? r.total.toFixed(1) : '0')+','+(r ? r.rating : '-')+'\n';
+  });
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'KPI结算_'+settleTab+'_'+todayStr+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('导出成功');
+}
+
+function downloadTemplate(){
+  const tab = settleTab;
+  const data = KPI_DATA[tab];
+  let headers = ['姓名'];
+
+  if(tab === 'ops'){
+    headers.push('内容改造','标题重复','违规清理(%)','月更','条均播放','互动率(%)','线索','组长评分');
+  } else if(tab === 'leader'){
+    headers.push('内容改造','帮带率(%)','早晚会(场)','组员均分','主管评分');
+  } else if(tab === 'sales'){
+    headers.push('线索数','建档率(%)','成交(单)','转化率(%)','主管评分');
+  }
+
+  let csv = headers.join(',') + '\n';
+  data.people.forEach(function(p){
+    csv += p.name + ',';
+    if(tab === 'ops') csv += ',0,0,100,,,,0,';
+    else if(tab === 'leader') csv += ',0,,0,,';
+    else if(tab === 'sales') csv += ',0,,0,,';
+    csv += '\n';
+  });
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'KPI模板_'+tab+'_'+todayStr+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('模板已下载，填入数据后上传');
 }
 
 // ===== Init =====
+loadExtraTasks();
 renderTasks();
 loadNotes();
 loadSavedVoice();
@@ -1225,11 +1555,11 @@ renderSettle('ops');
 setTimeout(function(){
   const h = now.getHours();
   let g = '';
-  if(h < 9) g = '早安富贵，新的一天开始了';
-  else if(h < 12) g = '上午好富贵';
-  else if(h < 14) g = '中午好富贵';
-  else if(h < 18) g = '下午好富贵';
-  else g = '晚上好富贵';
+  if(h < 9) g = '早安志标，新的一天开始了';
+  else if(h < 12) g = '上午好志标';
+  else if(h < 14) g = '中午好志标';
+  else if(h < 18) g = '下午好志标';
+  else g = '晚上好志标';
   showToast(g);
 }, 500);
 </script>
