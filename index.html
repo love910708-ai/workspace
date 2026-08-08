@@ -2201,7 +2201,7 @@ function renderProductList(container){
     html += '<span class="product-region '+p.region+'">'+regionLabel+'</span>';
     html += '<span class="product-name">'+p.name+'</span>';
     html += '<span class="product-meta">'+(p.days > 0 ? p.days+'天' : '')+' '+p.dest+'</span>';
-    html += '<button class="product-extract-btn" onclick="showExtractModal(''' + p.id + ''')">提炼</button>';
+    html += '<button class="product-extract-btn" onclick="showExtractModal(\'' + p.id + '\')">提炼</button>';
     html += '</div>';
   });
     html += '</div>';
