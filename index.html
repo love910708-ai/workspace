@@ -2502,15 +2502,9 @@ function showExtractModal(productId){
   html += '<span class="extract-close" onclick="closeExtractModal()">&times;</span></div>';
   html += '<div class="extract-body" id="extractBody">';
   if(p.desc) html += '<div style="color:var(--text2);margin-bottom:10px;font-size:13px">'+p.desc+'</div>';
-  if(p.prices && p.prices.length > 0){
+  if(p.prices){
     html += '<div class="extract-section"><div class="extract-label">价格信息</div>';
-    p.prices.forEach(function(pr){
-      var priceText = pr.type ? pr.type+'：' : '';
-      if(pr.lower) priceText += '下铺'+pr.lower+'元';
-      if(pr.upper) priceText += (pr.lower ? ' / ' : '')+'上铺'+pr.upper+'元';
-      if(!pr.lower && !pr.upper && pr.price) priceText += pr.price+'元';
-      html += '<div class="extract-price">'+priceText+'</div>';
-    });
+    html += '<div class="extract-price">'+p.prices+'</div>';
     html += '</div>';
   }
   if(p.days > 0 || p.dest){
@@ -2603,15 +2597,9 @@ function buildExtractText(p, format){
   lines.push(regionLabel + ' | ' + p.name);
   if(p.desc) lines.push(p.desc);
   lines.push('');
-  if(p.prices && p.prices.length > 0){
+  if(p.prices){
     lines.push('【价格】');
-    p.prices.forEach(function(pr){
-      var t = pr.type ? pr.type+'：' : '';
-      if(pr.lower) t += '下铺'+pr.lower+'元';
-      if(pr.upper) t += (pr.lower ? ' / ' : '')+'上铺'+pr.upper+'元';
-      if(!pr.lower && !pr.upper && pr.price) t += pr.price+'元';
-      lines.push('  ' + t);
-    });
+    lines.push('  ' + p.prices);
     lines.push('');
   }
   if(p.days > 0 || p.dest){
