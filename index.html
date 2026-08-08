@@ -6,6 +6,7 @@
 <title>志标·每日工作手册</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
+  html{overflow-x:hidden}
   :root{
     --bg:#f0f9ff;--bg2:#e0f2fe;--glass:rgba(255,255,255,.65);--glass2:rgba(255,255,255,.8);
     --border:rgba(14,165,233,.12);--border2:rgba(14,165,233,.25);
@@ -72,6 +73,7 @@
     background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px 24px;
     backdrop-filter:blur(16px);transition:border-color .2s;
     box-shadow:0 2px 16px rgba(14,165,233,.06);
+    max-width:100%;overflow:hidden;
   }
   .card:hover{border-color:var(--border2)}
   .card-title{
@@ -474,6 +476,120 @@
     .settle-table{font-size:10px}
     .kpi-table{font-size:10px}
   }
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
+  .product-card,.memory-card{grid-column:span 2}
+  .product-tabs,.memory-month-nav{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+  .product-tab,.memory-month-btn{
+    padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;border:1px solid var(--border);
+  }
+  .product-tab:hover,.memory-month-btn:hover{color:var(--text);border-color:var(--border2)}
+  .product-tab.active,.memory-month-btn.active{
+    background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
+    color:var(--cyan);border-color:rgba(14,165,233,.3);
+  }
+  .qa-input-wrap{display:flex;gap:8px;margin-bottom:16px}
+  .qa-input{
+    flex:1;padding:10px 16px;border:1px solid var(--border);border-radius:10px;
+    font-size:14px;color:var(--text);background:var(--glass);font-family:inherit;
+  }
+  .qa-input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+  .qa-btn{
+    padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;white-space:nowrap;
+  }
+  .qa-result{
+    background:var(--glass2);border:1px solid var(--border);border-radius:12px;padding:16px;
+    font-size:13px;line-height:1.7;color:var(--text);min-height:60px;
+  }
+  .qa-result .qa-item{padding:10px 14px;background:var(--glass);border:1px solid var(--border);border-radius:10px;margin-bottom:8px}
+  .qa-result .qa-item:last-child{margin-bottom:0}
+  .qa-result .qa-name{font-weight:700;color:var(--cyan);font-size:14px;margin-bottom:4px}
+  .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .cal-title{font-size:15px;font-weight:700;color:var(--text)}
+  .cal-nav{display:flex;gap:6px}
+  .cal-nav-btn{
+    width:30px;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--glass);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);transition:all .2s;
+  }
+  .cal-nav-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+  .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center}
+  .cal-weekday{font-size:11px;color:var(--text3);font-weight:600;padding:4px 0}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .cal-day{
+    min-height:50px;border:1px solid var(--border);border-radius:8px;padding:4px;
+    background:var(--glass);cursor:pointer;transition:all .15s;position:relative;
+  }
+  .cal-day:hover{border-color:var(--border2);background:var(--glass2)}
+  .cal-day.empty{background:transparent;border-color:transparent;cursor:default}
+  .cal-day.today{border-color:var(--cyan);background:rgba(14,165,233,.06)}
+  .cal-day .day-num{font-size:12px;font-weight:600;color:var(--text)}
+  .cal-day .day-dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+  .cal-day .day-dot{width:6px;height:6px;border-radius:50%}
+  .cal-day .day-dot.hn{background:var(--orange)}
+  .cal-day .day-dot.fj{background:var(--cyan)}
+  .cal-day .day-tours{font-size:9px;color:var(--text3);margin-top:2px;line-height:1.2;overflow:hidden;max-height:2.4em}
+  .cal-legend{display:flex;gap:16px;margin-top:10px;justify-content:center}
+  .cal-legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
+  .cal-legend-dot{width:8px;height:8px;border-radius:50%}
+  .cal-legend-dot.hn{background:var(--orange)}
+  .cal-legend-dot.fj{background:var(--cyan)}
+  .product-list{display:flex;flex-direction:column;gap:8px}
+  .product-item{
+    display:flex;align-items:center;gap:12px;padding:12px 16px;
+    background:var(--glass2);border:1px solid var(--border);border-radius:10px;transition:all .2s;
+  }
+  .product-item:hover{border-color:var(--border2);transform:translateX(2px)}
+  .product-region{
+    font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;white-space:nowrap;
+  }
+  .product-region.hn{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
+  .product-region.fj{background:rgba(14,165,233,.12);color:var(--cyan);border:1px solid rgba(14,165,233,.2)}
+  .product-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+  .product-meta{font-size:11px;color:var(--text3);white-space:nowrap}
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:900;display:none;
+    align-items:center;justify-content:center;backdrop-filter:blur(4px);
+  }
+  .modal-overlay.show{display:flex}
+  .modal{
+    background:#fff;border-radius:16px;padding:24px;max-width:400px;width:90%;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px}
+  .modal-close{float:right;font-size:20px;cursor:pointer;color:var(--text3);background:none;border:none;line-height:1}
+  .modal-close:hover{color:var(--text)}
+  .modal-form label{display:block;font-size:12px;color:var(--text2);font-weight:600;margin-bottom:4px;margin-top:12px}
+  .modal-form select,.modal-form input{
+    width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);
+  }
+  .modal-form select:focus,.modal-form input:focus{outline:none;border-color:var(--cyan)}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+  .modal-btn{padding:8px 20px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+  .modal-btn.primary{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff}
+  .modal-btn.secondary{background:var(--glass);color:var(--text2);border:1px solid var(--border)}
+  .memory-stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .memory-stat{
+    flex:1;min-width:100px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;text-align:center;
+  }
+  .memory-stat .stat-num{font-size:24px;font-weight:800;color:var(--cyan)}
+  .memory-stat .stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+  .memory-day-detail{
+    margin-top:12px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;
+  }
+  .memory-day-detail .detail-date{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .memory-day-detail .detail-tasks{font-size:12px;color:var(--text2);line-height:1.6}
+  .upload-product-zone{
+    border:2px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;
+    background:rgba(14,165,233,.03);transition:all .2s;cursor:pointer;margin-top:12px;
+  }
+  .upload-product-zone:hover{border-color:var(--cyan);background:rgba(14,165,233,.08)}
+  .search-input{
+    padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;
+    color:var(--text);background:var(--glass);width:200px;
+  }
+  .search-input:focus{outline:none;border-color:var(--cyan)}
+  .product-filter-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -651,6 +767,42 @@
     <textarea class="notes-area" id="notesArea" placeholder="随手记一些想法、问题、待跟进事项..." oninput="saveNotes()"></textarea>
   </div>
 
+  <!-- ===== Product Info ===== -->
+  <div class="card product-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4E6;</span> 产品信息库</div>
+    <div class="product-tabs">
+      <button class="product-tab active" onclick="switchProductTab(event,'qa')">即时问答</button>
+      <button class="product-tab" onclick="switchProductTab(event,'calendar')">班期日历</button>
+      <button class="product-tab" onclick="switchProductTab(event,'list')">产品列表</button>
+    </div>
+    <div id="productContent"></div>
+    <div class="upload-product-zone" id="productUploadZone" onclick="document.getElementById('productFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--cyan)'" ondragleave="this.style.borderColor=''" ondrop="event.preventDefault();this.style.borderColor='';handleProductDrop(event)">
+      <div style="font-size:13px;color:var(--text2)">点击或拖拽上传新产品文件（PDF/Excel）</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">自动识别文件名并添加到产品库</div>
+      <input type="file" id="productFileInput" accept=".pdf,.xlsx,.xls" style="display:none" onchange="handleProductFile(this)" multiple>
+    </div>
+  </div>
+
+  <!-- ===== Work Memory ===== -->
+  <div class="card memory-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4C5;</span> 工作记忆</div>
+    <div class="memory-stats" id="memoryStats"></div>
+    <div class="cal-header">
+      <div class="cal-title" id="memoryCalTitle"></div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMemoryMonth(-1)">&#x25C0;</button>
+        <button class="cal-nav-btn" onclick="changeMemoryMonth(0)">今</button>
+        <button class="cal-nav-btn" onclick="changeMemoryMonth(1)">&#x25B6;</button>
+      </div>
+    </div>
+    <div class="cal-weekdays">
+      <div class="cal-weekday">一</div><div class="cal-weekday">二</div><div class="cal-weekday">三</div>
+      <div class="cal-weekday">四</div><div class="cal-weekday">五</div><div class="cal-weekday">六</div><div class="cal-weekday">日</div>
+    </div>
+    <div class="cal-grid" id="memoryCalGrid"></div>
+    <div id="memoryDayDetail"></div>
+  </div>
+
 </div>
 
 <!-- Celebration overlay -->
@@ -658,6 +810,24 @@
   <div>
     <div class="text">&#x1F389; 全部完成！</div>
     <div class="sub" id="celebrationSub">今天的事干完了，志标你牛逼</div>
+  </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+    <div class="modal-title" id="scheduleModalTitle">添加班期</div>
+    <div class="modal-form">
+      <label>选择产品</label>
+      <select id="scheduleProduct"></select>
+      <label>出发日期</label>
+      <input type="date" id="scheduleDate">
+      <div class="modal-actions">
+        <button class="modal-btn secondary" onclick="closeScheduleModal()">取消</button>
+        <button class="modal-btn primary" onclick="saveSchedule()">保存</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -791,6 +961,7 @@ function toggleTask(id){
   states[id] = !states[id];
   localStorage.setItem(getTaskKey(), JSON.stringify(states));
   renderTasks();
+  saveWorkMemory();
 }
 
 // ===== Voice-to-Task Extraction =====
@@ -1063,7 +1234,7 @@ function switchKpiTab(evt, tab){
 function renderKpi(tab){
   const data = KPI_DATA[tab];
   const container = document.getElementById('kpiContent');
-  let html = '<table class="kpi-table"><thead><tr>';
+  let html = '<div class="table-scroll"><table class="kpi-table"><thead><tr>';
   data.columns.forEach(function(col){ html += '<th>' + col + '</th>'; });
   html += '</tr></thead><tbody>';
   data.people.forEach(function(p){
@@ -1083,7 +1254,7 @@ function renderKpi(tab){
     }
     html += '</tr>';
   });
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   html += '<div class="kpi-dimensions"><div class="kpi-dim-title">考核维度（满分100）</div><div class="kpi-dim-list">';
   data.dimensions.forEach(function(d){
     html += '<div class="kpi-dim-item"><span class="score">'+d.score+'分</span> '+d.name+' <span class="target">'+d.target+'</span></div>';
@@ -1403,7 +1574,7 @@ function renderSettleResults(tab){
 
   let html = '<div style="margin-bottom:12px;font-size:12px;color:var(--text3)">已上传数据，自动计算得分如下。<span style="color:var(--cyan);cursor:pointer;margin-left:8px" onclick="renderSettle(\''+tab+'\');delete settleResults[\''+tab+'\'];localStorage.removeItem(\'zhibiao_settle_v2_'+tab+'_'+todayStr+'\')">重新上传</span></div>';
 
-  html += '<table class="settle-table"><thead><tr>';
+  html += '<div class="table-scroll"><table class="settle-table"><thead><tr>';
   html += '<th>姓名</th>';
   dims.forEach(function(d){ html += '<th title="'+d.target+'">'+d.name+'<br><span style="font-weight:400;color:var(--text3)">('+d.score+')</span></th>'; });
   html += '<th>总分</th><th>评级</th>';
@@ -1424,7 +1595,7 @@ function renderSettleResults(tab){
     html += '</tr>';
   });
 
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   container.innerHTML = html;
 
   updateSettleSummary(tab);
@@ -1537,6 +1708,417 @@ function downloadTemplate(){
   showToast('模板已下载，填入数据后上传');
 }
 
+// ===== Product Database =====
+var PRODUCTS = [
+  {id:'hn1',name:'南北疆专列19日游',region:'hn',days:19,dest:'新疆',keywords:['南北疆','新疆','专列','19日','天山'],desc:'南北疆全景专列，途经天山、喀什、吐鲁番等经典景点'},
+  {id:'hn2',name:'东北+漠河专列15日游',region:'hn',days:15,dest:'东北',keywords:['东北','漠河','专列','15日'],desc:'东北全景+漠河北极村，感受最北端风光'},
+  {id:'hn3',name:'云南全景+泸沽湖16日游',region:'hn',days:16,dest:'云南',keywords:['云南','泸沽湖','专列','16日','全景'],desc:'云南全景环线含泸沽湖，大理丽江一网打尽'},
+  {id:'hn4',name:'解码西域天山行',region:'hn',days:0,dest:'新疆',keywords:['天山','西域','新疆','解码'],desc:'深度天山线路，解码西域风情'},
+  {id:'hn5',name:'额济纳专列12日游',region:'hn',days:12,dest:'额济纳',keywords:['额济纳','专列','12日','胡杨'],desc:'额济纳胡杨林专列，秋季金色盛宴'},
+  {id:'hn6',name:'甘青专列12日游',region:'hn',days:12,dest:'甘青',keywords:['甘青','甘肃','青海','专列','12日'],desc:'甘青大环线专列，青海湖、敦煌莫高窟'},
+  {id:'hn7',name:'探秘东极专列',region:'hn',days:0,dest:'东北',keywords:['东极','专列','探秘','抚远'],desc:'探秘中国最东端，迎接第一缕阳光'},
+  {id:'hn8',name:'探秘东极专列·沅湘阁版',region:'hn',days:0,dest:'东北',keywords:['东极','专列','沅湘阁','探秘'],desc:'沅湘阁定制版东极专列'},
+  {id:'hn9',name:'南北疆双层专列',region:'hn',days:0,dest:'新疆',keywords:['南北疆','双层','专列','新疆'],desc:'双层观景专列畅游南北疆'},
+  {id:'hn10',name:'藏地时光11日游',region:'hn',days:11,dest:'西藏',keywords:['西藏','藏地','专列','11日'],desc:'雪域高原深度体验'},
+  {id:'hn11',name:'新疆软卧19日游',region:'hn',days:19,dest:'新疆',keywords:['新疆','软卧','专列','19日'],desc:'新疆全景软卧专列，舒适出行'},
+  {id:'fj1',name:'天边北国·探秘东极',region:'fj',days:0,dest:'东北',keywords:['东极','北国','天边','探秘'],desc:'福建出发探秘东极线路'},
+  {id:'fj2',name:'常规版探秘东极',region:'fj',days:0,dest:'东北',keywords:['东极','常规','探秘'],desc:'标准版东极探秘行程'},
+  {id:'fj3',name:'大河之南号·南北疆17日游',region:'fj',days:17,dest:'新疆',keywords:['南北疆','大河之南','17日','新疆'],desc:'大河之南号南北疆全景17日'},
+  {id:'fj4',name:'疆山如画18日游',region:'fj',days:18,dest:'新疆',keywords:['新疆','疆山如画','18日'],desc:'新疆全景18日深度游'},
+  {id:'fj5',name:'额济纳+宁夏11日游',region:'fj',days:11,dest:'额济纳',keywords:['额济纳','宁夏','11日','胡杨'],desc:'额济纳胡杨林+宁夏沙坡头'},
+  {id:'fj6',name:'云南全景+泸沽湖16日游',region:'fj',days:16,dest:'云南',keywords:['云南','泸沽湖','16日','全景'],desc:'福建版云南全景含泸沽湖'},
+  {id:'fj7',name:'云南全景+泸沽湖15日游',region:'fj',days:15,dest:'云南',keywords:['云南','泸沽湖','15日','全景'],desc:'福建版云南全景15日精华'},
+  {id:'fj8',name:'潇湘号·新疆全景',region:'fj',days:0,dest:'新疆',keywords:['新疆','潇湘号','全景'],desc:'潇湘号新疆全景专列'},
+  {id:'fj9',name:'东北直达专列',region:'fj',days:0,dest:'东北',keywords:['东北','直达','专列'],desc:'福建直达东北专列线路'}
+];
+
+var schedules = JSON.parse(localStorage.getItem('zhibiao_schedules') || '[]');
+var calYear = now.getFullYear();
+var calMonth = now.getMonth();
+var productTab = 'qa';
+
+function switchProductTab(evt, tab){
+  document.querySelectorAll('.product-tab').forEach(function(el){ el.classList.remove('active'); });
+  evt.target.closest('.product-tab').classList.add('active');
+  productTab = tab;
+  renderProduct(tab);
+}
+
+function renderProduct(tab){
+  var container = document.getElementById('productContent');
+  if(tab === 'qa'){
+    var html = '<div class="qa-input-wrap"><input class="qa-input" id="qaInput" placeholder="输入产品问题，如：新疆有哪些线路？" onkeydown="if(event.key===\'Enter\')doProductQA()">';
+    html += '<button class="qa-btn" onclick="doProductQA()">提问</button></div>';
+    html += '<div class="qa-result" id="qaResult"><div style="color:var(--text3);text-align:center;padding:20px">输入问题即可查询产品信息<br><span style="font-size:12px">例如：有哪些去新疆的线路？额济纳几天？</span></div></div>';
+    container.innerHTML = html;
+  } else if(tab === 'calendar'){
+    renderProductCalendar(container);
+  } else if(tab === 'list'){
+    renderProductList(container);
+  }
+}
+
+function doProductQA(){
+  var query = document.getElementById('qaInput').value.trim();
+  if(!query){ showToast('请输入问题'); return; }
+  var results = [];
+  var q = query.toLowerCase();
+  PRODUCTS.forEach(function(p){
+    var score = 0;
+    p.keywords.forEach(function(kw){
+      if(q.indexOf(kw.toLowerCase()) >= 0) score += 2;
+    });
+    if(q.indexOf(p.region) >= 0) score += 1;
+    if(q.indexOf(p.dest.toLowerCase()) >= 0) score += 2;
+    if(p.days > 0 && q.indexOf(p.days) >= 0) score += 1;
+    if(q.indexOf(p.name.toLowerCase()) >= 0) score += 3;
+    if(score > 0) results.push({product:p, score:score});
+  });
+  results.sort(function(a,b){ return b.score - a.score; });
+  var rContainer = document.getElementById('qaResult');
+  if(results.length === 0){
+    rContainer.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">未找到相关产品，试试换个关键词<br><span style="font-size:12px">可用关键词：新疆、东北、云南、额济纳、西藏、甘青、专列等</span></div>';
+    return;
+  }
+  var html = '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">找到 '+results.length+' 个相关产品：</div>';
+  results.slice(0,5).forEach(function(r){
+    var p = r.product;
+    var regionLabel = p.region === 'hn' ? '湖南' : '福建';
+    html += '<div class="qa-item">';
+    html += '<div class="qa-name"><span class="product-region '+p.region+'">'+regionLabel+'</span> '+p.name+'</div>';
+    html += '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.desc+'</div>';
+    html += '<div style="font-size:11px;color:var(--text3);margin-top:4px">';
+    if(p.days > 0) html += '行程'+p.days+'天 | ';
+    html += '目的地：'+p.dest;
+    var pSchedules = schedules.filter(function(s){ return s.productId === p.id; });
+    if(pSchedules.length > 0){
+      html += ' | 近期班期：'+pSchedules.map(function(s){ return s.date; }).sort().slice(0,3).join('、');
+    }
+    html += '</div></div>';
+  });
+  rContainer.innerHTML = html;
+}
+
+function renderProductCalendar(container){
+  var firstDay = new Date(calYear, calMonth, 1);
+  var lastDay = new Date(calYear, calMonth + 1, 0);
+  var startDow = (firstDay.getDay() + 6) % 7;
+  var html = '<div class="cal-header">';
+  html += '<div class="cal-title">'+calYear+'年'+(calMonth+1)+'月 班期表</div>';
+  html += '<div class="cal-nav">';
+  html += '<button class="cal-nav-btn" onclick="changeCalMonth(-1)">&#x25C0;</button>';
+  html += '<button class="cal-nav-btn" onclick="changeCalMonth(0)">今</button>';
+  html += '<button class="cal-nav-btn" onclick="changeCalMonth(1)">&#x25B6;</button>';
+  html += '<button class="cal-nav-btn" onclick="openScheduleModal()" style="width:auto;padding:0 10px;font-size:12px">+ 添加</button>';
+  html += '</div></div>';
+  html += '<div class="cal-weekdays"><div class="cal-weekday">一</div><div class="cal-weekday">二</div><div class="cal-weekday">三</div><div class="cal-weekday">四</div><div class="cal-weekday">五</div><div class="cal-weekday">六</div><div class="cal-weekday">日</div></div>';
+  html += '<div class="cal-grid">';
+  for(var i = 0; i < startDow; i++){
+    html += '<div class="cal-day empty"></div>';
+  }
+  for(var d = 1; d <= lastDay.getDate(); d++){
+    var dateStr = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var daySchedules = schedules.filter(function(s){ return s.date === dateStr; });
+    var isToday = dateStr === todayStr;
+    var cls = 'cal-day' + (isToday ? ' today' : '');
+    html += '<div class="'+cls+'" onclick="showDayDetail(\''+dateStr+'\')">';
+    html += '<div class="day-num">'+d+'</div>';
+    if(daySchedules.length > 0){
+      html += '<div class="day-dots">';
+      daySchedules.forEach(function(s){
+        var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+        html += '<div class="day-dot '+(prod ? prod.region : '')+'" title="'+(prod ? prod.name : '')+'"></div>';
+      });
+      html += '</div>';
+      html += '<div class="day-tours">';
+      daySchedules.forEach(function(s){
+        var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+        if(prod) html += '<div style="color:'+(prod.region==='hn'?'var(--orange)':'var(--cyan)')+'">'+prod.name.substring(0,6)+'</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div class="cal-legend"><div class="cal-legend-item"><div class="cal-legend-dot hn"></div> 湖南出发</div><div class="cal-legend-item"><div class="cal-legend-dot fj"></div> 福建出发</div></div>';
+  container.innerHTML = html;
+}
+
+function changeCalMonth(delta){
+  if(delta === 0){ calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  else { calMonth += delta; if(calMonth > 11){ calMonth = 0; calYear++; } else if(calMonth < 0){ calMonth = 11; calYear--; } }
+  renderProduct('calendar');
+}
+
+function renderProductList(container){
+  var html = '<div class="product-filter-row"><input class="search-input" id="productSearch" placeholder="搜索产品..." oninput="filterProducts()">';
+  html += '<select class="search-input" style="width:120px" id="productRegionFilter" onchange="filterProducts()"><option value="">全部</option><option value="hn">湖南</option><option value="fj">福建</option></select></div>';
+  html += '<div class="product-list" id="productListArea">';
+  PRODUCTS.forEach(function(p){
+    var regionLabel = p.region === 'hn' ? '湖南' : '福建';
+    html += '<div class="product-item" data-region="'+p.region+'" data-name="'+p.name+'">';
+    html += '<span class="product-region '+p.region+'">'+regionLabel+'</span>';
+    html += '<span class="product-name">'+p.name+'</span>';
+    html += '<span class="product-meta">'+(p.days > 0 ? p.days+'天' : '')+' '+p.dest+'</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function filterProducts(){
+  var search = document.getElementById('productSearch').value.toLowerCase();
+  var region = document.getElementById('productRegionFilter').value;
+  var items = document.querySelectorAll('#productListArea .product-item');
+  items.forEach(function(item){
+    var name = item.getAttribute('data-name').toLowerCase();
+    var r = item.getAttribute('data-region');
+    var matchSearch = !search || name.indexOf(search) >= 0;
+    var matchRegion = !region || r === region;
+    item.style.display = (matchSearch && matchRegion) ? '' : 'none';
+  });
+}
+
+function openScheduleModal(dateStr){
+  var modal = document.getElementById('scheduleModal');
+  var select = document.getElementById('scheduleProduct');
+  var dateInput = document.getElementById('scheduleDate');
+  var html = '';
+  var regions = [{key:'hn',label:'-- 湖南产品 --'},{key:'fj',label:'-- 福建产品 --'}];
+  regions.forEach(function(rg){
+    html += '<optgroup label="'+rg.label+'">';
+    PRODUCTS.filter(function(p){ return p.region === rg.key; }).forEach(function(p){
+      html += '<option value="'+p.id+'">'+p.name+'</option>';
+    });
+    html += '</optgroup>';
+  });
+  select.innerHTML = html;
+  dateInput.value = dateStr || todayStr;
+  modal.classList.add('show');
+}
+
+function closeScheduleModal(){
+  document.getElementById('scheduleModal').classList.remove('show');
+}
+
+function saveSchedule(){
+  var productId = document.getElementById('scheduleProduct').value;
+  var date = document.getElementById('scheduleDate').value;
+  if(!productId || !date){ showToast('请填写完整'); return; }
+  schedules.push({productId:productId, date:date});
+  localStorage.setItem('zhibiao_schedules', JSON.stringify(schedules));
+  closeScheduleModal();
+  if(productTab === 'calendar') renderProduct('calendar');
+  showToast('班期已添加');
+}
+
+function handleProductDrop(event){
+  var files = event.dataTransfer.files;
+  if(files){
+    for(var i = 0; i < files.length; i++) addProductFromFile(files[i]);
+  }
+}
+
+function handleProductFile(input){
+  if(input.files){
+    for(var i = 0; i < input.files.length; i++) addProductFromFile(input.files[i]);
+  }
+}
+
+function addProductFromFile(file){
+  var name = file.name.replace(/\.[^.]+$/, '');
+  var ext = file.name.split('.').pop().toLowerCase();
+  if(ext === 'xlsx' || ext === 'xls'){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        if(typeof XLSX === 'undefined'){ showToast('Excel解析库加载中'); return; }
+        var data = new Uint8Array(e.target.result);
+        var wb = XLSX.read(data, {type:'array'});
+        var sheet = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(sheet);
+        if(rows.length > 0){
+          var headers = Object.keys(rows[0]);
+          var routeName = '';
+          headers.forEach(function(h){
+            if(h.indexOf('线路') >= 0 || h.indexOf('产品') >= 0 || h.indexOf('名称') >= 0 || h.indexOf('行程') >= 0){
+              routeName = rows[0][h] || '';
+            }
+          });
+          if(routeName) name = routeName;
+        }
+      }catch(err){}
+      doAddProduct(name);
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    doAddProduct(name);
+  }
+}
+
+function doAddProduct(name){
+  var exists = PRODUCTS.some(function(p){ return p.name.indexOf(name.substring(0,4)) >= 0; });
+  if(exists){ showToast('产品已存在：'+name.substring(0,10)); return; }
+  var region = 'hn';
+  if(name.indexOf('福建') >= 0 || name.indexOf('潇湘') >= 0 || name.indexOf('大河之南') >= 0 || name.indexOf('天边') >= 0 || name.indexOf('疆山如画') >= 0 || name.indexOf('直达') >= 0) region = 'fj';
+  var daysMatch = name.match(/(\d{1,2})日/);
+  var days = daysMatch ? parseInt(daysMatch[1]) : 0;
+  var dest = '未知';
+  var dests = ['新疆','东北','云南','西藏','额济纳','甘青','甘肃','青海','宁夏'];
+  for(var i = 0; i < dests.length; i++){
+    if(name.indexOf(dests[i]) >= 0){ dest = dests[i]; break; }
+  }
+  var id = 'custom_' + Date.now();
+  var keywords = [];
+  dests.forEach(function(d){ if(name.indexOf(d) >= 0) keywords.push(d); });
+  if(name.indexOf('专列') >= 0) keywords.push('专列');
+  if(name.indexOf('潇湘') >= 0) keywords.push('潇湘号');
+  if(name.indexOf('北国') >= 0) keywords.push('北国');
+  if(name.indexOf('东极') >= 0) keywords.push('东极');
+  PRODUCTS.push({id:id,name:name,region:region,days:days,dest:dest,keywords:keywords,desc:'从文件名自动识别：'+name});
+  showToast('已添加产品：'+name.substring(0,15));
+}
+
+function showDayDetail(dateStr){
+  var daySchedules = schedules.filter(function(s){ return s.date === dateStr; });
+  var detail = document.getElementById('memoryDayDetail');
+  if(daySchedules.length === 0){
+    if(confirm(dateStr + ' 没有班期记录，要添加吗？')){
+      openScheduleModal(dateStr);
+    }
+    return;
+  }
+  var html = '<div class="memory-day-detail"><div class="detail-date">'+dateStr+' 出发班期</div><div class="detail-tasks">';
+  daySchedules.forEach(function(s){
+    var prod = PRODUCTS.find(function(p){ return p.id === s.productId; });
+    if(prod){
+      var regionLabel = prod.region === 'hn' ? '湖南' : '福建';
+      html += '<div style="padding:6px 0;border-bottom:1px solid var(--border)"><strong>'+prod.name+'</strong> ('+regionLabel+')';
+      if(prod.days > 0) html += ' - '+prod.days+'天';
+      html += '<br><span style="color:var(--text3)">'+prod.desc+'</span>';
+      html += ' <span style="color:var(--red);cursor:pointer;font-size:11px;margin-left:8px" onclick="removeSchedule(\''+s.productId+'\',\''+dateStr+'\')">删除</span></div>';
+    }
+  });
+  html += '</div></div>';
+  detail.innerHTML = html;
+}
+
+function removeSchedule(productId, date){
+  schedules = schedules.filter(function(s){ return !(s.productId === productId && s.date === date); });
+  localStorage.setItem('zhibiao_schedules', JSON.stringify(schedules));
+  if(productTab === 'calendar') renderProduct('calendar');
+  document.getElementById('memoryDayDetail').innerHTML = '';
+  showToast('已删除');
+}
+
+// ===== Work Memory =====
+var memoryYear = now.getFullYear();
+var memoryMonth = now.getMonth();
+
+function saveWorkMemory(){
+  var states = getTaskStates();
+  var total = 0, done = 0;
+  ['morning','afternoon','evening'].forEach(function(period){
+    var allTasks = TASKS[period].concat(extraTasks[period] || []);
+    allTasks.forEach(function(task, i){
+      total++;
+      if(states[period+'_'+i]) done++;
+    });
+  });
+  var mood = localStorage.getItem('zhibiao_mood_' + todayStr) || '';
+  var notes = localStorage.getItem('zhibiao_notes_' + todayStr) || '';
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  var data = {date:todayStr, done:done, total:total, mood:mood, notes:notes, pct:pct};
+  localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
+}
+
+function getWorkMemory(dateStr){
+  var saved = localStorage.getItem('zhibiao_memory_' + dateStr);
+  if(saved){ try{ return JSON.parse(saved); }catch(e){} }
+  return null;
+}
+
+function renderMemoryCalendar(){
+  var firstDay = new Date(memoryYear, memoryMonth, 1);
+  var lastDay = new Date(memoryYear, memoryMonth + 1, 0);
+  var startDow = (firstDay.getDay() + 6) % 7;
+  document.getElementById('memoryCalTitle').textContent = memoryYear + '年' + (memoryMonth + 1) + '月';
+  var totalDays = 0, totalDone = 0, activeDays = 0, streak = 0;
+  for(var d = 1; d <= lastDay.getDate(); d++){
+    var ds = memoryYear + '-' + String(memoryMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var mem = getWorkMemory(ds);
+    if(mem){
+      totalDays++;
+      totalDone += mem.done;
+      if(mem.done > 0) activeDays++;
+    }
+  }
+  var checkDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  checkDate.setDate(checkDate.getDate() - 1);
+  while(true){
+    var cs = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
+    var cm = getWorkMemory(cs);
+    if(cm && cm.done > 0){ streak++; checkDate.setDate(checkDate.getDate() - 1); }
+    else break;
+  }
+  var todayMem = getWorkMemory(todayStr);
+  if(todayMem && todayMem.done > 0) streak++;
+  var statsHtml = '';
+  statsHtml += '<div class="memory-stat"><div class="stat-num">' + activeDays + '</div><div class="stat-label">工作天数</div></div>';
+  statsHtml += '<div class="memory-stat"><div class="stat-num">' + totalDone + '</div><div class="stat-label">完成任务</div></div>';
+  statsHtml += '<div class="memory-stat"><div class="stat-num" style="color:var(--orange)">' + streak + '</div><div class="stat-label">连续天数</div></div>';
+  var avgPct = totalDays > 0 ? Math.round(totalDone / (totalDays * 8) * 100) : 0;
+  if(avgPct > 100) avgPct = 100;
+  statsHtml += '<div class="memory-stat"><div class="stat-num" style="color:var(--green)">' + avgPct + '%</div><div class="stat-label">平均完成率</div></div>';
+  document.getElementById('memoryStats').innerHTML = statsHtml;
+  var html = '';
+  for(var i = 0; i < startDow; i++) html += '<div class="cal-day empty"></div>';
+  for(var d = 1; d <= lastDay.getDate(); d++){
+    var ds = memoryYear + '-' + String(memoryMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var mem = getWorkMemory(ds);
+    var isToday = ds === todayStr;
+    var cls = 'cal-day' + (isToday ? ' today' : '');
+    html += '<div class="' + cls + '" onclick="showMemoryDay(\'' + ds + '\')">';
+    html += '<div class="day-num">' + d + '</div>';
+    if(mem){
+      var pct = mem.pct || 0;
+      var color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--cyan)' : pct > 0 ? 'var(--orange)' : 'var(--text3)';
+      html += '<div style="font-size:10px;font-weight:700;color:' + color + '">' + mem.done + '/' + mem.total + '</div>';
+      if(pct >= 80) html += '<div style="font-size:10px;color:var(--green)">&#x2B50;</div>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('memoryCalGrid').innerHTML = html;
+  document.getElementById('memoryDayDetail').innerHTML = '';
+}
+
+function changeMemoryMonth(delta){
+  if(delta === 0){ memoryYear = now.getFullYear(); memoryMonth = now.getMonth(); }
+  else { memoryMonth += delta; if(memoryMonth > 11){ memoryMonth = 0; memoryYear++; } else if(memoryMonth < 0){ memoryMonth = 11; memoryYear--; } }
+  renderMemoryCalendar();
+}
+
+function showMemoryDay(dateStr){
+  var mem = getWorkMemory(dateStr);
+  var detail = document.getElementById('memoryDayDetail');
+  if(!mem){
+    detail.innerHTML = '<div class="memory-day-detail"><div class="detail-date">' + dateStr + '</div><div class="detail-tasks" style="color:var(--text3)">当天没有使用记录</div></div>';
+    return;
+  }
+  var moodEmojis = {fire:'\u{1F525}',good:'\u{1F60A}',ok:'\u{1F610}',tired:'\u{1F634}',stress:'\u{1F624}'};
+  var html = '<div class="memory-day-detail">';
+  html += '<div class="detail-date">' + dateStr + '</div>';
+  html += '<div class="detail-tasks">';
+  html += '<div style="display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap">';
+  html += '<span>完成任务：<strong style="color:var(--cyan)">' + mem.done + ' / ' + mem.total + '</strong></span>';
+  html += '<span>完成率：<strong style="color:' + (mem.pct >= 80 ? 'var(--green)' : 'var(--orange)') + '">' + mem.pct + '%</strong></span>';
+  if(mem.mood) html += '<span>状态：' + (moodEmojis[mem.mood] || '') + '</span>';
+  html += '</div>';
+  if(mem.notes) html += '<div style="margin-top:6px;padding:8px 12px;background:var(--glass);border-radius:8px;font-size:12px;color:var(--text2)"><strong>备注：</strong>' + mem.notes + '</div>';
+  html += '</div></div>';
+  detail.innerHTML = html;
+}
+
 // ===== Init =====
 loadExtraTasks();
 renderTasks();
@@ -1550,6 +2132,8 @@ loadStreak();
 renderHoroscope();
 renderHolidays();
 renderSettle('ops');
+renderProduct('qa');
+renderMemoryCalendar();
 
 // greeting toast
 setTimeout(function(){
