@@ -687,6 +687,16 @@
   border-radius:8px;cursor:pointer;transition:all .2s;background:transparent;
 }
 .dt-refresh:hover{color:var(--cyan);border-color:var(--cyan)}
+.qa-tag{display:inline-block;padding:3px 10px;margin:2px 4px;font-size:12px;background:#fff0f5;color:#e75a8c;border:1px solid #f0a0b8;border-radius:12px;cursor:pointer;transition:all .2s}
+.qa-tag:hover{background:#e75a8c;color:#fff}
+.qa-result-item{background:#fff;border:1px solid #f5d5e0;border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:box-shadow .2s}
+.qa-result-item:hover{box-shadow:0 2px 12px rgba(231,90,140,.12)}
+.qa-result-item .qa-account{font-size:15px;font-weight:600;color:#e75a8c}
+.qa-result-item .qa-meta{font-size:13px;color:#666;margin-top:4px;line-height:1.7}
+.qa-result-item .qa-meta b{color:#333;font-weight:500}
+.qa-result-item .qa-highlight{background:#fff3cd;padding:1px 4px;border-radius:3px}
+.qa-summary{font-size:13px;color:#888;margin-bottom:10px;padding:6px 10px;background:#fef8fa;border-radius:8px;border-left:3px solid #e75a8c}
+.qa-region-group{margin-top:12px;margin-bottom:6px;font-size:13px;font-weight:600;color:#e75a8c;padding:4px 0;border-bottom:1px dashed #f0a0b8}
 </style>
 </head>
 <body>
@@ -912,6 +922,28 @@
     <div id="dtContent"></div>
   </div>
 
+  <!-- ===== Instant Q&A ===== -->
+  <div class="card qa-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F50D;</span> 即时问答 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">账号归属 / 运营人 / 销转 / 旅行社</span></div>
+    <div style="position:relative;margin-bottom:12px;">
+      <input type="text" id="qaInput" placeholder="输入关键词，如：家天下文旅小辉、王霖、湖南组、范少华..." 
+        style="width:100%;padding:10px 40px 10px 14px;border:1.5px solid #f0a0b8;border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;transition:border-color .2s;"
+        onfocus="this.style.borderColor='#e75a8c'" onblur="this.style.borderColor='#f0a0b8'"
+        onkeydown="if(event.key==='Enter')doQASearch()">
+      <button onclick="doQASearch()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:#e75a8c;color:#fff;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;">搜索</button>
+    </div>
+    <div id="qaQuickTags" style="margin-bottom:10px;">
+      <span style="font-size:12px;color:#999;margin-right:6px;">试试：</span>
+      <span class="qa-tag" onclick="qaQuickSearch('陈薇婷')">陈薇婷</span>
+      <span class="qa-tag" onclick="qaQuickSearch('王霖')">王霖</span>
+      <span class="qa-tag" onclick="qaQuickSearch('湖南组')">湖南组</span>
+      <span class="qa-tag" onclick="qaQuickSearch('范少华')">范少华</span>
+      <span class="qa-tag" onclick="qaQuickSearch('深圳')">深圳</span>
+      <span class="qa-tag" onclick="qaQuickSearch('北京')">北京</span>
+    </div>
+    <div id="qaResults"></div>
+  </div>
+
 </div>
 
 <!-- Celebration overlay -->
@@ -946,6 +978,130 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
 <script>
+// ===== Q&A Knowledge Base =====
+const QA_DATA = [
+  // 河北组 — 河北美琪旅行社有限公司
+  {a:'家天下文旅小辉',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小赵',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅露露',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅夏夏',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅夏姐',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小夏',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅范范',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小范',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小云',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小丁',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅薇薇',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官薇薇',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官小赵',o:'吴雪琦',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官小范',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官小云',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官小薇',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'石家庄中老年旅游推荐官云云',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小燕',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅侯',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅燕燕',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下旅游-东北新疆专列',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅华华',o:'林城涵',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅薇薇(林城涵)',o:'林城涵',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小薇(林智杰)',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅梅梅',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下文旅小云(林智杰)',o:'林智杰',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'家天下旅游小薇',o:'林智杰',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  {a:'东北新疆专列小王',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
+  // 深圳组 — 深圳市鹏运国际旅行社有限公司
+  {a:'深圳鹏运国旅-怡景旅游',o:'王霖',s:'张海宾',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区金碧路46号'},
+  {a:'鹏运国旅小桐',o:'王霖',s:'张桐桐',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'鹏运国旅小珠',o:'王霖',s:'郑敏珠',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市龙岗区'},
+  {a:'鹏运国旅小航',o:'王霖',s:'罗航',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市福田区'},
+  {a:'鹏运国旅小张',o:'王霖',s:'张莎',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市龙华区'},
+  {a:'鹏运国旅小黎',o:'王霖',s:'黎玉环',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'鹏运国旅株株',o:'王霖',s:'郑敏珠',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'鹏运国旅铁蛋',o:'王霖',s:'曾丽凤',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'一起探世界',o:'王霖',s:'唐子轩',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'性价比最高的游玩攻略',o:'王霖',s:'肖水凤',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  {a:'专业旅游推荐官',o:'王霖',s:'陈家榕',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
+  // 湖南组 — 江西家天下国际旅行社有限公司湖南分公司
+  {a:'中老年旅游推官小向',o:'刘良勉',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列小浩',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列小颖',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列小陈',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'中老年退休旅游',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙银发专列徐导',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙旅游专列推荐小娜',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙银发旅游小小',o:'刘良勉',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'专列陈导',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'退休火车旅游专列小向',o:'许嵩玲',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'退休火车旅游专列小王',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南出发火车专列',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'退休火车之旅',o:'许嵩玲',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙银发旅游专列(许嵩玲)',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列小鹿',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙旅游专列推荐官小西',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南旅游专列刘导',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'中老年旅游推荐官小王',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙出发专列',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列达人',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙退休火车专列旅游',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南发旅游专列',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南旅游专列小陆',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙旅游专列小陆',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'旅游专列李导',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南出发退休旅游',o:'林泉灵',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'长沙专列推荐小李',o:'林泉灵',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'家天下-长沙出发旅游专列',o:'周津',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  {a:'湖南专列小小',o:'周津',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
+  // 福建组 — 厦门中星国际旅行社有限公司
+  {a:'福建专列旅游推荐官黄老师',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'中星旅游',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'中星旅游中老年专列',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'福建退休旅游专列圈',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'闽南退休旅游',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'爱旅老友福建专列出发',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'福建中老年旅游大本营',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'中星国旅福建中老年专列游',o:'周津',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  {a:'中星旅游银发专列',o:'周津',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
+  // 北京组
+  {a:'北京臻途中老年专列推荐官',o:'陈清林',s:'伍艳云',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
+  {a:'大伟带您游世界',o:'陈清林',s:'郭大伟',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京'},
+  {a:'北京臻途中老年旅游专列芊潞',o:'陈清林',s:'颜磊',r:'北京',ag:'北京雅途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
+  {a:'北京专列-小雅',o:'陈清林',s:'颜磊',r:'北京',ag:'北京雅途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
+  {a:'北京火车专列-王导',o:'陈清林',s:'郭大伟',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京',note:'暂停运营'}
+];
+
+function qaQuickSearch(kw){document.getElementById('qaInput').value=kw;doQASearch()}
+
+function doQASearch(){
+  var kw=document.getElementById('qaInput').value.trim().toLowerCase();
+  var box=document.getElementById('qaResults');
+  if(!kw){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">输入关键词搜索账号、运营人、销转、旅行社</div>';return}
+  var hits=QA_DATA.filter(function(d){
+    var blob=(d.a+' '+d.o+' '+d.s+' '+d.r+' '+d.ag+' '+d.ad+' '+(d.note||'')).toLowerCase();
+    return blob.indexOf(kw)!==-1;
+  });
+  if(!hits.length){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">没有找到匹配结果，换个关键词试试</div>';return}
+  // Group by region
+  var groups={},order=[];
+  hits.forEach(function(d){if(!groups[d.r]){groups[d.r]=[];order.push(d.r)}groups[d.r].push(d)});
+  var hl=function(t,k){if(!k)return t;var idx=t.toLowerCase().indexOf(k);if(idx===-1)return t;return t.substring(0,idx)+'<span class="qa-highlight">'+t.substring(idx,idx+k.length)+'</span>'+t.substring(idx+k.length)};
+  var html='<div class="qa-summary">找到 <b>'+hits.length+'</b> 条匹配结果</div>';
+  order.forEach(function(region){
+    html+='<div class="qa-region-group">'+region+'组 ('+groups[region].length+'个账号)</div>';
+    groups[region].forEach(function(d){
+      var noteTag=d.note?'<span style="background:#ffe0e0;color:#c00;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:6px;">'+d.note+'</span>':'';
+      html+='<div class="qa-result-item">'
+        +'<div class="qa-account">'+hl(d.a,kw)+noteTag+'</div>'
+        +'<div class="qa-meta">'
+        +'<b>运营人：</b>'+hl(d.o,kw)+' &nbsp; '
+        +'<b>销转：</b>'+hl(d.s,kw)+'<br>'
+        +'<b>旅行社：</b>'+hl(d.ag,kw)+'<br>'
+        +'<b>地址：</b>'+d.ad
+        +'</div></div>';
+    });
+  });
+  box.innerHTML=html;
+}
+
 // ===== Date =====
 const now = new Date();
 const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
