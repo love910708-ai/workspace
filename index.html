@@ -1078,8 +1078,17 @@ function selectMood(mood){
   document.querySelectorAll('.mood-btn').forEach(function(el){ el.classList.remove('selected'); });
   document.querySelector('.mood-btn[data-mood="'+mood+'"]').classList.add('selected');
   localStorage.setItem('zhibiao_mood_' + todayStr, mood);
-  const moodMsgs = {fire:'状态拉满，今天多推进点关键决策',good:'心情不错，节奏稳住',ok:'平平淡淡也是真，先干完晨间任务',tired:'有点累，挑重点的先做',stress:'压力大的话，先深呼吸。问题一个一个拆'};
-  showToast(moodMsgs[mood]);
+  saveWorkMemory();
+  const moodMsgs = {
+    fire:['状态拉满，今天多推进点关键决策','火力全开，你是最棒的','今天效率爆表，冲鸭','满血复活，干就完了'],
+    good:['心情不错，节奏稳住','保持这个状态，稳稳的幸福','微笑面对，好运自然来','今天也是元气满满的一天'],
+    ok:['平平淡淡也是真，先干完晨间任务','平稳前行，完成比完美重要','按部就班，也是一种力量','慢慢来，比较快'],
+    tired:['有点累，挑重点的先做','辛苦了，适当休息也是工作','累了就歇会儿，别硬撑','身体第一，任务第二'],
+    stress:['压力大的话，先深呼吸。问题一个一个拆','压力是暂时的，你是强大的','深呼吸，一件一件来','别急，路是一步步走的']
+  };
+  var msgs = moodMsgs[mood] || ['加油'];
+  var msg = msgs[Math.floor(Math.random() * msgs.length)];
+  showToast(msg);
 }
 function loadMood(){
   const saved = localStorage.getItem('zhibiao_mood_' + todayStr);
@@ -1096,6 +1105,7 @@ function loadNotes(){
 }
 function saveNotes(){
   localStorage.setItem('zhibiao_notes_' + todayStr, document.getElementById('notesArea').value);
+  saveWorkMemory();
 }
 
 // ===== Voice =====
@@ -2471,7 +2481,8 @@ function renderMemoryCalendar(){
       var color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--cyan)' : pct > 0 ? 'var(--orange)' : 'var(--text3)';
       html += '<div style="font-size:10px;font-weight:700;color:' + color + '">' + mem.done + '/' + mem.total + '</div>';
       if(pct >= 80) html += '<div style="font-size:10px;color:var(--green)">&#x2B50;</div>';
-      var moodVal = localStorage.getItem('zhibiao_mood_' + ds);var moodEmojis = {fire:'\u{1F525}',good:'\u{1F60A}',ok:'\u{1F610}',tired:'\u{1F634}',stress:'\u{1F624}'};if(moodVal && moodEmojis[moodVal]) html += '<div style="font-size:14px;margin-top:2px">' + moodEmojis[moodVal] + '</div>';
+      var moodEmojis = {fire:'\u{1F525}',good:'\u{1F60A}',ok:'\u{1F610}',tired:'\u{1F634}',stress:'\u{1F624}'};
+      if(mem.mood && moodEmojis[mem.mood]) html += '<div style="font-size:14px;margin-top:2px">' + moodEmojis[mem.mood] + '</div>';
     }
     html += '</div>';
   }
@@ -2501,6 +2512,37 @@ function showMemoryDay(dateStr){
   html += '<span>完成率：<strong style="color:' + (mem.pct >= 80 ? 'var(--green)' : 'var(--orange)') + '">' + mem.pct + '%</strong></span>';
   if(mem.mood) html += '<span>状态：' + (moodEmojis[mem.mood] || '') + '</span>';
   html += '</div>';
+
+  // Show completed task names
+  var taskKey = 'zhibiao_tasks_' + dateStr;
+  var savedStates = localStorage.getItem(taskKey);
+  var states = {};
+  if(savedStates){ try{ states = JSON.parse(savedStates); }catch(e){} }
+  var completedTasks = [];
+  ['morning','afternoon','evening'].forEach(function(period){
+    var allTasks = TASKS[period].concat(extraTasks[period] || []);
+    allTasks.forEach(function(task, i){
+      var key = period + '_' + i;
+      if(states[key]){
+        completedTasks.push({period: period, name: task.name || task});
+      }
+    });
+  });
+  if(completedTasks.length > 0){
+    html += '<div style="margin-top:10px"><strong style="color:var(--text2);font-size:12px">已完成事项：</strong></div>';
+    html += '<div style="margin-top:6px;max-height:200px;overflow-y:auto">';
+    var periodLabels = {morning:'晨间',afternoon:'下午',evening:'晚上'};
+    var currentPeriod = '';
+    completedTasks.forEach(function(t){
+      if(t.period !== currentPeriod){
+        currentPeriod = t.period;
+        html += '<div style="font-size:11px;color:var(--purple);margin-top:6px;font-weight:600">' + periodLabels[currentPeriod] + '</div>';
+      }
+      html += '<div style="font-size:12px;color:var(--text2);padding:2px 0;padding-left:8px">✓ ' + t.name + '</div>';
+    });
+    html += '</div>';
+  }
+
   if(mem.notes) html += '<div style="margin-top:6px;padding:8px 12px;background:var(--glass);border-radius:8px;font-size:12px;color:var(--text2)"><strong>备注：</strong>' + mem.notes + '</div>';
   html += '</div></div>';
   detail.innerHTML = html;
@@ -2829,7 +2871,7 @@ function generateCardImage(p){
   ctx.fillStyle = '#fff';
   ctx.font = '12px Arial, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('\u5fd7\u7235\u00b7\u6bcf\u65e5\u5de5\u4f5c\u624b\u518c', width/2, height - footerHeight/2 + 4);
+  ctx.fillText('\u5fd7\u6807\u00b7\u6bcf\u65e5\u5de5\u4f5c\u624b\u518c', width/2, height - footerHeight/2 + 4);
 
   showCardImageModal(canvas.toDataURL('image/png'));
 }
