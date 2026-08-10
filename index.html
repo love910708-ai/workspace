@@ -936,12 +936,31 @@
       <span style="font-size:12px;color:#999;margin-right:6px;">试试：</span>
       <span class="qa-tag" onclick="qaQuickSearch('陈薇婷')">陈薇婷</span>
       <span class="qa-tag" onclick="qaQuickSearch('王霖')">王霖</span>
-      <span class="qa-tag" onclick="qaQuickSearch('湖南组')">湖南组</span>
-      <span class="qa-tag" onclick="qaQuickSearch('范少华')">范少华</span>
+      <span class="qa-tag" onclick="qaQuickSearch('刘良勉')">刘良勉</span>
+      <span class="qa-tag" onclick="qaQuickSearch('陈林霞')">陈林霞</span>
+      <span class="qa-tag" onclick="qaQuickSearch('陈清林')">陈清林</span>
+      <span class="qa-tag" onclick="qaQuickSearch('林涛')">林涛</span>
+      <span class="qa-tag" onclick="qaQuickSearch('河北')">河北</span>
+      <span class="qa-tag" onclick="qaQuickSearch('湖南')">湖南</span>
       <span class="qa-tag" onclick="qaQuickSearch('深圳')">深圳</span>
+      <span class="qa-tag" onclick="qaQuickSearch('福建')">福建</span>
       <span class="qa-tag" onclick="qaQuickSearch('北京')">北京</span>
     </div>
     <div id="qaResults"></div>
+  </div>
+
+  <!-- ===== Review Monitor ===== -->
+  <div class="card review-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CA;</span> 复盘监控 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">运营 / 销转每日复盘追踪</span>
+      <span id="dataUpdateTime" style="margin-left:auto;font-size:11px;color:#aaa;font-weight:normal;"></span>
+    </div>
+    <div class="product-tabs" style="margin-bottom:12px;">
+      <button class="product-tab active" onclick="switchReviewTab('ops')">&#x1F4E6; 运营复盘</button>
+      <button class="product-tab" onclick="switchReviewTab('sales')">&#x1F4B0; 销转复盘</button>
+    </div>
+    <div id="reviewNav" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"></div>
+    <div id="reviewSummary" style="margin-bottom:12px;"></div>
+    <div id="reviewDetail"></div>
   </div>
 
 </div>
@@ -977,97 +996,12 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
+<script src="qa-data.js"></script>
 <script>
-// ===== Q&A Knowledge Base =====
-const QA_DATA = [
-  // 河北组 — 河北美琪旅行社有限公司
-  {a:'家天下文旅小辉',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小赵',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅露露',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅夏夏',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅夏姐',o:'陈薇婷',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小夏',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅范范',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小范',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小云',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小丁',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅薇薇',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官薇薇',o:'吴雪琦',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官小赵',o:'吴雪琦',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官小范',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官小云',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官小薇',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'石家庄中老年旅游推荐官云云',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小燕',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅侯',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅燕燕',o:'卢东鸿',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下旅游-东北新疆专列',o:'卢东鸿',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅华华',o:'林城涵',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅薇薇(林城涵)',o:'林城涵',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小薇(林智杰)',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅梅梅',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下文旅小云(林智杰)',o:'林智杰',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'家天下旅游小薇',o:'林智杰',s:'范少华',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  {a:'东北新疆专列小王',o:'林智杰',s:'王云',r:'河北',ag:'河北美琪旅行社有限公司',ad:'石家庄市长安区广安大街世纪方舟B座2512'},
-  // 深圳组 — 深圳市鹏运国际旅行社有限公司
-  {a:'深圳鹏运国旅-怡景旅游',o:'王霖',s:'张海宾',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区金碧路46号'},
-  {a:'鹏运国旅小桐',o:'王霖',s:'张桐桐',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'鹏运国旅小珠',o:'王霖',s:'郑敏珠',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市龙岗区'},
-  {a:'鹏运国旅小航',o:'王霖',s:'罗航',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市福田区'},
-  {a:'鹏运国旅小张',o:'王霖',s:'张莎',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市龙华区'},
-  {a:'鹏运国旅小黎',o:'王霖',s:'黎玉环',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'鹏运国旅株株',o:'王霖',s:'郑敏珠',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'鹏运国旅铁蛋',o:'王霖',s:'曾丽凤',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'一起探世界',o:'王霖',s:'唐子轩',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'性价比最高的游玩攻略',o:'王霖',s:'肖水凤',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  {a:'专业旅游推荐官',o:'王霖',s:'陈家榕',r:'深圳',ag:'深圳市鹏运国际旅行社有限公司',ad:'深圳市罗湖区'},
-  // 湖南组 — 江西家天下国际旅行社有限公司湖南分公司
-  {a:'中老年旅游推官小向',o:'刘良勉',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列小浩',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列小颖',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列小陈',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'中老年退休旅游',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙银发专列徐导',o:'刘良勉',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙旅游专列推荐小娜',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙银发旅游小小',o:'刘良勉',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'专列陈导',o:'刘良勉',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'退休火车旅游专列小向',o:'许嵩玲',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'退休火车旅游专列小王',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南出发火车专列',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'退休火车之旅',o:'许嵩玲',s:'陆艳',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙银发旅游专列(许嵩玲)',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列小鹿',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙旅游专列推荐官小西',o:'许嵩玲',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南旅游专列刘导',o:'许嵩玲',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'中老年旅游推荐官小王',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙出发专列',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列达人',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙退休火车专列旅游',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南发旅游专列',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南旅游专列小陆',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙旅游专列小陆',o:'郑艳彬',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'旅游专列李导',o:'郑艳彬',s:'胡亮',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南出发退休旅游',o:'林泉灵',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'长沙专列推荐小李',o:'林泉灵',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'家天下-长沙出发旅游专列',o:'周津',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  {a:'湖南专列小小',o:'周津',s:'谈波',r:'湖南',ag:'江西家天下国际旅行社有限公司湖南分公司',ad:'长沙芙蓉区五一大道158号人瑞潇湘国际15楼'},
-  // 福建组 — 厦门中星国际旅行社有限公司
-  {a:'福建专列旅游推荐官黄老师',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'中星旅游',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'中星旅游中老年专列',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'福建退休旅游专列圈',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'闽南退休旅游',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'爱旅老友福建专列出发',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'福建中老年旅游大本营',o:'陈林霞',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'中星国旅福建中老年专列游',o:'周津',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  {a:'中星旅游银发专列',o:'周津',s:'伍艳云',r:'福建',ag:'厦门中星国际旅行社有限公司',ad:'厦门市湖里区厦门文旅大厦806'},
-  // 北京组
-  {a:'北京臻途中老年专列推荐官',o:'陈清林',s:'伍艳云',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
-  {a:'大伟带您游世界',o:'陈清林',s:'郭大伟',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京'},
-  {a:'北京臻途中老年旅游专列芊潞',o:'陈清林',s:'颜磊',r:'北京',ag:'北京雅途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
-  {a:'北京专列-小雅',o:'陈清林',s:'颜磊',r:'北京',ag:'北京雅途国际旅行社有限公司',ad:'北京',note:'暂停运营'},
-  {a:'北京火车专列-王导',o:'陈清林',s:'郭大伟',r:'北京',ag:'北京臻途国际旅行社有限公司',ad:'北京',note:'暂停运营'}
-];
+// ===== Q&A Knowledge Base (loaded from qa-data.js) =====
+if(typeof QA_DATA==='undefined') var QA_DATA=[];
+if(typeof OPS_REVIEW==='undefined') var OPS_REVIEW=[];
+if(typeof SALES_REVIEW==='undefined') var SALES_REVIEW=[];
 
 function qaQuickSearch(kw){document.getElementById('qaInput').value=kw;doQASearch()}
 
@@ -1076,7 +1010,7 @@ function doQASearch(){
   var box=document.getElementById('qaResults');
   if(!kw){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">输入关键词搜索账号、运营人、销转、旅行社</div>';return}
   var hits=QA_DATA.filter(function(d){
-    var blob=(d.a+' '+d.o+' '+d.s+' '+d.r+' '+d.ag+' '+d.ad+' '+(d.note||'')).toLowerCase();
+    var blob=(d.a+' '+d.o+' '+d.s+' '+d.r+' '+d.ag+' '+d.ad+' '+(d.n||'')).toLowerCase();
     return blob.indexOf(kw)!==-1;
   });
   if(!hits.length){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">没有找到匹配结果，换个关键词试试</div>';return}
@@ -1088,7 +1022,7 @@ function doQASearch(){
   order.forEach(function(region){
     html+='<div class="qa-region-group">'+region+'组 ('+groups[region].length+'个账号)</div>';
     groups[region].forEach(function(d){
-      var noteTag=d.note?'<span style="background:#ffe0e0;color:#c00;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:6px;">'+d.note+'</span>':'';
+      var noteTag=d.n?'<span style="background:#ffe0e0;color:#c00;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:6px;">'+d.n+'</span>':'';
       html+='<div class="qa-result-item">'
         +'<div class="qa-account">'+hl(d.a,kw)+noteTag+'</div>'
         +'<div class="qa-meta">'
@@ -1101,6 +1035,107 @@ function doQASearch(){
   });
   box.innerHTML=html;
 }
+
+// ===== Review Monitor =====
+var _reviewTab='ops', _reviewDateIdx=0;
+
+function switchReviewTab(tab){
+  _reviewTab=tab; _reviewDateIdx=0;
+  document.querySelectorAll('.review-card .product-tab').forEach(function(b,i){
+    b.classList.toggle('active', (tab==='ops'&&i===0)||(tab==='sales'&&i===1));
+  });
+  renderReview();
+}
+
+function renderReview(){
+  var data=(_reviewTab==='ops')?OPS_REVIEW:SALES_REVIEW;
+  if(!data||!data.length){
+    document.getElementById('reviewDetail').innerHTML='<div style="color:#bbb;text-align:center;padding:30px;">暂无复盘数据</div>';
+    document.getElementById('reviewNav').innerHTML='';
+    document.getElementById('reviewSummary').innerHTML='';
+    return;
+  }
+  // Get unique dates desc
+  var dateSet={},dates=[];
+  data.forEach(function(r){if(r.d&&!dateSet[r.d]){dateSet[r.d]=1;dates.push(r.d)}});
+  dates.sort().reverse();
+
+  // Nav
+  var navHtml='<span style="font-size:12px;color:#999;">日期：</span>';
+  dates.forEach(function(d,i){
+    var cls=i===_reviewDateIdx?'background:#e75a8c;color:#fff':'background:#f5f5f5;color:#666';
+    navHtml+='<button onclick="_reviewDateIdx='+i+';renderReview()" style="'+cls+';border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;">'+d.replace(/^\d{4}\//,'')+'</button>';
+  });
+  document.getElementById('reviewNav').innerHTML=navHtml;
+
+  var selDate=dates[_reviewDateIdx];
+  var dayData=data.filter(function(r){return r.d===selDate});
+  var isOps=(_reviewTab==='ops');
+
+  // Summary
+  var totalViews=0,totalPosts=0,totalViol=0;
+  dayData.forEach(function(r){
+    totalViews+=parseInt(r.views)||0;
+    totalPosts+=parseInt(r.posts)||0;
+    if(isOps) totalViol+=parseInt(r.viol_today)||0;
+    else totalViol+=parseInt(r.dm_today)||0;
+  });
+  var violLabel=isOps?'今日违规':'今日私信';
+  document.getElementById('reviewSummary').innerHTML=
+    '<div style="display:flex;gap:16px;flex-wrap:wrap;">'+
+    '<div style="background:#fff5f8;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#e75a8c;">'+dayData.length+'</div><div style="font-size:11px;color:#999;">复盘人数</div></div>'+
+    '<div style="background:#f0f9ff;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#0ea5e9;">'+totalViews.toLocaleString()+'</div><div style="font-size:11px;color:#999;">总播放</div></div>'+
+    '<div style="background:#f0fdf4;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#10b981;">'+totalPosts+'</div><div style="font-size:11px;color:#999;">发视频数</div></div>'+
+    '<div style="background:#fefce8;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#f59e0b;">'+totalViol+'</div><div style="font-size:11px;color:#999;">'+violLabel+'</div></div>'+
+    '</div>';
+
+  // Detail cards
+  renderReviewDetail(dayData,isOps);
+}
+
+function renderReviewDetail(dayData,isOps){
+  var html='';
+  dayData.forEach(function(r){
+    var flags=[];
+    if(isOps){
+      if(parseInt(r.viol_today)>0) flags.push('<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:4px;font-size:11px;">违规'+r.viol_today+'</span>');
+      if(parseInt(r.low_v)>0) flags.push('<span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:4px;font-size:11px;">低播'+r.low_v+'</span>');
+      if(parseInt(r.high_v)>0) flags.push('<span style="background:#d1fae5;color:#059669;padding:2px 8px;border-radius:4px;font-size:11px;">高播'+r.high_v+'</span>');
+    } else {
+      if(parseInt(r.dm_today)>0) flags.push('<span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:4px;font-size:11px;">私信'+r.dm_today+'</span>');
+      if(parseInt(r.wx_today)>0) flags.push('<span style="background:#d1fae5;color:#059669;padding:2px 8px;border-radius:4px;font-size:11px;">加微'+r.wx_today+'</span>');
+      if(parseInt(r.deals_today)>0) flags.push('<span style="background:#fce7f3;color:#db2777;padding:2px 8px;border-radius:4px;font-size:11px;">成交'+r.deals_today+'</span>');
+    }
+    if(!r.plan||r.plan.trim()==='') flags.push('<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:4px;font-size:11px;">无计划</span>');
+
+    var flagHtml=flags.length?flags.join(' '):'<span style="color:#10b981;font-size:11px;">正常</span>';
+    var metrics='';
+    if(isOps){
+      metrics='<span>账号 <b>'+r.accts+'</b></span><span>活跃 <b>'+r.active+'</b></span><span>发布 <b>'+r.posts+'</b></span><span>播放 <b>'+parseInt(r.views||0).toLocaleString()+'</b></span><span>点赞 <b>'+r.likes+'</b></span><span>评论 <b>'+r.comments+'</b></span><span>分享 <b>'+r.shares+'</b></span>';
+    } else {
+      metrics='<span>账号 <b>'+r.accts+'</b></span><span>播放 <b>'+parseInt(r.views||0).toLocaleString()+'</b></span><span>评论 <b>'+r.cmts+'</b></span><span>私信 <b>'+r.dm_today+'</b></span><span>加微 <b>'+r.wx_today+'</b></span><span>电话 <b>'+r.ph_today+'</b></span><span>线索 <b>'+r.leads_today+'</b></span><span>成交 <b>'+r.deals_today+'</b></span>';
+    }
+
+    html+='<div style="background:#fff;border:1px solid #f0d0da;border-radius:12px;padding:14px 16px;margin-bottom:10px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'
+      +'<div><span style="font-weight:700;color:#e75a8c;font-size:14px;">'+r.n+'</span>'
+      +' <span style="font-size:11px;color:#999;background:#f5f5f5;padding:2px 6px;border-radius:4px;">'+r.team+'</span>'
+      +' <span style="font-size:11px;color:#999;">'+r.loc+'</span></div>'
+      +'<div>'+flagHtml+'</div></div>'
+      +'<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:#666;margin-bottom:6px;">'+metrics+'</div>'
+      +'<div style="font-size:12px;color:#888;line-height:1.6;"><b style="color:#555;">计划：</b>'+(r.plan||'<span style="color:#dc2626;">未填写</span>')+'</div>'
+      +'</div>';
+  });
+  document.getElementById('reviewDetail').innerHTML=html;
+}
+
+// Init review monitor + data update time
+(function(){
+  if(typeof DATA_UPDATE_TIME!=='undefined'&&DATA_UPDATE_TIME){
+    document.getElementById('dataUpdateTime').textContent='数据更新：'+DATA_UPDATE_TIME;
+  }
+  renderReview();
+})();
 
 // ===== Date =====
 const now = new Date();
