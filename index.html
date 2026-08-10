@@ -442,6 +442,7 @@
     .card-title{font-size:14px;margin-bottom:12px}
     .phase-grid{grid-template-columns:1fr}
     .phase-info,.kpi-card,.intel-card,.notes-card,.settle-card{grid-column:span 1}
+    .dingtalk-card{grid-column:span 1}
     .kpi-table,.settle-table{font-size:11px}
     .kpi-table th,.kpi-table td,.settle-table th,.settle-table td{padding:6px 4px}
     .horo-text{font-size:12px}
@@ -607,6 +608,85 @@
 .extract-btn.primary{background:var(--cyan);color:#fff}
 .extract-btn.secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
 .extract-btn:hover{opacity:0.85}
+
+/* DingTalk Workspace */
+.dingtalk-card{grid-column:span 2}
+.dt-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.dt-tab{
+  padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+  background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;border:1px solid var(--border);
+  position:relative;
+}
+.dt-tab:hover{color:var(--text);border-color:var(--border2)}
+.dt-tab.active{
+  background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
+  color:var(--cyan);border-color:rgba(14,165,233,.3);
+}
+.dt-tab .badge{
+  display:inline-block;background:var(--red);color:#fff;font-size:10px;
+  padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:700;vertical-align:middle;
+}
+.dt-group-section{margin-bottom:16px}
+.dt-group-title{
+  font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;
+  display:flex;align-items:center;gap:6px;padding:6px 0;
+  border-bottom:1px solid var(--border);
+}
+.dt-group-title .g-icon{font-size:15px}
+.dt-group-title .g-count{font-size:11px;color:var(--text3);font-weight:500;margin-left:auto}
+.dt-item{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  border-radius:10px;margin-bottom:4px;border:1px solid transparent;transition:all .2s;
+  cursor:default;
+}
+.dt-item:hover{background:var(--glass2);border-color:var(--border)}
+.dt-item .dt-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;
+}
+.dt-dot.urgent{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.4)}
+.dt-dot.normal{background:var(--cyan);box-shadow:0 0 6px rgba(14,165,233,.3)}
+.dt-dot.info{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.3)}
+.dt-item .dt-text{font-size:13px;line-height:1.5;color:var(--text);flex:1}
+.dt-item .dt-meta{font-size:11px;color:var(--text3);white-space:nowrap;margin-top:2px}
+.dt-file-group{margin-bottom:16px}
+.dt-file-group-title{
+  font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;
+  display:flex;align-items:center;gap:6px;
+}
+.dt-file-item{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  border-radius:8px;margin-bottom:3px;cursor:pointer;transition:all .2s;
+  border:1px solid transparent;
+}
+.dt-file-item:hover{background:var(--glass2);border-color:var(--border)}
+.dt-file-icon{font-size:18px;flex-shrink:0}
+.dt-file-name{font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dt-file-tag{
+  font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;white-space:nowrap;
+}
+.dt-file-tag.folder{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
+.dt-file-tag.sheet{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.dt-file-tag.doc{background:rgba(14,165,233,.12);color:var(--cyan);border:1px solid rgba(14,165,233,.2)}
+.dt-file-tag.link{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)}
+.dt-msg-section{margin-bottom:14px}
+.dt-msg-group{
+  font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.dt-msg-item{
+  padding:8px 12px;border-radius:8px;margin-bottom:4px;
+  background:rgba(14,165,233,.03);border:1px solid var(--border);
+  font-size:12px;line-height:1.6;color:var(--text2);
+}
+.dt-msg-item .msg-author{font-weight:600;color:var(--cyan);margin-right:6px}
+.dt-msg-item .msg-time{font-size:11px;color:var(--text3);float:right}
+.dt-empty{text-align:center;padding:30px;color:var(--text3);font-size:13px}
+.dt-refresh{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 12px;
+  font-size:11px;color:var(--text3);border:1px solid var(--border);
+  border-radius:8px;cursor:pointer;transition:all .2s;background:transparent;
+}
+.dt-refresh:hover{color:var(--cyan);border-color:var(--cyan)}
 </style>
 </head>
 <body>
@@ -819,6 +899,17 @@
     </div>
     <div class="cal-grid" id="memoryCalGrid"></div>
     <div id="memoryDayDetail"></div>
+  </div>
+
+  <!-- ===== DingTalk Workspace ===== -->
+  <div class="card dingtalk-card">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4AC;</span> 钉钉工作台 <button class="dt-refresh" onclick="renderDingTalk('followup')" title="刷新数据">&#x21BB; 刷新</button></div>
+    <div class="dt-tabs">
+      <button class="dt-tab active" onclick="switchDtTab(event,'followup')">&#x1F4CB; 待跟进<span class="badge" id="dtFollowupCount">0</span></button>
+      <button class="dt-tab" onclick="switchDtTab(event,'files')">&#x1F4C1; 团队文件</button>
+      <button class="dt-tab" onclick="switchDtTab(event,'activity')">&#x1F4E2; 群动态</button>
+    </div>
+    <div id="dtContent"></div>
   </div>
 
 </div>
@@ -3206,7 +3297,192 @@ function copyExtractInfo(productId, format){
 
 
 
-// ===== Init =====
+// ===== DingTalk Workspace =====
+var DT_FOLLOWUP = [
+  {group:'运营部门-管理',icon:'\u2699\uFE0F',items:[
+    {text:'盘所有账号：搜不到=停更，搜得到=更新',level:'urgent',date:'8/10'},
+    {text:'李晗星需在表格新增账号状态页',level:'urgent',date:'8/10'},
+    {text:'新号认证进度跟进（1通过/2待审）',level:'normal',date:'8/10'},
+    {text:'早晚会议纪要需分开发，不要合并',level:'normal',date:'8/5'},
+    {text:'注册5-10个新账号（李晗星/陈薇婷各5个）',level:'urgent',date:'8/5'},
+    {text:'办卡注册进度跟进',level:'normal',date:'8/5'}
+  ]},
+  {group:'运营部门-总群',icon:'\u1F465',items:[
+    {text:'直营账号分配及线路规划表已分享，确认各组执行情况',level:'normal',date:'8/7'},
+    {text:'晋升喜报：李晗星、陈薇婷、郑艳彬晋升',level:'info',date:'8/5'},
+    {text:'上月KPI结算已同步，核对各组数据',level:'normal',date:'8/4'},
+    {text:'区域账号信息登记表需补充完整',level:'normal',date:'8/1'}
+  ]},
+  {group:'销转部门-总群',icon:'\u1F4B0',items:[
+    {text:'各区域产品打包发给富贵（王洲/谈波负责）',level:'urgent',date:'8/7'},
+    {text:'王洲开始表格复盘',level:'normal',date:'8/7'},
+    {text:'旅游部门-核心信息表更新',level:'normal',date:'8/7'},
+    {text:'7月结案更新 + 8月考核方案确认',level:'urgent',date:'8/4'},
+    {text:'客资数据打包（200个目标）',level:'normal',date:'8/3'},
+    {text:'成交登记表确认',level:'normal',date:'8/3'}
+  ]},
+  {group:'旅游部门-总群',icon:'\u2708\uFE0F',items:[
+    {text:'补卡新规：仅限忘记打卡，迟到无效，本月生效',level:'normal',date:'8/3'}
+  ]},
+  {group:'旅游部门-仙游',icon:'\u1F3D6\uFE0F',items:[
+    {text:'关注仙游运营组日常动态',level:'info',date:'8/1'}
+  ]},
+  {group:'旅游部门-福州',icon:'\u1F3D9\uFE0F',items:[
+    {text:'关注福州运营组日常动态',level:'info',date:'8/1'}
+  ]},
+  {group:'福建-直营战团',icon:'\u1F525',items:[
+    {text:'直营组仅1人，缺5人，跟进招聘进度',level:'urgent',date:'持续'}
+  ]},
+  {group:'湖南-直营战团',icon:'\u1F525',items:[
+    {text:'直营组日常运营跟进',level:'info',date:'持续'}
+  ]}
+];
+
+var DT_FILES = [
+  {dept:'管理部',icon:'\u1F3E2',files:[
+    {name:'旅游部门-核心信息.axls',type:'sheet',tag:'核心',url:'https://alidocs.dingtalk.com'},
+    {name:'旅游部门-每月kpi',type:'folder',tag:'KPI'},
+    {name:'域见旅游-流量团队薪资体系',type:'doc',tag:'薪资'},
+    {name:'根据最新旅游公约我们需要做什么？',type:'doc',tag:'公约'},
+    {name:'团队架构重组与业务发展',type:'doc',tag:'架构'},
+    {name:'旅游部门-核心信息-月份联动版.xlsx',type:'sheet',tag:'核心'},
+    {name:'销转部门 \u00B7 薪资结构规范',type:'doc',tag:'薪资'}
+  ]},
+  {dept:'运营部',icon:'\u2699\uFE0F',files:[
+    {name:'域见\u00B7规章制度',type:'folder',tag:'制度'},
+    {name:'运营\u00B7KPI考核',type:'folder',tag:'KPI'},
+    {name:'运营各板块SOP',type:'folder',tag:'SOP'},
+    {name:'域见-文案库',type:'folder',tag:'文案'},
+    {name:'直营账号分配与线路规划',type:'sheet',tag:'直营'},
+    {name:'所有账号地址与责任人登记',type:'sheet',tag:'账号'},
+    {name:'旅游部门综合库',type:'link',tag:'链接'},
+    {name:'可以保留"震惊感"…（文案指南）',type:'doc',tag:'文案'}
+  ]},
+  {dept:'销转部',icon:'\u1F4B0',files:[
+    {name:'销转\u00B7KPI',type:'folder',tag:'KPI'},
+    {name:'销转-承接流量的号码跟微信登记',type:'sheet',tag:'流量'},
+    {name:'直播间引导客资话术',type:'sheet',tag:'话术'},
+    {name:'销转一体新员工培训手册',type:'doc',tag:'培训'},
+    {name:'销转各板块SOP',type:'folder',tag:'SOP'}
+  ]}
+];
+
+var DT_ACTIVITY = [
+  {group:'运营部门-管理',icon:'\u2699\uFE0F',msgs:[
+    {author:'富贵',time:'8/10',text:'盘所有账号，搜不到的就是停更的，搜得到的就是更新的'},
+    {author:'富贵',time:'8/10',text:'李晗星在表格里面新增一个账号状态页'},
+    {author:'富贵',time:'8/5',text:'早晚会议纪要分开发'},
+    {author:'富贵',time:'8/5',text:'注册5-10个新账号，李晗星和陈薇婷各5个'}
+  ]},
+  {group:'运营部门-总群',icon:'\u1F465',msgs:[
+    {author:'富贵',time:'8/7',text:'直营账号分配及线路规划表已分享'},
+    {author:'系统',time:'8/5',text:'晋升喜报：李晗星、陈薇婷、郑艳彬'},
+    {author:'系统',time:'8/4',text:'上月KPI结算已同步'},
+    {author:'富贵',time:'8/1',text:'区域账号信息登记表需补充完整'}
+  ]},
+  {group:'销转部门-总群',icon:'\u1F4B0',msgs:[
+    {author:'富贵',time:'8/7',text:'各区域产品打包发给我，王洲和谈波负责'},
+    {author:'富贵',time:'8/7',text:'王洲开始表格复盘'},
+    {author:'富贵',time:'8/4',text:'7月结案更新，8月考核方案确认'},
+    {author:'富贵',time:'8/3',text:'客资数据打包，目标200个'}
+  ]},
+  {group:'旅游部门-总群',icon:'\u2708\uFE0F',msgs:[
+    {author:'系统',time:'8/3',text:'补卡新规：仅限忘记打卡，迟到无效，本月生效'}
+  ]}
+];
+
+var dtCurrentTab = 'followup';
+function switchDtTab(e, tab){
+  dtCurrentTab = tab;
+  var tabs = document.querySelectorAll('.dt-tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].className='dt-tab'+(tabs[i]===e.target?' active':'');
+  renderDingTalk(tab);
+}
+
+function renderDingTalk(tab){
+  var el = document.getElementById('dtContent');
+  if(!tab) tab = dtCurrentTab;
+  if(tab==='followup') renderDtFollowup(el);
+  else if(tab==='files') renderDtFiles(el);
+  else if(tab==='activity') renderDtActivity(el);
+  // Update badge
+  var total = 0;
+  for(var i=0;i<DT_FOLLOWUP.length;i++){
+    for(var j=0;j<DT_FOLLOWUP[i].items.length;j++){
+      if(DT_FOLLOWUP[i].items[j].level==='urgent') total++;
+    }
+  }
+  var badge = document.getElementById('dtFollowupCount');
+  if(badge) badge.textContent = total;
+}
+
+function renderDtFollowup(el){
+  var html = '';
+  for(var i=0;i<DT_FOLLOWUP.length;i++){
+    var g = DT_FOLLOWUP[i];
+    var urgentCount = 0;
+    for(var j=0;j<g.items.length;j++) if(g.items[j].level==='urgent') urgentCount++;
+    html += '<div class="dt-group-section">';
+    html += '<div class="dt-group-title"><span class="g-icon">'+g.icon+'</span>'+g.group;
+    html += '<span class="g-count">'+g.items.length+'项'+(urgentCount?' \u00B7 '+urgentCount+'项紧急':'')+'</span>';
+    html += '</div>';
+    for(var j=0;j<g.items.length;j++){
+      var item = g.items[j];
+      html += '<div class="dt-item">';
+      html += '<span class="dt-dot '+item.level+'"></span>';
+      html += '<span class="dt-text">'+item.text+'</span>';
+      html += '<span class="dt-meta">'+item.date+'</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderDtFiles(el){
+  var html = '';
+  for(var i=0;i<DT_FILES.length;i++){
+    var dept = DT_FILES[i];
+    html += '<div class="dt-file-group">';
+    html += '<div class="dt-file-group-title">'+dept.icon+' '+dept.dept+' <span style="font-size:11px;color:var(--text3);font-weight:400">('+dept.files.length+'个文件)</span></div>';
+    for(var j=0;j<dept.files.length;j++){
+      var f = dept.files[j];
+      var icon = '\u1F4C4';
+      if(f.type==='folder') icon = '\u1F4C1';
+      else if(f.type==='sheet') icon = '\u1F4CA';
+      else if(f.type==='doc') icon = '\u1F4DD';
+      else if(f.type==='link') icon = '\u1F517';
+      html += '<div class="dt-file-item" onclick="window.open(\''+f.url+'\','+'_blank\')">';
+      html += '<span class="dt-file-icon">'+icon+'</span>';
+      html += '<span class="dt-file-name">'+f.name+'</span>';
+      html += '<span class="dt-file-tag '+f.type+'">'+f.tag+'</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderDtActivity(el){
+  var html = '';
+  for(var i=0;i<DT_ACTIVITY.length;i++){
+    var g = DT_ACTIVITY[i];
+    html += '<div class="dt-msg-section">';
+    html += '<div class="dt-msg-group">'+g.icon+' '+g.group+'</div>';
+    for(var j=0;j<g.msgs.length;j++){
+      var m = g.msgs[j];
+      html += '<div class="dt-msg-item">';
+      html += '<span class="msg-time">'+m.time+'</span>';
+      html += '<span class="msg-author">'+m.author+'</span>';
+      html += m.text;
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+
 loadExtraTasks();
 loadSavedVoice();
 initVoice();
@@ -3216,6 +3492,7 @@ renderHoroscope();
 renderHolidays();
 renderSettle('ops');
 renderProduct('qa');
+renderDingTalk('followup');
 
 // Load cloud data first, then render data-dependent UI
 loadFromGitHub().then(function(){
