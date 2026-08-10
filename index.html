@@ -940,6 +940,8 @@
       <span class="qa-tag" onclick="qaQuickSearch('陈林霞')">陈林霞</span>
       <span class="qa-tag" onclick="qaQuickSearch('陈清林')">陈清林</span>
       <span class="qa-tag" onclick="qaQuickSearch('林涛')">林涛</span>
+      <span class="qa-tag" onclick="qaQuickSearch('潘敏娟')">潘敏娟</span>
+      <span class="qa-tag" onclick="qaQuickSearch('黄钦林')">黄钦林</span>
       <span class="qa-tag" onclick="qaQuickSearch('河北')">河北</span>
       <span class="qa-tag" onclick="qaQuickSearch('湖南')">湖南</span>
       <span class="qa-tag" onclick="qaQuickSearch('深圳')">深圳</span>
@@ -1055,6 +1057,11 @@ function renderReview(){
     document.getElementById('reviewSummary').innerHTML='';
     return;
   }
+  // All unique names = expected reviewers (full team roster)
+  var allNamesSet={},allNames=[];
+  data.forEach(function(r){if(r.n&&r.n.trim()&&!allNamesSet[r.n.trim()]){allNamesSet[r.n.trim()]=1;allNames.push(r.n.trim())}});
+  allNames.sort();
+
   // Get unique dates desc
   var dateSet={},dates=[];
   data.forEach(function(r){if(r.d&&!dateSet[r.d]){dateSet[r.d]=1;dates.push(r.d)}});
@@ -1072,6 +1079,12 @@ function renderReview(){
   var dayData=data.filter(function(r){return r.d===selDate});
   var isOps=(_reviewTab==='ops');
 
+  // Actual reviewers for selected date
+  var actualSet={};
+  dayData.forEach(function(r){if(r.n)actualSet[r.n.trim()]=1});
+  var actualNames=allNames.filter(function(nm){return actualSet[nm]});
+  var missingNames=allNames.filter(function(nm){return !actualSet[nm]});
+
   // Summary
   var totalViews=0,totalPosts=0,totalViol=0;
   dayData.forEach(function(r){
@@ -1081,13 +1094,16 @@ function renderReview(){
     else totalViol+=parseInt(r.dm_today)||0;
   });
   var violLabel=isOps?'今日违规':'今日私信';
+  var missingHtml=missingNames.length?'<div style="margin-top:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;"><span style="font-size:12px;color:#dc2626;font-weight:600;">未复盘人员（'+missingNames.length+'人）：</span><span style="font-size:12px;color:#99131b;">'+missingNames.join('、')+'</span></div>':'<div style="margin-top:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;"><span style="font-size:12px;color:#16a34a;font-weight:600;">全员已复盘</span></div>';
   document.getElementById('reviewSummary').innerHTML=
     '<div style="display:flex;gap:16px;flex-wrap:wrap;">'+
-    '<div style="background:#fff5f8;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#e75a8c;">'+dayData.length+'</div><div style="font-size:11px;color:#999;">复盘人数</div></div>'+
+    '<div style="background:#f5f3ff;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#7c3aed;">'+allNames.length+'</div><div style="font-size:11px;color:#999;">应复盘人数</div></div>'+
+    '<div style="background:#fff5f8;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#e75a8c;">'+actualNames.length+'</div><div style="font-size:11px;color:#999;">实际复盘</div></div>'+
+    '<div style="background:'+(missingNames.length?'#fef2f2':'#f0fdf4')+';border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:'+(missingNames.length?'#dc2626':'#16a34a')+';">'+missingNames.length+'</div><div style="font-size:11px;color:#999;">未复盘</div></div>'+
     '<div style="background:#f0f9ff;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#0ea5e9;">'+totalViews.toLocaleString()+'</div><div style="font-size:11px;color:#999;">总播放</div></div>'+
     '<div style="background:#f0fdf4;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#10b981;">'+totalPosts+'</div><div style="font-size:11px;color:#999;">发视频数</div></div>'+
     '<div style="background:#fefce8;border-radius:10px;padding:10px 18px;text-align:center;min-width:80px;"><div style="font-size:22px;font-weight:700;color:#f59e0b;">'+totalViol+'</div><div style="font-size:11px;color:#999;">'+violLabel+'</div></div>'+
-    '</div>';
+    '</div>'+missingHtml;
 
   // Detail cards
   renderReviewDetail(dayData,isOps);
