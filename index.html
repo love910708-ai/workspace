@@ -594,7 +594,7 @@
 /* Extract Modal */
 .extract-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9998}
 #extractModal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none}
-#extractModal .extract-modal{pointer-events:auto;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:16px;width:90%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.3)}
+#extractModal .extract-modal{pointer-events:auto;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:16px;width:90%;max-width:460px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.3)}
 .extract-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
 .extract-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}
 .extract-close{font-size:22px;cursor:pointer;color:var(--text3);line-height:1}
@@ -2584,6 +2584,42 @@ function showCalDayDetail(dateStr){
   detail.innerHTML = html;
 }
 
+// Helper: parse prices string into individual lines
+function parsePriceLines(priceStr){
+  if(!priceStr) return [];
+  return priceStr.split('|').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+}
+// Helper: parse ticket price string into individual lines
+function parseTicketLines(ticketStr){
+  if(!ticketStr) return [];
+  // Split by / but keep age-tier groups together
+  if(ticketStr.indexOf('全含') >= 0 || ticketStr.indexOf('详见') >= 0) return [ticketStr];
+  return ticketStr.split('|').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+}
+// Helper: get minimum price from price string for "起步价" display
+function getMinPrice(priceStr){
+  if(!priceStr) return '';
+  var nums = priceStr.match(/\d{3,}/g);
+  if(!nums || nums.length === 0) return '';
+  var min = Math.min.apply(null, nums.map(Number));
+  return min;
+}
+// Helper: build selling points array with enhanced detail for elderly audience
+function getEnhancedSellPoints(p){
+  var pts = [];
+  // Original selling points
+  var sps = Array.isArray(p.sellPoints) ? p.sellPoints : (p.sellPoints ? [p.sellPoints] : []);
+  sps.forEach(function(sp){ pts.push(sp); });
+  // Auto-add elderly-friendly highlights
+  if(p.mealsIncluded) pts.push('全程含餐，不用操心吃饭问题');
+  if(p.shopping && (p.shopping.indexOf('无') >= 0 || p.shopping.indexOf('0购物') >= 0)) pts.push('纯玩无购物，安心游玩');
+  if(p.selfPay && (p.selfPay.indexOf('无') >= 0 || p.selfPay.indexOf('0自费') >= 0)) pts.push('全程0自费，没有隐性消费');
+  if(p.transport && p.transport.indexOf('软卧') >= 0) pts.push('软卧出行，舒适不累');
+  if(p.transport && p.transport.indexOf('独立卫浴') >= 0) pts.push('独立卫浴，干净卫生');
+  if(p.ticketPrice && p.ticketPrice.indexOf('全含') >= 0) pts.push('门票全含，省心省钱');
+  return pts;
+}
+
 function showExtractModal(productId){
   var p = PRODUCTS.find(function(x){ return x.id === productId; });
   if(!p) return;
@@ -2594,48 +2630,87 @@ function showExtractModal(productId){
   html += '<span class="extract-close" onclick="closeExtractModal()">&times;</span></div>';
   html += '<div class="extract-body" id="extractBody">';
   if(p.desc) html += '<div style="color:var(--text2);margin-bottom:10px;font-size:13px">'+p.desc+'</div>';
+  // Price section - detailed by berth type
   if(p.prices){
-    html += '<div class="extract-section"><div class="extract-label">价格信息</div>';
-    html += '<div class="extract-price">'+p.prices+'</div>';
+    var minP = getMinPrice(p.prices);
+    html += '<div class="extract-section"><div class="extract-label" style="font-size:15px">💰 铺位价格明细</div>';
+    if(minP) html += '<div style="color:#e74c3c;font-size:18px;font-weight:bold;margin-bottom:8px">起步价 ¥'+minP+' 起/人</div>';
+    var priceItems = parsePriceLines(p.prices);
+    priceItems.forEach(function(item){
+      var isChild = item.indexOf('儿童') >= 0;
+      var isSingle = item.indexOf('单房差') >= 0;
+      var style = isChild ? 'color:#999;font-size:12px' : (isSingle ? 'color:#999;font-size:12px' : 'color:#e74c3c;font-weight:bold;font-size:13px');
+      var prefix = isChild ? '👶 ' : (isSingle ? '🏠 ' : '🛏️ ');
+      html += '<div style="'+style+';padding:3px 0">'+prefix+item+'</div>';
+    });
     html += '</div>';
   }
+  // Ticket price section - by age tier
+  if(p.ticketPrice){
+    html += '<div class="extract-section"><div class="extract-label" style="font-size:15px">🎫 景区门票价格</div>';
+    var ticketItems = parseTicketLines(p.ticketPrice);
+    ticketItems.forEach(function(item){
+      var isAllIn = item.indexOf('全含') >= 0;
+      var isDetail = item.indexOf('详见') >= 0;
+      var style = isAllIn ? 'color:#27ae60;font-weight:bold;font-size:14px' : (isDetail ? 'color:#999;font-size:12px' : 'color:#e67e22;font-size:13px');
+      html += '<div style="'+style+';padding:3px 0">'+(isAllIn ? '✅ ' : '📋 ')+item+'</div>';
+    });
+    html += '</div>';
+  }
+  // Trip info
   if(p.days > 0 || p.dest){
-    html += '<div class="extract-section"><div class="extract-label">行程信息</div>';
+    html += '<div class="extract-section"><div class="extract-label">🚌 行程信息</div>';
     if(p.days > 0) html += '<div>行程天数：<strong>'+p.days+'天</strong></div>';
     if(p.dest) html += '<div>目的地：<strong>'+p.dest+'</strong></div>';
     if(p.transport) html += '<div>交通方式：'+p.transport+'</div>';
-    if(p.ageLimit) html += '<div>年龄限制：'+p.ageLimit+'</div>';
+    if(p.ageLimit) html += '<div style="color:#e67e22">年龄要求：'+p.ageLimit+'</div>';
     html += '</div>';
   }
+  // Meals
   if(p.meals || p.mealsIncluded !== undefined){
-    html += '<div class="extract-section"><div class="extract-label">用餐信息</div>';
-    html += '<div>含餐：'+(p.mealsIncluded ? '<span style="color:var(--green)">是</span>' : '<span style="color:var(--orange)">不含/自理</span>')+'</div>';
+    html += '<div class="extract-section"><div class="extract-label">🍽️ 用餐信息</div>';
+    html += '<div>含餐：'+(p.mealsIncluded ? '<span style="color:var(--green);font-weight:bold">✓ 全程含餐</span>' : '<span style="color:var(--orange)">部分含餐/自理</span>')+'</div>';
     if(p.meals) html += '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+p.meals+'</div>';
     html += '</div>';
   }
-  if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
-    html += '<div class="extract-section"><div class="extract-label">费用说明</div>';
-    if(p.ticketPrice) html += '<div>门票：'+p.ticketPrice+'</div>';
-    if(p.shopping !== undefined) html += '<div>购物店：'+p.shopping+'</div>';
-    if(p.selfPay !== undefined) html += '<div>自费项目：'+p.selfPay+'</div>';
+  // Shopping & self-pay
+  if(p.shopping !== undefined || p.selfPay !== undefined){
+    html += '<div class="extract-section"><div class="extract-label">🛒 购物与自费</div>';
+    if(p.shopping !== undefined){
+      var isNoShop = p.shopping.indexOf('无') >= 0 || p.shopping.indexOf('0购物') >= 0;
+      html += '<div>购物店：'+(isNoShop ? '<span style="color:#27ae60;font-weight:bold">无购物 ✓</span>' : p.shopping)+'</div>';
+    }
+    if(p.selfPay !== undefined){
+      var isNoSelf = p.selfPay.indexOf('无') >= 0 || p.selfPay.indexOf('0自费') >= 0;
+      html += '<div>自费项目：'+(isNoSelf ? '<span style="color:#27ae60;font-weight:bold">无自费 ✓</span>' : p.selfPay)+'</div>';
+    }
     html += '</div>';
   }
+  // Highlights
   if(p.highlights){
-    html += '<div class="extract-section"><div class="extract-label">行程亮点</div>';
-    html += '<div style="font-size:12px;color:var(--text2)">'+p.highlights+'</div></div>';
+    html += '<div class="extract-section"><div class="extract-label">🌟 景点亮点</div>';
+    var hlItems = p.highlights.split('+');
+    html += '<div style="font-size:12px;color:var(--text2);line-height:1.8">';
+    hlItems.forEach(function(h){ html += '<span style="display:inline-block;background:#f0f7ff;border-radius:4px;padding:2px 8px;margin:2px;font-size:12px">'+h.trim()+'</span>'; });
+    html += '</div></div>';
   }
+  // Dates
   if(p.dates && p.dates.length > 0){
     var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
     if(future.length > 0){
-      html += '<div class="extract-section"><div class="extract-label">近期班期</div>';
+      html += '<div class="extract-section"><div class="extract-label">📅 近期班期</div>';
       html += '<div style="font-size:12px;color:var(--cyan)">'+future.slice(0,6).join('、')+(future.length > 6 ? ' 等'+future.length+'个班期' : '')+'</div></div>';
     }
   }
-  if(p.sellPoints && p.sellPoints.length > 0){
-    html += '<div class="extract-section"><div class="extract-label">推荐理由</div>';
-    var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
-    sps.forEach(function(sp){ html += '<div style="font-size:12px;padding:2px 0">✅ '+sp+'</div>'; });
+  // Enhanced selling points - prominent
+  var enhancedPts = getEnhancedSellPoints(p);
+  if(enhancedPts.length > 0){
+    html += '<div class="extract-section" style="background:linear-gradient(135deg,#f6fff6,#f0faf0);border-radius:8px;padding:12px;border:1px solid #c8e6c9"><div class="extract-label" style="color:#27ae60;font-size:15px">✨ 核心卖点（推荐理由）</div>';
+    enhancedPts.forEach(function(sp){ html += '<div style="font-size:13px;padding:4px 0;color:#2d6a2e">✅ '+sp+'</div>'; });
     html += '</div>';
+  }
+  if(p.special){
+    html += '<div class="extract-section"><div style="color:#e74c3c;font-size:12px">⚠️ 特别说明：'+p.special+'</div></div>';
   }
   html += '</div>';
   html += '<div class="extract-footer">';
@@ -2670,43 +2745,56 @@ function fallbackCopy(text){
 function buildExtractText(p, format){
   var regionLabel = p.region === 'hn' ? '\u6e56\u5357\u51fa\u53d1' : '\u798f\u5efa\u51fa\u53d1';
   var lines = [];
+  lines.push('\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550');
   lines.push(regionLabel + ' | ' + p.name);
   if(p.desc) lines.push(p.desc);
-  lines.push('');
+  lines.push('\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550');
+  // Detailed prices by berth
   if(p.prices){
-    lines.push('\u3010\u4ef7\u683c\u3011');
-    lines.push('  ' + p.prices);
+    var minP = getMinPrice(p.prices);
+    lines.push('');
+    if(minP) lines.push('\u3010\u94fa\u4f4d\u4ef7\u683c\u660e\u7ec6\u3011\u8d77\u6b65\u4ef7 \u00a5' + minP + ' \u8d77/\u4eba');
+    var priceItems = parsePriceLines(p.prices);
+    priceItems.forEach(function(item){ lines.push('  ' + item); });
     lines.push('');
   }
+  // Ticket prices by age tier
+  if(p.ticketPrice){
+    lines.push('\u3010\u666f\u533a\u95e8\u7968\u4ef7\u683c\u3011');
+    var ticketItems = parseTicketLines(p.ticketPrice);
+    ticketItems.forEach(function(item){ lines.push('  ' + item); });
+    lines.push('');
+  }
+  // Trip info
   if(p.days > 0 || p.dest){
-    lines.push('\u3010\u884c\u7a0b\u3011');
+    lines.push('\u3010\u884c\u7a0b\u4fe1\u606f\u3011');
     if(p.days > 0) lines.push('  '+p.days+'\u5929\u884c\u7a0b');
     if(p.dest) lines.push('  \u76ee\u7684\u5730\uff1a'+p.dest);
     if(p.transport) lines.push('  \u4ea4\u901a\uff1a'+p.transport);
+    if(p.ageLimit) lines.push('  \u5e74\u9f84\u8981\u6c42\uff1a'+p.ageLimit);
     lines.push('');
   }
+  // Meals
   if(p.meals || p.mealsIncluded !== undefined){
-    lines.push('\u3010\u7528\u9910\u3011');
-    lines.push('  '+(p.mealsIncluded ? '\u542b\u9910' : '\u4e0d\u542b\u9910/\u81ea\u7406'));
+    lines.push('\u3010\u7528\u9910\u4fe1\u606f\u3011');
+    lines.push('  '+(p.mealsIncluded ? '\u2713 \u5168\u7a0b\u542b\u9910' : '\u90e8\u5206\u542b\u9910/\u81ea\u7406'));
     if(p.meals) lines.push('  '+p.meals);
     lines.push('');
   }
-  if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
-    lines.push('\u3010\u8d39\u7528\u3011');
-    if(p.ticketPrice) lines.push('  \u95e8\u7968\uff1a'+p.ticketPrice);
+  // Shopping & self-pay
+  if(p.shopping !== undefined || p.selfPay !== undefined){
+    lines.push('\u3010\u8d2d\u7269\u4e0e\u81ea\u8d39\u3011');
     if(p.shopping !== undefined) lines.push('  \u8d2d\u7269\uff1a'+p.shopping);
-    if(selfPay !== undefined) lines.push('  \u81ea\u8d39\uff1a'+p.selfPay);
+    if(p.selfPay !== undefined) lines.push('  \u81ea\u8d39\uff1a'+p.selfPay);
     lines.push('');
   }
-  if(p.ageLimit){
-    lines.push('\u3010\u5e74\u9f84\u3011'+p.ageLimit);
-    lines.push('');
-  }
+  // Highlights
   if(p.highlights){
-    lines.push('\u3010\u4eae\u70b9\u3011');
-    lines.push('  '+p.highlights);
+    lines.push('\u3010\u666f\u70b9\u4eae\u70b9\u3011');
+    lines.push('  ' + p.highlights.replace(/\+/g, '\u3001'));
     lines.push('');
   }
+  // Dates
   if(p.dates && p.dates.length > 0){
     var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
     if(future.length > 0){
@@ -2715,10 +2803,15 @@ function buildExtractText(p, format){
       lines.push('');
     }
   }
-  if(p.sellPoints && p.sellPoints.length > 0){
-    lines.push('\u3010\u63a8\u8350\u7406\u7531\u3011');
-    var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
-    sps.forEach(function(sp){ lines.push('  \u2705 '+sp); });
+  // Enhanced selling points
+  var enhancedPts = getEnhancedSellPoints(p);
+  if(enhancedPts.length > 0){
+    lines.push('\u3010\u2728 \u6838\u5fc3\u5356\u70b9\u3011');
+    enhancedPts.forEach(function(sp){ lines.push('  \u2705 '+sp); });
+    lines.push('');
+  }
+  if(p.special){
+    lines.push('\u3010\u7279\u522b\u8bf4\u660e\u3011'+p.special);
     lines.push('');
   }
   lines.push('\u4e13\u5217\u65c5\u6e38\uff0c\u540d\u989d\u6709\u9650\uff0c\u6b22\u8fce\u54a8\u8be2\uff01');
@@ -2746,7 +2839,7 @@ function generateCardImage(p){
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 2;
-  var width = 400;
+  var width = 420;
   var lineHeight = 22;
   var padding = 20;
   var maxWidth = width - padding * 2;
@@ -2754,59 +2847,99 @@ function generateCardImage(p){
   var footerHeight = 40;
   var regionLabel = p.region === 'hn' ? '\u6e56\u5357\u51fa\u53d1' : '\u798f\u5efa\u51fa\u53d1';
 
-  // Build raw content lines
+  // Build raw content lines - enhanced version
   var rawLines = [];
   rawLines.push({text: regionLabel + ' | ' + p.name, size: 16, bold: true, color: '#333'});
-  if(p.desc) rawLines.push({text: p.desc, size: 13, bold: false, color: '#666'});
-  rawLines.push({text: '', size: 10});
+  if(p.desc) rawLines.push({text: p.desc, size: 12, bold: false, color: '#666'});
+  rawLines.push({text: '', size: 8});
+
+  // Detailed prices by berth type
   if(p.prices){
-    rawLines.push({text: '\u3010\u4ef7\u683c\u3011', size: 14, bold: true, color: '#e74c3c'});
-    rawLines.push({text: p.prices, size: 13, bold: false, color: '#e74c3c'});
-    rawLines.push({text: '', size: 10});
+    var minP = getMinPrice(p.prices);
+    rawLines.push({text: '\u3010\u94fa\u4f4d\u4ef7\u683c\u660e\u7ec6\u3011', size: 14, bold: true, color: '#e74c3c'});
+    if(minP) rawLines.push({text: '  \u8d77\u6b65\u4ef7 \u00a5'+minP+' \u8d77/\u4eba', size: 15, bold: true, color: '#c0392b'});
+    var priceItems = parsePriceLines(p.prices);
+    priceItems.forEach(function(item){
+      var isChild = item.indexOf('\u513f\u7ae5') >= 0;
+      var isSingle = item.indexOf('\u5355\u623f\u5dee') >= 0;
+      rawLines.push({text: '  ' + item, size: isChild || isSingle ? 11 : 13, bold: !(isChild || isSingle), color: isChild || isSingle ? '#999' : '#e74c3c'});
+    });
+    rawLines.push({text: '', size: 8});
   }
+
+  // Ticket prices by age tier
+  if(p.ticketPrice){
+    rawLines.push({text: '\u3010\u666f\u533a\u95e8\u7968\u4ef7\u683c\u3011', size: 14, bold: true, color: '#e67e22'});
+    var ticketItems = parseTicketLines(p.ticketPrice);
+    ticketItems.forEach(function(item){
+      var isAllIn = item.indexOf('\u5168\u542b') >= 0;
+      rawLines.push({text: '  ' + item, size: 13, bold: isAllIn, color: isAllIn ? '#27ae60' : '#e67e22'});
+    });
+    rawLines.push({text: '', size: 8});
+  }
+
+  // Trip info
   if(p.days > 0 || p.dest){
-    rawLines.push({text: '\u3010\u884c\u7a0b\u3011', size: 14, bold: true, color: '#3498db'});
+    rawLines.push({text: '\u3010\u884c\u7a0b\u4fe1\u606f\u3011', size: 14, bold: true, color: '#3498db'});
     if(p.days > 0) rawLines.push({text: '  '+p.days+'\u5929\u884c\u7a0b', size: 13, color: '#555'});
     if(p.dest) rawLines.push({text: '  \u76ee\u7684\u5730\uff1a'+p.dest, size: 13, color: '#555'});
-    if(p.transport) rawLines.push({text: '  \u4ea4\u901a\uff1a'+p.transport, size: 13, color: '#555'});
-    rawLines.push({text: '', size: 10});
+    if(p.transport) rawLines.push({text: '  \u4ea4\u901a\uff1a'+p.transport, size: 12, color: '#555'});
+    if(p.ageLimit) rawLines.push({text: '  \u5e74\u9f84\u8981\u6c42\uff1a'+p.ageLimit, size: 11, color: '#e67e22'});
+    rawLines.push({text: '', size: 8});
   }
+
+  // Meals
   if(p.meals || p.mealsIncluded !== undefined){
-    rawLines.push({text: '\u3010\u7528\u9910\u3011', size: 14, bold: true, color: '#3498db'});
-    rawLines.push({text: '  '+(p.mealsIncluded ? '\u542b\u9910' : '\u4e0d\u542b\u9910/\u81ea\u7406'), size: 13, color: '#555'});
-    if(p.meals) rawLines.push({text: '  '+p.meals, size: 12, color: '#777'});
-    rawLines.push({text: '', size: 10});
+    rawLines.push({text: '\u3010\u7528\u9910\u4fe1\u606f\u3011', size: 14, bold: true, color: '#3498db'});
+    rawLines.push({text: '  '+(p.mealsIncluded ? '\u2713 \u5168\u7a0b\u542b\u9910' : '\u90e8\u5206\u542b\u9910/\u81ea\u7406'), size: 13, color: p.mealsIncluded ? '#27ae60' : '#e67e22'});
+    if(p.meals) rawLines.push({text: '  '+p.meals, size: 11, color: '#777'});
+    rawLines.push({text: '', size: 8});
   }
-  if(p.ticketPrice || p.shopping !== undefined || p.selfPay !== undefined){
-    rawLines.push({text: '\u3010\u8d39\u7528\u3011', size: 14, bold: true, color: '#3498db'});
-    if(p.ticketPrice) rawLines.push({text: '  \u95e8\u7968\uff1a'+p.ticketPrice, size: 13, color: '#555'});
-    if(p.shopping !== undefined) rawLines.push({text: '  \u8d2d\u7269\uff1a'+p.shopping, size: 13, color: '#555'});
-    if(p.selfPay !== undefined) rawLines.push({text: '  \u81ea\u8d39\uff1a'+p.selfPay, size: 13, color: '#555'});
-    rawLines.push({text: '', size: 10});
+
+  // Shopping & self-pay
+  if(p.shopping !== undefined || p.selfPay !== undefined){
+    rawLines.push({text: '\u3010\u8d2d\u7269\u4e0e\u81ea\u8d39\u3011', size: 14, bold: true, color: '#3498db'});
+    if(p.shopping !== undefined){
+      var isNoShop = p.shopping.indexOf('\u65e0') >= 0 || p.shopping.indexOf('0\u8d2d\u7269') >= 0;
+      rawLines.push({text: '  \u8d2d\u7269\uff1a'+(isNoShop ? '\u65e0\u8d2d\u7269 \u2713' : p.shopping), size: 12, color: isNoShop ? '#27ae60' : '#555'});
+    }
+    if(p.selfPay !== undefined){
+      var isNoSelf = p.selfPay.indexOf('\u65e0') >= 0 || p.selfPay.indexOf('0\u81ea\u8d39') >= 0;
+      rawLines.push({text: '  \u81ea\u8d39\uff1a'+(isNoSelf ? '\u65e0\u81ea\u8d39 \u2713' : p.selfPay), size: 12, color: isNoSelf ? '#27ae60' : '#555'});
+    }
+    rawLines.push({text: '', size: 8});
   }
-  if(p.ageLimit){
-    rawLines.push({text: '\u3010\u5e74\u9f84\u3011'+p.ageLimit, size: 13, color: '#555'});
-    rawLines.push({text: '', size: 10});
-  }
+
+  // Highlights
   if(p.highlights){
     rawLines.push({text: '\u3010\u666f\u70b9\u4eae\u70b9\u3011', size: 14, bold: true, color: '#3498db'});
-    rawLines.push({text: '  '+p.highlights, size: 13, color: '#555'});
-    rawLines.push({text: '', size: 10});
+    rawLines.push({text: '  '+p.highlights.replace(/\+/g, '\u3001'), size: 12, color: '#555'});
+    rawLines.push({text: '', size: 8});
   }
+
+  // Dates
   if(p.dates && p.dates.length > 0){
     var future = p.dates.filter(function(d){ return d >= todayStr; }).sort();
     if(future.length > 0){
       rawLines.push({text: '\u3010\u8fd1\u671f\u73ed\u671f\u3011', size: 14, bold: true, color: '#3498db'});
-      rawLines.push({text: '  '+future.join('\u3001'), size: 13, color: '#555'});
-      rawLines.push({text: '', size: 10});
+      rawLines.push({text: '  '+future.join('\u3001'), size: 13, color: '#17a2b8'});
+      rawLines.push({text: '', size: 8});
     }
   }
-  if(p.sellPoints && p.sellPoints.length > 0){
-    rawLines.push({text: '\u3010\u63a8\u8350\u7406\u7531\u3011', size: 14, bold: true, color: '#27ae60'});
-    var sps = Array.isArray(p.sellPoints) ? p.sellPoints : [p.sellPoints];
-    sps.forEach(function(sp){ rawLines.push({text: '  \u2705 '+sp, size: 13, color: '#555'}); });
-    rawLines.push({text: '', size: 10});
+
+  // Enhanced selling points - prominent
+  var enhancedPts = getEnhancedSellPoints(p);
+  if(enhancedPts.length > 0){
+    rawLines.push({text: '\u3010\u2728 \u6838\u5fc3\u5356\u70b9\u3011', size: 14, bold: true, color: '#27ae60'});
+    enhancedPts.forEach(function(sp){ rawLines.push({text: '  \u2705 '+sp, size: 13, bold: false, color: '#2d6a2e'}); });
+    rawLines.push({text: '', size: 8});
   }
+
+  if(p.special){
+    rawLines.push({text: '\u26a0\ufe0f '+p.special, size: 11, color: '#e74c3c'});
+    rawLines.push({text: '', size: 6});
+  }
+
   rawLines.push({text: '\u4e13\u5217\u65c5\u6e38\uff0c\u540d\u989d\u6709\u9650\uff0c\u6b22\u8fce\u54a8\u8be2\uff01', size: 13, bold: true, color: '#e74c3c'});
 
   // Wrap long lines
