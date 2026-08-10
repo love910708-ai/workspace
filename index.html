@@ -2427,6 +2427,8 @@ function saveWorkMemory(){
   var pct = total > 0 ? Math.round(done / total * 100) : 0;
   var data = {date:todayStr, done:done, total:total, mood:mood, notes:notes, pct:pct};
   localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
+  // Real-time update: re-render calendar
+  renderMemoryCalendar();
 }
 
 function getWorkMemory(dateStr){
