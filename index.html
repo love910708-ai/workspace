@@ -1011,21 +1011,37 @@ function doQASearch(){
   var kw=document.getElementById('qaInput').value.trim().toLowerCase();
   var box=document.getElementById('qaResults');
   if(!kw){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">输入关键词搜索账号、运营人、销转、旅行社</div>';return}
-  var hits=QA_DATA.filter(function(d){
-    var blob=(d.a+' '+d.o+' '+d.s+' '+d.r+' '+d.ag+' '+d.ad+' '+(d.n||'')).toLowerCase();
+
+  // Tier 1: account name contains keyword (highest priority)
+  var tier1=QA_DATA.filter(function(d){return d.a.toLowerCase().indexOf(kw)!==-1});
+  // Tier 2: operator name contains keyword
+  var tier2=QA_DATA.filter(function(d){return d.a.toLowerCase().indexOf(kw)===-1 && d.o.toLowerCase().indexOf(kw)!==-1});
+  // Tier 3: any other field contains keyword
+  var tier3=QA_DATA.filter(function(d){
+    if(d.a.toLowerCase().indexOf(kw)!==-1||d.o.toLowerCase().indexOf(kw)!==-1) return false;
+    var blob=(d.s+' '+d.r+' '+d.ag+' '+d.ad+' '+(d.n||'')).toLowerCase();
     return blob.indexOf(kw)!==-1;
   });
+
+  // Combine: tier1 first, then tier2, then tier3
+  var hits=tier1.concat(tier2).concat(tier3);
   if(!hits.length){box.innerHTML='<div style="color:#bbb;font-size:13px;text-align:center;padding:16px;">没有找到匹配结果，换个关键词试试</div>';return}
-  // Group by region
+
+  // Group by region, preserve tier order within each group
   var groups={},order=[];
   hits.forEach(function(d){if(!groups[d.r]){groups[d.r]=[];order.push(d.r)}groups[d.r].push(d)});
   var hl=function(t,k){if(!k)return t;var idx=t.toLowerCase().indexOf(k);if(idx===-1)return t;return t.substring(0,idx)+'<span class="qa-highlight">'+t.substring(idx,idx+k.length)+'</span>'+t.substring(idx+k.length)};
-  var html='<div class="qa-summary">找到 <b>'+hits.length+'</b> 条匹配结果</div>';
+
+  var tier1Count=tier1.length,tier2Count=tier2.length,tier3Count=tier3.length;
+  var modeLabel=tier1Count>0?'<span style="background:#e75a8c;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:8px;">账号匹配 '+tier1Count+'</span>'+(tier2Count?'<span style="background:#f0f0f0;color:#666;padding:2px 8px;border-radius:10px;font-size:11px;">运营人 '+tier2Count+'</span>':'')+(tier3Count?'<span style="background:#f0f0f0;color:#666;padding:2px 8px;border-radius:10px;font-size:11px;">其他 '+tier3Count+'</span>':''):'';
+  var html='<div class="qa-summary">找到 <b>'+hits.length+'</b> 条匹配结果'+modeLabel+'</div>';
   order.forEach(function(region){
     html+='<div class="qa-region-group">'+region+'组 ('+groups[region].length+'个账号)</div>';
     groups[region].forEach(function(d){
       var noteTag=d.n?'<span style="background:#ffe0e0;color:#c00;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:6px;">'+d.n+'</span>':'';
-      html+='<div class="qa-result-item">'
+      var isTier1=d.a.toLowerCase().indexOf(kw)!==-1;
+      var borderStyle=isTier1?'border-left:3px solid #e75a8c;':'';
+      html+='<div class="qa-result-item" style="'+borderStyle+'">'
         +'<div class="qa-account">'+hl(d.a,kw)+noteTag+'</div>'
         +'<div class="qa-meta">'
         +'<b>运营人：</b>'+hl(d.o,kw)+' &nbsp; '
