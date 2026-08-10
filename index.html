@@ -2236,6 +2236,7 @@ function renderProductCalendar(container){
   }
   html += '</div>';
   html += '<div class="cal-legend"><div class="cal-legend-item"><div class="cal-legend-dot hn"></div> 湖南出发</div><div class="cal-legend-item"><div class="cal-legend-dot fj"></div> 福建出发</div></div>';
+  html += '<div id="productCalDetail" style="margin-top:12px"></div>';
   container.innerHTML = html;
 }
 
@@ -2551,7 +2552,10 @@ function showMemoryDay(dateStr){
 function showCalDayDetail(dateStr){
   var dayDepartures = PRODUCTS.filter(function(p){ return p.dates && p.dates.indexOf(dateStr) >= 0; });
   var daySchedules = schedules.filter(function(s){ return s.date === dateStr; });
-  var detail = document.getElementById('memoryDayDetail');
+  var detail = document.getElementById('productCalDetail');
+  if(!detail){
+    detail = document.getElementById('memoryDayDetail');
+  }
   if(dayDepartures.length === 0 && daySchedules.length === 0){
     detail.innerHTML = '<div class="memory-day-detail"><div class="detail-date">'+dateStr+'</div><div class="detail-tasks" style="color:var(--text3)">当天没有出发班期</div></div>';
     return;
