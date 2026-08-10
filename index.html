@@ -2596,13 +2596,21 @@ function parseTicketLines(ticketStr){
   if(ticketStr.indexOf('全含') >= 0 || ticketStr.indexOf('详见') >= 0) return [ticketStr];
   return ticketStr.split('|').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
 }
-// Helper: get minimum price from price string for "起步价" display
+// Helper: get minimum price from price string for "起步价" display (excludes 单房差 and 儿童)
 function getMinPrice(priceStr){
   if(!priceStr) return '';
-  var nums = priceStr.match(/\d{3,}/g);
-  if(!nums || nums.length === 0) return '';
-  var min = Math.min.apply(null, nums.map(Number));
-  return min;
+  // Split by | and exclude segments containing 单房差 or 儿童
+  var segments = priceStr.split('|').map(function(s){ return s.trim(); });
+  var validSegments = segments.filter(function(s){
+    return s.indexOf('\u5355\u623f\u5dee') < 0 && s.indexOf('\u513f\u7ae5') < 0;
+  });
+  var allNums = [];
+  validSegments.forEach(function(seg){
+    var nums = seg.match(/\d{3,}/g);
+    if(nums) nums.forEach(function(n){ allNums.push(parseInt(n)); });
+  });
+  if(allNums.length === 0) return '';
+  return Math.min.apply(null, allNums);
 }
 // Helper: build selling points array with enhanced detail for elderly audience
 function getEnhancedSellPoints(p){
@@ -2633,14 +2641,19 @@ function showExtractModal(productId){
   // Price section - detailed by berth type
   if(p.prices){
     var minP = getMinPrice(p.prices);
+    var hasSoftSleeper = p.prices.indexOf('\u8f6f\u5367') >= 0;
+    var hasHardSleeper = p.prices.indexOf('\u786c\u5367') >= 0;
     html += '<div class="extract-section"><div class="extract-label" style="font-size:15px">💰 铺位价格明细</div>';
     if(minP) html += '<div style="color:#e74c3c;font-size:18px;font-weight:bold;margin-bottom:8px">起步价 ¥'+minP+' 起/人</div>';
+    if(!hasSoftSleeper && hasHardSleeper){
+      html += '<div style="color:#e67e22;font-size:12px;margin-bottom:6px">⚠️ 本产品仅提供硬卧，无软卧选项</div>';
+    }
     var priceItems = parsePriceLines(p.prices);
     priceItems.forEach(function(item){
       var isChild = item.indexOf('儿童') >= 0;
       var isSingle = item.indexOf('单房差') >= 0;
       var style = isChild ? 'color:#999;font-size:12px' : (isSingle ? 'color:#999;font-size:12px' : 'color:#e74c3c;font-weight:bold;font-size:13px');
-      var prefix = isChild ? '👶 ' : (isSingle ? '🏠 ' : '🛏️ ');
+      var prefix = isChild ? '\u{1F476} ' : (isSingle ? '\u{1F3E0} ' : '\u{1F6CF}\uFE0F ');
       html += '<div style="'+style+';padding:3px 0">'+prefix+item+'</div>';
     });
     html += '</div>';
@@ -2856,8 +2869,13 @@ function generateCardImage(p){
   // Detailed prices by berth type
   if(p.prices){
     var minP = getMinPrice(p.prices);
+    var hasSoftSleeper = p.prices.indexOf('\u8f6f\u5367') >= 0;
+    var hasHardSleeper = p.prices.indexOf('\u786c\u5367') >= 0;
     rawLines.push({text: '\u3010\u94fa\u4f4d\u4ef7\u683c\u660e\u7ec6\u3011', size: 14, bold: true, color: '#e74c3c'});
     if(minP) rawLines.push({text: '  \u8d77\u6b65\u4ef7 \u00a5'+minP+' \u8d77/\u4eba', size: 15, bold: true, color: '#c0392b'});
+    if(!hasSoftSleeper && hasHardSleeper){
+      rawLines.push({text: '  \u26a0\ufe0f \u672c\u4ea7\u54c1\u4ec5\u63d0\u4f9b\u786c\u5367\uff0c\u65e0\u8f6f\u5367\u9009\u9879', size: 11, color: '#e67e22'});
+    }
     var priceItems = parsePriceLines(p.prices);
     priceItems.forEach(function(item){
       var isChild = item.indexOf('\u513f\u7ae5') >= 0;
