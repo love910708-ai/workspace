@@ -951,6 +951,12 @@
     <div id="qaResults"></div>
   </div>
 
+  <!-- ===== 今日待办 ===== -->
+  <div class="card todo-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">钉钉待办同步 · 点击圆圈标记完成</span></div>
+    <div id="todoList"></div>
+  </div>
+
   <!-- ===== Review Monitor ===== -->
   <div class="card review-card" style="grid-column: 1 / -1;">
     <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CA;</span> 复盘监控 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">运营 / 销转每日复盘追踪</span>
@@ -998,14 +1004,51 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js"></script>
+<script src="qa-data.js?v=20260810"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
 if(typeof OPS_REVIEW==='undefined') var OPS_REVIEW=[];
 if(typeof SALES_REVIEW==='undefined') var SALES_REVIEW=[];
+if(typeof TODOS==='undefined') var TODOS=[];
 
 function qaQuickSearch(kw){document.getElementById('qaInput').value=kw;doQASearch()}
+
+// ===== 今日待办 =====
+function renderTodos(){
+  var box=document.getElementById('todoList');
+  if(!box)return;
+  var active=TODOS.filter(function(t){return !t.done});
+  if(!active.length){box.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:13px;">所有待办已完成！</div>';return}
+  var h='';
+  active.forEach(function(t){
+    var urgent=t.urgent;
+    var overdue=t.due&&new Date(t.due)<new Date(new Date().toDateString());
+    var bc=urgent?'#ff4757':(overdue?'#ff6348':'#f0a0b8');
+    var status=t.done?'<span style="color:#2ed573;font-size:12px;">已完成</span>':
+      (overdue?'<span style="color:#ff4757;font-size:12px;font-weight:bold;">已逾期</span>':
+      (urgent?'<span style="color:#ff6348;font-size:12px;font-weight:bold;">紧急</span>':
+      '<span style="color:#f0a0b8;font-size:12px;">进行中</span>'));
+    h+='<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #f5e8ee;gap:10px;">';
+    h+='<div onclick="markTodoDone(\''+t.id+'\')" style="width:20px;height:20px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成">';
+    if(t.done)h+='<span style="color:#2ed573;font-size:12px;">&#10003;</span>';
+    h+='</div>';
+    h+='<div style="flex:1;min-width:0;">';
+    h+='<div style="font-size:13px;color:#333;font-weight:500;">'+t.name+'</div>';
+    h+='<div style="font-size:11px;color:#999;margin-top:3px;">';
+    if(t.people)h+='&#x1F464; '+t.people+' ';
+    if(t.due)h+=' &#x1F4C5; '+t.due;
+    h+='</div></div>';
+    h+='<div style="flex-shrink:0;">'+status+'</div>';
+    h+='</div>';
+  });
+  box.innerHTML=h;
+}
+function markTodoDone(id){
+  TODOS.forEach(function(t){if(t.id===id)t.done=true});
+  try{localStorage.setItem('done_todos_'+id,'1')}catch(e){}
+  renderTodos();
+}
 
 function doQASearch(){
   var kw=document.getElementById('qaInput').value.trim().toLowerCase();
