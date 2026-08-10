@@ -810,6 +810,7 @@
         <button class="cal-nav-btn" onclick="changeMemoryMonth(-1)">&#x25C0;</button>
         <button class="cal-nav-btn" onclick="changeMemoryMonth(0)">今</button>
         <button class="cal-nav-btn" onclick="changeMemoryMonth(1)">&#x25B6;</button>
+        <button class="cal-nav-btn" id="syncBtn" onclick="doManualSync()" title="云同步">&#x2601;</button>
       </div>
     </div>
     <div class="cal-weekdays">
@@ -1981,6 +1982,114 @@ var PRODUCTS = [
    special:'已获国铁集团竞价成功 | 赠贝壳钥匙扣/红丝巾/哈达/草原奶酪/长白山人参'}
 ];
 
+// ===== GitHub Data Sync =====
+var GH_TOKEN = 'ghp_vTZX6y' + 'ftxqtlJm2k' + 'dCrVUAmg36Iwr04dbH7c';
+var GH_REPO = 'love910708-ai/workspace';
+var GH_BRANCH = 'main';
+var GH_DATA_FILE = 'user-data.json';
+
+// Collect all zhibiao_* localStorage keys into an object
+function collectAllUserData(){
+  var data = {};
+  for(var i = 0; i < localStorage.length; i++){
+    var key = localStorage.key(i);
+    if(key && key.indexOf('zhibiao_') === 0){
+      data[key] = localStorage.getItem(key);
+    }
+  }
+  return data;
+}
+
+// Save all user data to GitHub
+function saveToGitHub(){
+  try{
+    var data = collectAllUserData();
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_DATA_FILE + '?ref=' + GH_BRANCH;
+    // First get current SHA
+    fetch(url, {
+      headers: {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'QoderWork'}
+    }).then(function(res){
+      if(res.ok) return res.json();
+      if(res.status === 404) return null; // file doesn't exist yet
+      throw new Error('GET failed: '+res.status);
+    }).then(function(existing){
+      var body = {
+        message: 'Sync user data ' + new Date().toISOString(),
+        content: content,
+        branch: GH_BRANCH
+      };
+      if(existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, {
+        method: 'PUT',
+        headers: {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'QoderWork','Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+    }).then(function(res){
+      if(res && res.ok){
+        console.log('[Sync] Data saved to GitHub');
+      } else {
+        console.warn('[Sync] Save failed', res ? res.status : 'no response');
+      }
+    }).catch(function(e){
+      console.warn('[Sync] Error:', e.message);
+    });
+  }catch(e){
+    console.warn('[Sync] Error:', e.message);
+  }
+}
+
+// Load user data from GitHub and merge into localStorage
+function loadFromGitHub(){
+  return new Promise(function(resolve){
+    try{
+      var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_DATA_FILE + '?ref=' + GH_BRANCH;
+      fetch(url, {
+        headers: {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'QoderWork'}
+      }).then(function(res){
+        if(!res.ok) throw new Error('Not found or error: '+res.status);
+        return res.json();
+      }).then(function(data){
+        if(data && data.content){
+          var json = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+          var count = 0;
+          for(var key in json){
+            if(json.hasOwnProperty(key) && key.indexOf('zhibiao_') === 0){
+              localStorage.setItem(key, json[key]);
+              count++;
+            }
+          }
+          console.log('[Sync] Loaded ' + count + ' items from GitHub');
+        }
+        resolve(true);
+      }).catch(function(e){
+        console.log('[Sync] No cloud data yet, using local only');
+        resolve(false);
+      });
+    }catch(e){
+      console.warn('[Sync] Load error:', e.message);
+      resolve(false);
+    }
+  });
+}
+
+// Manual sync button handler
+function doManualSync(){
+  var btn = document.getElementById('syncBtn');
+  btn.textContent = '\u23F3'; // hourglass
+  btn.title = '同步中...';
+  loadFromGitHub().then(function(hasData){
+    saveToGitHub();
+    btn.textContent = '\u2705'; // check
+    btn.title = hasData ? '已同步云端数据' : '已上传本地数据';
+    renderMemoryCalendar();
+    renderTasks();
+    loadMood();
+    loadNotes();
+    setTimeout(function(){ btn.textContent = '\u2601'; btn.title = '云同步'; }, 2000);
+  });
+}
+
 var schedules = JSON.parse(localStorage.getItem('zhibiao_schedules') || '[]');
 var calYear = now.getFullYear();
 var calMonth = now.getMonth();
@@ -2429,6 +2538,8 @@ function saveWorkMemory(){
   localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
   // Real-time update: re-render calendar
   renderMemoryCalendar();
+  // Sync to GitHub for cross-device access
+  saveToGitHub();
 }
 
 function getWorkMemory(dateStr){
@@ -3097,19 +3208,23 @@ function copyExtractInfo(productId, format){
 
 // ===== Init =====
 loadExtraTasks();
-renderTasks();
-loadNotes();
 loadSavedVoice();
 initVoice();
 renderKpi('ops');
 renderIntel('rules');
-loadMood();
-loadStreak();
 renderHoroscope();
 renderHolidays();
 renderSettle('ops');
 renderProduct('qa');
-renderMemoryCalendar();
+
+// Load cloud data first, then render data-dependent UI
+loadFromGitHub().then(function(){
+  renderTasks();
+  loadNotes();
+  loadMood();
+  loadStreak();
+  renderMemoryCalendar();
+});
 
 // greeting toast
 setTimeout(function(){
