@@ -898,7 +898,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811d"></script>
+<script src="qa-data.js?v=20260811e"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -1096,16 +1096,11 @@ function renderReview(){
     document.getElementById('reviewSummary').innerHTML='';
     return;
   }
-  // Expected reviewers from org structure (QA_DATA), not historical review data
+  // Expected reviewers from DingTalk org structure (authoritative source)
   // People not in org structure = resigned, don't count them
-  var allNamesSet={},allNames=[];
-  if(_reviewTab==='ops'){
-    // Use unique operators from QA_DATA
-    QA_DATA.forEach(function(r){if(r.o&&r.o.trim()&&!allNamesSet[r.o.trim()]){allNamesSet[r.o.trim()]=1;allNames.push(r.o.trim())}});
-  } else {
-    // Use unique sales people from QA_DATA
-    QA_DATA.forEach(function(r){if(r.s&&r.s.trim()&&!allNamesSet[r.s.trim()]){allNamesSet[r.s.trim()]=1;allNames.push(r.s.trim())}});
-  }
+  var OPS_TEAM=['陈林霞','李晗星','许嵩玲','吴威锦','刘良勉','潘敏娟','郑艳彬','李爽','吴雪琦','王霖','陈薇婷','卢东鸿','陈清林','周津','陈栩','黄钦林','林智杰'];
+  var SALES_TEAM=['陈锐','王洲','谢敏惠','胡亮','郑廷钰','谈波'];
+  var allNames=(_reviewTab==='ops')?OPS_TEAM.slice():SALES_TEAM.slice();
   allNames.sort();
 
   // Get unique dates desc — always include today and yesterday
