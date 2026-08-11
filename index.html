@@ -2260,17 +2260,32 @@ var calYear = now.getFullYear();
 var calMonth = now.getMonth();
 var productTab = 'qa';
 
-// Load custom products from localStorage
+// Check localStorage availability
+var hasLocalStorage = false;
 try{
-  var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
-  if(savedProducts.length > 0){
-    savedProducts.forEach(function(p){
-      if(!PRODUCTS.some(function(existing){ return existing.id === p.id; })){
-        PRODUCTS.push(p);
-      }
-    });
+  localStorage.setItem('__test__', '1');
+  localStorage.removeItem('__test__');
+  hasLocalStorage = true;
+}catch(e){
+  console.warn('localStorage不可用:', e);
+}
+
+// Load custom products from localStorage
+if(hasLocalStorage){
+  try{
+    var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
+    if(savedProducts.length > 0){
+      savedProducts.forEach(function(p){
+        if(!PRODUCTS.some(function(existing){ return existing.id === p.id; })){
+          PRODUCTS.push(p);
+        }
+      });
+      console.log('已加载'+savedProducts.length+'个自定义产品');
+    }
+  }catch(e){
+    console.error('加载自定义产品失败:', e);
   }
-}catch(e){}
+}
 
 function switchProductTab(evt, tab){
   document.querySelectorAll('.product-tab').forEach(function(el){ el.classList.remove('active'); });
@@ -2534,7 +2549,10 @@ function changeCalMonth(delta){
 
 function renderProductList(container){
   var html = '<div class="product-filter-row"><input class="search-input" id="productSearch" placeholder="搜索产品..." oninput="filterProducts()">';
-  html += '<select class="search-input" style="width:120px" id="productRegionFilter" onchange="filterProducts()"><option value="">全部</option><option value="hn">湖南</option><option value="fj">福建</option></select></div>';
+  html += '<select class="search-input" style="width:120px" id="productRegionFilter" onchange="filterProducts()"><option value="">全部</option><option value="hn">湖南</option><option value="fj">福建</option></select>';
+  html += '<button class="search-input" style="width:auto;padding:6px 12px;font-size:12px;cursor:pointer" onclick="exportProducts()">导出</button>';
+  html += '<button class="search-input" style="width:auto;padding:6px 12px;font-size:12px;cursor:pointer" onclick="document.getElementById(\'importFileInput\').click()">导入</button>';
+  html += '<input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importProducts(this)"></div>';
   html += '<div class="product-list" id="productListArea">';
   PRODUCTS.forEach(function(p){
     var regionLabel = p.region === 'hn' ? '湖南' : '福建';
@@ -2560,6 +2578,65 @@ function filterProducts(){
     var matchRegion = !region || r === region;
     item.style.display = (matchSearch && matchRegion) ? '' : 'none';
   });
+}
+
+function exportProducts(){
+  // Export only custom products (not hardcoded ones)
+  var customProducts = PRODUCTS.filter(function(p){ return p.id.indexOf('custom_') === 0; });
+  if(customProducts.length === 0){
+    showToast('没有自定义产品可导出');
+    return;
+  }
+  var dataStr = JSON.stringify(customProducts, null, 2);
+  var blob = new Blob([dataStr], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '产品备份_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('已导出'+customProducts.length+'个产品');
+}
+
+function importProducts(input){
+  if(!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var imported = JSON.parse(e.target.result);
+      if(!Array.isArray(imported)){
+        showToast('文件格式错误');
+        return;
+      }
+      var added = 0;
+      imported.forEach(function(p){
+        if(!PRODUCTS.some(function(existing){ return existing.id === p.id; })){
+          PRODUCTS.push(p);
+          added++;
+        }
+      });
+      // Save to localStorage
+      if(hasLocalStorage && added > 0){
+        try{
+          var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
+          imported.forEach(function(p){
+            if(!savedProducts.some(function(existing){ return existing.id === p.id; })){
+              savedProducts.push(p);
+            }
+          });
+          localStorage.setItem('zhibiao_custom_products', JSON.stringify(savedProducts));
+        }catch(e){}
+      }
+      showToast('已导入'+added+'个产品');
+      if(productTab === 'list') renderProductList(document.getElementById('productContent'));
+      if(productTab === 'calendar') renderProductCalendar(document.getElementById('productContent'));
+    }catch(err){
+      showToast('导入失败：'+err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
 }
 
 function openScheduleModal(dateStr){
@@ -2732,13 +2809,22 @@ function doAddProduct(name, excelRow, headers){
   PRODUCTS.push(product);
 
   // Save to localStorage for persistence
-  try{
-    var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
-    savedProducts.push(product);
-    localStorage.setItem('zhibiao_custom_products', JSON.stringify(savedProducts));
-  }catch(e){}
+  var saveSuccess = false;
+  if(hasLocalStorage){
+    try{
+      var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
+      savedProducts.push(product);
+      localStorage.setItem('zhibiao_custom_products', JSON.stringify(savedProducts));
+      saveSuccess = true;
+    }catch(e){
+      console.error('保存产品到localStorage失败:', e);
+    }
+  }
 
-  showToast('已添加产品：'+name.substring(0,15)+(product.dates ? ' ('+product.dates.length+'个班期)' : ''));
+  var msg = '已添加产品：'+name.substring(0,15);
+  if(product.dates) msg += ' ('+product.dates.length+'个班期)';
+  if(!saveSuccess) msg += ' ⚠️浏览器不支持存储，刷新后会丢失';
+  showToast(msg);
 
   // Refresh product list if visible
   if(productTab === 'list') renderProductList(document.getElementById('productContent'));
