@@ -703,6 +703,8 @@
       <div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">&#x1F4CC; 钉钉待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">点击圆圈标记完成</span></div>
       <div id="todoList"></div>
     </div>
+    <!-- Section 4: 会议待办 (运营部门-管理群) -->
+    <div id="meetingTodosSection" style="border-top:2px solid #f5e8ee;padding-top:10px;margin-top:10px;"></div>
   </div>
 
   <!-- ===== Review Monitor ===== -->
@@ -898,7 +900,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811e"></script>
+<script src="qa-data.js?v=20260811f"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -907,10 +909,12 @@ if(typeof SALES_REVIEW==='undefined') var SALES_REVIEW=[];
 if(typeof TODOS==='undefined') var TODOS=[];
 if(typeof DAILY_ROUTINE==='undefined') var DAILY_ROUTINE=[];
 if(typeof ACTION_ITEMS==='undefined') var ACTION_ITEMS=[];
+if(typeof MEETING_TODOS==='undefined') var MEETING_TODOS=[];
 // Restore done states from localStorage
 try{
   TODOS.forEach(function(t){if(localStorage.getItem('done_todos_'+t.id)==='1')t.done=true});
   ACTION_ITEMS.forEach(function(t){if(localStorage.getItem('done_ai_'+t.id)==='1')t.done=true});
+  MEETING_TODOS.forEach(function(t){if(localStorage.getItem('done_mt_'+t.id)==='1')t.done=true});
 }catch(e){}
 
 function qaQuickSearch(kw){document.getElementById('qaInput').value=kw;doQASearch()}
@@ -992,6 +996,58 @@ function markActionDone(id){
   ACTION_ITEMS.forEach(function(t){if(t.id===id)t.done=true});
   try{localStorage.setItem('done_ai_'+id,'1')}catch(e){}
   renderActionItems();
+}
+
+// Section 4: 会议待办 (运营部门-管理群消息提取)
+function renderMeetingTodos(){
+  var box=document.getElementById('meetingTodosSection');
+  if(!box||!MEETING_TODOS.length)return;
+  var active=MEETING_TODOS.filter(function(t){return !t.done});
+  var doneCount=MEETING_TODOS.length-active.length;
+  // Group by date
+  var groups={};
+  var dateKeys=[];
+  MEETING_TODOS.forEach(function(t){
+    if(!groups[t.date])groups[t.date]=[];
+    groups[t.date].push(t);
+    if(dateKeys.indexOf(t.date)===-1)dateKeys.push(t.date);
+  });
+  dateKeys.sort().reverse();
+  var h='<div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">';
+  h+='&#x1F4E2; 会议待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">来源：运营部门-管理群 ('+doneCount+'/'+MEETING_TODOS.length+'已完成)</span>';
+  h+='</div>';
+  if(!active.length){
+    h+='<div style="text-align:center;color:#aaa;padding:12px;font-size:13px;">所有会议待办已完成！</div>';
+    box.innerHTML=h;return;
+  }
+  dateKeys.forEach(function(dk){
+    var items=groups[dk];
+    var gActive=items.filter(function(t){return !t.done});
+    if(!gActive.length)return;
+    h+='<div style="margin-bottom:10px;">';
+    h+='<div style="font-size:11px;color:#d63384;font-weight:600;margin-bottom:6px;padding-left:4px;">'+dk+' <span style="color:#aaa;font-weight:400;">('+gActive.length+'项待办)</span></div>';
+    h+='<div style="display:grid;gap:4px;">';
+    gActive.forEach(function(t){
+      var bc=t.urgent?'#ff4757':'#f0a0b8';
+      h+='<div style="display:flex;align-items:center;padding:7px 10px;background:#fff8fa;border-radius:7px;border:1px solid #f5e0ea;gap:8px;">';
+      h+='<div onclick="markMeetingTodoDone(\''+t.id+'\')" style="width:16px;height:16px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成"></div>';
+      h+='<div style="flex:1;min-width:0;">';
+      h+='<div style="font-size:12px;color:#333;font-weight:500;">'+t.name+'</div>';
+      h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
+      if(t.people)h+='&#x1F464; '+t.people+' ';
+      if(t.urgent)h+='<span style="color:#ff4757;font-weight:bold;">紧急</span> ';
+      h+='</div></div>';
+      h+='<span style="font-size:9px;background:#fff0f5;color:#d63384;padding:1px 5px;border-radius:3px;flex-shrink:0;">'+t.src+'</span>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  box.innerHTML=h;
+}
+function markMeetingTodoDone(id){
+  MEETING_TODOS.forEach(function(t){if(t.id===id)t.done=true});
+  try{localStorage.setItem('done_mt_'+id,'1')}catch(e){}
+  renderMeetingTodos();
 }
 
 // Section 3: 钉钉待办
@@ -3553,6 +3609,7 @@ renderProduct('qa');
 renderDailyRoutine();
 renderActionItems();
 renderTodos();
+renderMeetingTodos();
 renderDingTalk('followup');
 
 // Load cloud data first, then render data-dependent UI
