@@ -650,6 +650,16 @@
     <span class="phase-tag"><span class="dot"></span>合规止血 + 新号重建期</span>
     <span class="streak-badge" id="streakBadge"><span class="fire">&#x1F525;</span> <span id="streakNum">0</span> 天连击</span>
   </div>
+  <div style="width:100%;display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.04);margin-top:10px;">
+    <span style="font-size:12px;color:#94a3b8;font-weight:500;">&#x1F31F; 今日状态</span>
+    <div style="display:flex;gap:4px;">
+      <div class="mood-btn" data-mood="fire" onclick="selectMood('fire')" style="width:28px;height:28px;font-size:15px;">&#x1F525;</div>
+      <div class="mood-btn" data-mood="good" onclick="selectMood('good')" style="width:28px;height:28px;font-size:15px;">&#x1F60A;</div>
+      <div class="mood-btn" data-mood="ok" onclick="selectMood('ok')" style="width:28px;height:28px;font-size:15px;">&#x1F610;</div>
+      <div class="mood-btn" data-mood="tired" onclick="selectMood('tired')" style="width:28px;height:28px;font-size:15px;">&#x1F634;</div>
+      <div class="mood-btn" data-mood="stress" onclick="selectMood('stress')" style="width:28px;height:28px;font-size:15px;">&#x1F624;</div>
+    </div>
+  </div>
 </div>
 
 <!-- Quote Banner -->
@@ -658,41 +668,36 @@
   <div class="q-text" id="quoteText"></div>
 </div>
 
-<!-- Top Row: Horoscope + Holiday -->
-<div class="top-row">
-  <div class="card horoscope-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x264F;</span> 天蝎座今日运势</div>
-    <div class="horo-rating" id="horoRating"></div>
-    <div class="horo-text" id="horoText"></div>
-    <div class="horo-meta">
-      <div class="horo-meta-item">&#x1F3A8; 幸运色 <span class="val" id="horoColor"></span></div>
-      <div class="horo-meta-item">&#x1F522; 幸运数 <span class="val" id="horoNum"></span></div>
-      <div class="horo-meta-item">&#x1F9ED; 宜 <span class="val" id="horoGood"></span></div>
-      <div class="horo-meta-item">&#x1F6AB; 忌 <span class="val" id="horoBad"></span></div>
-    </div>
-  </div>
-  <div class="card holiday-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F3D6;&#xFE0F;</span> 假期倒计时</div>
-    <div class="holiday-list" id="holidayList"></div>
-  </div>
-</div>
 
 <!-- Main -->
 <div class="main">
 
-  <!-- ===== 今日状态 ===== -->
-  <div class="card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F31F;</span> 今日状态</div>
-    <div class="mood-row">
-      <span class="mood-label">今天感觉怎么样</span>
-      <div class="mood-options">
-        <div class="mood-btn" data-mood="fire" onclick="selectMood('fire')">&#x1F525;</div>
-        <div class="mood-btn" data-mood="good" onclick="selectMood('good')">&#x1F60A;</div>
-        <div class="mood-btn" data-mood="ok" onclick="selectMood('ok')">&#x1F610;</div>
-        <div class="mood-btn" data-mood="tired" onclick="selectMood('tired')">&#x1F634;</div>
-        <div class="mood-btn" data-mood="stress" onclick="selectMood('stress')">&#x1F624;</div>
-      </div>
+  <!-- ===== 今日待办 ===== -->
+  <div class="card todo-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">操盘手工作流 · 会议行动项 · 钉钉待办</span></div>
+    <!-- Section 1: 操盘手每日工作流 -->
+    <div id="dailyRoutineSection" style="margin-bottom:16px;"></div>
+    <!-- Section 2: 会议行动项 -->
+    <div id="actionItemsSection" style="margin-bottom:16px;"></div>
+    <!-- Section 3: 钉钉待办 -->
+    <div style="border-top:2px solid #f5e8ee;padding-top:10px;">
+      <div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">&#x1F4CC; 钉钉待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">点击圆圈标记完成</span></div>
+      <div id="todoList"></div>
     </div>
+  </div>
+
+  <!-- ===== Review Monitor ===== -->
+  <div class="card review-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CA;</span> 复盘监控 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">运营 / 销转每日复盘追踪</span>
+      <span id="dataUpdateTime" style="margin-left:auto;font-size:11px;color:#aaa;font-weight:normal;"></span>
+    </div>
+    <div class="product-tabs" style="margin-bottom:12px;">
+      <button class="product-tab active" onclick="switchReviewTab('ops')">&#x1F4E6; 运营复盘</button>
+      <button class="product-tab" onclick="switchReviewTab('sales')">&#x1F4B0; 销转复盘</button>
+    </div>
+    <div id="reviewNav" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"></div>
+    <div id="reviewSummary" style="margin-bottom:12px;"></div>
+    <div id="reviewDetail"></div>
   </div>
 
   <!-- ===== Voice ===== -->
@@ -868,34 +873,6 @@
     <div id="qaResults"></div>
   </div>
 
-  <!-- ===== 今日待办 ===== -->
-  <div class="card todo-card" style="grid-column: 1 / -1;">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">操盘手工作流 · 会议行动项 · 钉钉待办</span></div>
-    <!-- Section 1: 操盘手每日工作流 -->
-    <div id="dailyRoutineSection" style="margin-bottom:16px;"></div>
-    <!-- Section 2: 会议行动项 -->
-    <div id="actionItemsSection" style="margin-bottom:16px;"></div>
-    <!-- Section 3: 钉钉待办 -->
-    <div style="border-top:2px solid #f5e8ee;padding-top:10px;">
-      <div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">&#x1F4CC; 钉钉待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">点击圆圈标记完成</span></div>
-      <div id="todoList"></div>
-    </div>
-  </div>
-
-  <!-- ===== Review Monitor ===== -->
-  <div class="card review-card" style="grid-column: 1 / -1;">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CA;</span> 复盘监控 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">运营 / 销转每日复盘追踪</span>
-      <span id="dataUpdateTime" style="margin-left:auto;font-size:11px;color:#aaa;font-weight:normal;"></span>
-    </div>
-    <div class="product-tabs" style="margin-bottom:12px;">
-      <button class="product-tab active" onclick="switchReviewTab('ops')">&#x1F4E6; 运营复盘</button>
-      <button class="product-tab" onclick="switchReviewTab('sales')">&#x1F4B0; 销转复盘</button>
-    </div>
-    <div id="reviewNav" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"></div>
-    <div id="reviewSummary" style="margin-bottom:12px;"></div>
-    <div id="reviewDetail"></div>
-  </div>
-
 </div>
 
 <!-- Schedule Modal -->
@@ -921,7 +898,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811a"></script>
+<script src="qa-data.js?v=20260811b"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
