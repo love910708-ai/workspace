@@ -687,8 +687,9 @@
     <div class="voice-controls" style="margin-top:10px">
       <button class="voice-btn" onclick="clearVoice()">清空</button>
       <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
+      <button class="voice-btn primary" id="extractTodoBtn" onclick="extractVoiceToTodo()" style="background:#d63384;color:#fff;">&#x2728; 一键提炼为明日待办</button>
     </div>
-    <div class="voice-hint">录音后可一键复制，粘贴给AI整理工作安排</div>
+    <div class="voice-hint">录音后可一键复制，粘贴给 AI 整理工作安排 | 点击"提炼"自动保存并复制到剪贴板，次日待办生成时会自动包含</div>
   </div>
 
   <!-- ===== 今日待办 ===== -->
@@ -1415,6 +1416,37 @@ function copyVoice(){
     document.execCommand('copy');
     document.body.removeChild(ta);
     showToast('已复制！粘贴给AI即可生成计划');
+  });
+}
+
+// 一键提炼为明日待办
+function extractVoiceToTodo(){
+  const text = finalText.trim();
+  if(!text){ showToast('请先录音或输入内容'); return; }
+  
+  // 保存到 localStorage
+  const voiceTodo = {
+    content: text,
+    date: todayStr,
+    timestamp: new Date().toISOString(),
+    status: 'pending'
+  };
+  try {
+    localStorage.setItem('voice_todo_pending', JSON.stringify(voiceTodo));
+  } catch(e) {}
+  
+  // 复制到剪贴板（格式化为待办提取指令）
+  const todoContent = '[语音提炼待办 '+todayStr+']\n\n'+text+'\n\n---\n请从以上内容中提取明日待办事项，格式：\n- 任务内容 | 负责人 | 优先级（紧急/普通）\n\n同时将提取的待办加入工作台的会议待办模块。';
+  navigator.clipboard.writeText(todoContent).then(function(){
+    showToast('已保存并复制！请在QoderWork中粘贴，我会自动整理到明日待办');
+  }).catch(function(){
+    const ta = document.createElement('textarea');
+    ta.value = todoContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已保存并复制！请在QoderWork中粘贴');
   });
 }
 
