@@ -367,9 +367,9 @@
     .streak-badge{font-size:11px;padding:3px 10px}
     .quote-banner{padding:12px 16px;margin-bottom:10px}
     .quote-banner .q-text{font-size:13px}
-    .top-row{grid-template-columns:1fr;gap:10px;margin-bottom:10px}
-    .main{width:100%;grid-template-columns:1fr;gap:10px}
-    .card{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:none;backdrop-filter:none}
+    .top-row{display:flex!important;flex-direction:column!important;gap:10px!important;margin-bottom:10px!important}
+    .main{display:flex!important;flex-direction:column!important;gap:10px!important;width:100%!important}
+    .card{display:block!important;width:100%!important;max-width:100%!important;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-sizing:border-box!important}
     .card-title{font-size:14px;margin-bottom:12px}
     .phase-grid{grid-template-columns:1fr}
     .phase-info,.kpi-card,.intel-card,.settle-card{grid-column:span 1}
@@ -399,9 +399,9 @@
     .header{padding:12px;border-radius:12px;margin-bottom:8px;flex-direction:column;gap:8px}
     .header-left h1{font-size:17px}
     .header-right{width:100%;justify-content:flex-start;gap:6px}
-    .top-row{grid-template-columns:1fr;gap:8px;margin-bottom:8px}
-    .main{width:100%;grid-template-columns:1fr;gap:8px}
-    .card{padding:12px 12px;border-radius:12px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:none;backdrop-filter:none}
+    .top-row{display:flex!important;flex-direction:column!important;gap:8px!important;margin-bottom:8px!important}
+    .main{display:flex!important;flex-direction:column!important;gap:8px!important;width:100%!important}
+    .card{display:block!important;width:100%!important;max-width:100%!important;padding:12px 12px;border-radius:12px;background:rgba(255,255,255,.92)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-sizing:border-box!important}
     .card-title{font-size:13px;margin-bottom:10px}
     .card-title .icon{font-size:15px}
     .quote-banner{padding:10px 12px;margin-bottom:8px;gap:10px}
@@ -806,7 +806,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811q"></script>
+<script src="qa-data.js?v=20260811r"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -842,7 +842,13 @@ function renderDailyRoutine(){
     TODOS.forEach(function(t){if(!t.done)all.push({name:t.name,people:t.people,date:t.due,urgent:t.urgent,source:'钉钉待办'})});
   }
   if(typeof MEETING_TODOS!=='undefined'){
-    MEETING_TODOS.forEach(function(t){if(!t.done)all.push({name:t.name,people:t.people,date:t.date,urgent:t.urgent,source:'会议待办'})});
+    MEETING_TODOS.forEach(function(t){
+      if(t.done)return;
+      var srcLabel='会议待办';
+      if(t.src==='群指令')srcLabel='群聊待办';
+      else if(t.src==='复盘监控')srcLabel='复盘监控';
+      all.push({name:t.name,people:t.people,date:t.date,urgent:t.urgent,source:srcLabel});
+    });
   }
   var today=new Date();today.setHours(0,0,0,0);
   var todayStr2=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
@@ -890,7 +896,7 @@ function renderDailyRoutine(){
       h+='<div style="flex:1;min-width:0;">';
       h+='<div style="font-size:12px;color:#333;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>';
       h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
-      if(t.people)h+='&#x1F464; '+t.people+' ';
+      if(t.people)h+='<span style="color:#6c5ce7;font-size:10px">●</span> '+t.people+' ';
       if(t.date)h+=' &#x1F4C5; '+t.date+' ';
       if(isOverdue)h+='<span style="color:#dc2626;font-weight:bold;">已逾期</span>';
       h+='</div></div>';
@@ -919,7 +925,13 @@ function renderUnifiedTodos(){
     TODOS.forEach(function(t){all.push({id:t.id,name:t.name,people:t.people,date:t.due,src:t.src||'',urgent:t.urgent,done:t.done,source:'钉钉待办',srcColor:'#0984e3'})});
   }
   if(typeof MEETING_TODOS!=='undefined'){
-    MEETING_TODOS.forEach(function(t){all.push({id:t.id,name:t.name,people:t.people,date:t.date,src:t.src||'',urgent:t.urgent,done:t.done,source:'会议待办',srcColor:'#d63384'})});
+    MEETING_TODOS.forEach(function(t){
+      var srcLabel='会议待办',srcClr='#d63384';
+      if(t.src==='群指令'){srcLabel='群聊待办';srcClr='#00b894'}
+      else if(t.src==='复盘监控'){srcLabel='复盘监控';srcClr='#fdcb6e'}
+      else if(t.src&&t.src.indexOf('纪要')!==-1){srcLabel='会议待办';srcClr='#d63384'}
+      all.push({id:t.id,name:t.name,people:t.people,date:t.date,src:t.src||'',urgent:t.urgent,done:t.done,source:srcLabel,srcColor:srcClr});
+    });
   }
   var active=all.filter(function(t){return !t.done});
   var doneCount=all.length-active.length;
@@ -958,7 +970,7 @@ function renderUnifiedTodos(){
     h+='<div style="flex:1;min-width:0;">';
     h+='<div style="font-size:12px;color:#333;font-weight:500;">'+t.name+'</div>';
     h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
-    if(t.people)h+='&#x1F464; '+t.people+' ';
+    if(t.people)h+='<span style="color:#6c5ce7;font-size:10px">●</span> '+t.people+' ';
     if(t.date)h+=' &#x1F4C5; '+t.date;
     h+='</div></div>';
     h+='<span style="font-size:9px;background:'+t.srcColor+';color:#fff;padding:1px 5px;border-radius:3px;flex-shrink:0;">'+t.source+'</span>';
@@ -971,7 +983,7 @@ function renderUnifiedTodos(){
 function markUnifiedDone(source,id){
   if(source==='会议行动项'){ACTION_ITEMS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_ai_'+id,'1')}catch(e){}}
   else if(source==='钉钉待办'){TODOS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_todos_'+id,'1')}catch(e){}}
-  else if(source==='会议待办'){MEETING_TODOS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_mt_'+id,'1')}catch(e){}}
+  else{MEETING_TODOS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_mt_'+id,'1')}catch(e){}}
   renderUnifiedTodos();
 }
 
