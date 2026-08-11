@@ -901,7 +901,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811m"></script>
+<script src="qa-data.js?v=20260811p"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -911,6 +911,19 @@ if(typeof TODOS==='undefined') var TODOS=[];
 if(typeof DAILY_ROUTINE==='undefined') var DAILY_ROUTINE=[];
 if(typeof ACTION_ITEMS==='undefined') var ACTION_ITEMS=[];
 if(typeof MEETING_TODOS==='undefined') var MEETING_TODOS=[];
+// DEBUG: Show data state temporarily
+(function(){
+  var dbg=document.getElementById('meetingTodosSection');
+  if(dbg){
+    dbg.innerHTML='<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px;margin-bottom:8px;font-size:11px;color:#856404;">'+
+      'DEBUG: MEETING_TODOS.length='+MEETING_TODOS.length+
+      ' | TODOS.length='+TODOS.length+
+      ' | ACTION_ITEMS.length='+ACTION_ITEMS.length+
+      ' | DAILY_ROUTINE.length='+DAILY_ROUTINE.length+
+      ' | DATA_UPDATE_TIME='+(typeof DATA_UPDATE_TIME!=='undefined'?DATA_UPDATE_TIME:'undefined')+
+      '</div>';
+  }
+})();
 // Restore done states from localStorage
 try{
   TODOS.forEach(function(t){if(localStorage.getItem('done_todos_'+t.id)==='1')t.done=true});
@@ -3630,17 +3643,19 @@ function renderDtActivity(el){
 
 loadSavedVoice();
 initVoice();
-renderKpi('ops');
-renderIntel('rules');
-renderHoroscope();
-renderHolidays();
-renderSettle('ops');
-renderProduct('qa');
+try{renderKpi('ops')}catch(e){console.error('renderKpi error:',e)}
+try{renderIntel('rules')}catch(e){console.error('renderIntel error:',e)}
+try{renderHoroscope()}catch(e){console.error('renderHoroscope error:',e)}
+try{renderHolidays()}catch(e){console.error('renderHolidays error:',e)}
+try{renderSettle('ops')}catch(e){console.error('renderSettle error:',e)}
+try{renderProduct('qa')}catch(e){console.error('renderProduct error:',e)}
 try{renderDailyRoutine()}catch(e){console.error('renderDailyRoutine error:',e)}
 try{renderActionItems()}catch(e){console.error('renderActionItems error:',e)}
 try{renderTodos()}catch(e){console.error('renderTodos error:',e)}
 try{renderMeetingTodos()}catch(e){console.error('renderMeetingTodos error:',e)}
 try{renderDingTalk('followup')}catch(e){console.error('renderDingTalk error:',e)}
+// Safety net: ensure meeting todos render even if something above fails silently
+setTimeout(function(){try{renderMeetingTodos()}catch(e){}},1000);
 
 // Load cloud data first, then render data-dependent UI
 loadFromGitHub().then(function(){
