@@ -901,7 +901,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811k"></script>
+<script src="qa-data.js?v=20260811m"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -930,25 +930,23 @@ function renderDailyRoutine(){
   if(!box||!DAILY_ROUTINE.length)return;
   var h='<div style="font-size:13px;color:#888;font-weight:600;margin-bottom:10px;padding-left:4px;">&#x1F552; 操盘手每日工作流 <span style="font-size:11px;color:#aaa;font-weight:normal;">每日重置，勾选后自动保存</span></div>';
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;">';
-  DAILY_ROUTINE.forEach(function(slot){
-    h+='<div style="background:linear-gradient(135deg,#fff5f8,#fef0f5);border-radius:10px;padding:12px 14px;border:1px solid #f5d5e0;">';
-    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">';
-    h+='<span style="font-size:18px;">'+slot.icon+'</span>';
-    h+='<span style="font-size:14px;font-weight:600;color:#d63384;">'+slot.title+'</span>';
-    h+='<span style="font-size:11px;color:#aaa;margin-left:auto;">'+slot.time+'</span>';
+  DAILY_ROUTINE.forEach(function(item){
+    var lsKey='routine_'+item.id;
+    var checked=false;
+    try{checked=localStorage.getItem(lsKey)==='1'}catch(e){}
+    var textDec=checked?'text-decoration:line-through;color:#bbb;':'color:#444;';
+    var catColors={'数据':'#e17055','执行':'#00b894','策略':'#6c5ce7','管理':'#fdcb6e'};
+    var catColor=catColors[item.category]||'#d63384';
+    h+='<div style="background:linear-gradient(135deg,#fff5f8,#fef0f5);border-radius:10px;padding:12px 14px;border:1px solid #f5d5e0;'+(checked?'opacity:0.6;':'')+'">';
+    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
+    h+='<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(checked?'#2ed573':'#e8a0b8')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;background:'+(checked?'#2ed573':'transparent')+';cursor:pointer;transition:all .2s;" onclick="toggleRoutine(\''+lsKey+'\',this)">';
+    if(checked)h+='<span style="color:#fff;font-size:11px;">&#10003;</span>';
     h+='</div>';
-    slot.checks.forEach(function(ck){
-      var lsKey=_routineKey(slot.slot,ck.k);
-      var checked=false;
-      try{checked=localStorage.getItem(lsKey)==='1'}catch(e){}
-      var textDec=checked?'text-decoration:line-through;color:#bbb;':'color:#444;';
-      h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;" onclick="toggleRoutine(\''+lsKey+'\',this)">';
-      h+='<div style="width:16px;height:16px;border-radius:4px;border:2px solid '+(checked?'#2ed573':'#e8a0b8')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;background:'+(checked?'#2ed573':'transparent')+';transition:all .2s;">';
-      if(checked)h+='<span style="color:#fff;font-size:10px;">&#10003;</span>';
-      h+='</div>';
-      h+='<span style="font-size:12px;'+textDec+'">'+ck.t+'</span>';
-      h+='</div>';
-    });
+    h+='<span style="font-size:14px;font-weight:600;color:#d63384;'+textDec+'">'+item.title+'</span>';
+    h+='<span style="font-size:11px;color:#aaa;margin-left:auto;background:#fff0f5;padding:1px 6px;border-radius:3px;">'+item.time+'</span>';
+    h+='</div>';
+    h+='<div style="font-size:11px;color:#999;padding-left:24px;line-height:1.5;">'+item.desc+'</div>';
+    h+='<div style="margin-top:4px;padding-left:24px;"><span style="font-size:9px;background:'+catColor+';color:#fff;padding:1px 5px;border-radius:3px;">'+item.category+'</span></div>';
     h+='</div>';
   });
   h+='</div>';
@@ -3638,11 +3636,11 @@ renderHoroscope();
 renderHolidays();
 renderSettle('ops');
 renderProduct('qa');
-renderDailyRoutine();
-renderActionItems();
-renderTodos();
-renderMeetingTodos();
-renderDingTalk('followup');
+try{renderDailyRoutine()}catch(e){console.error('renderDailyRoutine error:',e)}
+try{renderActionItems()}catch(e){console.error('renderActionItems error:',e)}
+try{renderTodos()}catch(e){console.error('renderTodos error:',e)}
+try{renderMeetingTodos()}catch(e){console.error('renderMeetingTodos error:',e)}
+try{renderDingTalk('followup')}catch(e){console.error('renderDingTalk error:',e)}
 
 // Load cloud data first, then render data-dependent UI
 loadFromGitHub().then(function(){
