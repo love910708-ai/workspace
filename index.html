@@ -100,60 +100,6 @@
   }
   .mood-btn:hover{border-color:var(--purple);transform:scale(1.1)}
   .mood-btn.selected{border-color:var(--purple);background:rgba(56,189,248,.15);box-shadow:0 0 12px rgba(56,189,248,.3)}
-  .task-group{margin-bottom:16px}
-  .task-group:last-of-type{margin-bottom:0}
-  .task-group-label{
-    font-size:11px;color:var(--text3);font-weight:600;margin-bottom:8px;
-    display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:1px;
-  }
-  .task-group-label::before{content:'';width:3px;height:12px;border-radius:2px}
-  .task-group[data-period="morning"] .task-group-label::before{background:var(--orange);box-shadow:0 0 6px rgba(251,191,36,.4)}
-  .task-group[data-period="afternoon"] .task-group-label::before{background:var(--cyan);box-shadow:0 0 6px rgba(14,165,233,.4)}
-  .task-group[data-period="evening"] .task-group-label::before{background:var(--purple);box-shadow:0 0 6px rgba(56,189,248,.4)}
-  .task-item{
-    display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
-    border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:3px;
-    border:1px solid transparent;
-  }
-  .task-item:hover{background:var(--glass2);border-color:var(--border)}
-  .task-checkbox{
-    width:20px;height:20px;border:2px solid var(--text3);border-radius:6px;
-    flex-shrink:0;margin-top:1px;transition:all .25s;display:flex;align-items:center;justify-content:center;
-  }
-  .task-item:hover .task-checkbox{border-color:var(--purple)}
-  .task-item.done .task-checkbox{
-    background:linear-gradient(135deg,var(--cyan),var(--purple));border-color:transparent;
-    box-shadow:0 0 10px rgba(14,165,233,.3);
-  }
-  .task-item.done .task-checkbox::after{
-    content:'';width:5px;height:9px;border:2px solid #fff;border-top:0;border-left:0;
-    transform:rotate(45deg) translate(-1px,-1px);
-  }
-  .task-text{font-size:13px;line-height:1.5;flex:1;color:var(--text)}
-  .task-item.done .task-text{color:var(--text3);text-decoration:line-through}
-  .task-tag{font-size:10px;padding:1px 7px;border-radius:4px;font-weight:600;white-space:nowrap;letter-spacing:.5px}
-  .task-tag.urgent{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
-  .task-tag.important{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
-  .task-tag.routine{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
-  .task-tag.voice-gen{background:rgba(56,189,248,.12);color:var(--cyan);border:1px solid rgba(56,189,248,.2)}
-  .task-progress{
-    margin-top:14px;padding:12px 16px;background:var(--glass2);border:1px solid var(--border);border-radius:12px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .task-progress .bar-wrap{flex:1;height:8px;background:rgba(14,165,233,.08);border-radius:4px;margin:0 12px;overflow:hidden;position:relative}
-  .task-progress .bar{
-    height:100%;border-radius:4px;transition:width .5s ease;
-    background:linear-gradient(90deg,var(--cyan),var(--purple),#bae6fd);
-    box-shadow:0 0 12px rgba(56,189,248,.4);
-  }
-  .task-progress .count{font-size:13px;color:var(--text2);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
-  .task-progress .count .pct{color:var(--cyan)}
-  .encourage-msg{
-    margin-top:10px;text-align:center;font-size:13px;font-weight:600;
-    transition:opacity .3s;
-  }
-  .encourage-msg.show{opacity:1}
-  .encourage-msg.hide{opacity:0}
   .voice-card{grid-column:span 1}
   .voice-area{
     background:rgba(14,165,233,.04);border-radius:12px;padding:16px;min-height:160px;
@@ -267,13 +213,6 @@
     text-shadow:0 0 40px rgba(56,189,248,.3);
   }
   .celebration .sub{font-size:16px;color:var(--text2);margin-top:8px;text-align:center}
-  .energy-bar{
-    display:flex;align-items:center;gap:8px;margin-top:12px;
-  }
-  .energy-label{font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap}
-  .energy-track{flex:1;height:6px;background:rgba(14,165,233,.08);border-radius:3px;overflow:hidden}
-  .energy-fill{height:100%;border-radius:3px;transition:width .5s;background:linear-gradient(90deg,var(--pink),var(--cyan))}
-  .energy-val{font-size:12px;font-weight:700;color:var(--cyan);font-variant-numeric:tabular-nums}
   .horoscope-card{}
   .horo-rating{font-size:16px;margin-bottom:8px;letter-spacing:1px}
   .horo-text{font-size:13px;line-height:1.7;color:var(--text)}
@@ -459,7 +398,6 @@
     .celebration .text{font-size:24px}
     .celebration .sub{font-size:14px}
     .settle-actions{justify-content:center}
-    .energy-bar{margin-top:10px}
     .mood-btn{width:32px;height:32px;font-size:16px}
     .rule-item{padding:10px 12px}
     .rule-item .rule-title{font-size:13px}
@@ -742,11 +680,11 @@
 <!-- Main -->
 <div class="main">
 
-  <!-- ===== Tasks ===== -->
+  <!-- ===== 今日状态 ===== -->
   <div class="card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x26A1;</span> 今日待办<span class="auto-badge">基于岗位自动生成</span></div>
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F31F;</span> 今日状态</div>
     <div class="mood-row">
-      <span class="mood-label">今日状态</span>
+      <span class="mood-label">今天感觉怎么样</span>
       <div class="mood-options">
         <div class="mood-btn" data-mood="fire" onclick="selectMood('fire')">&#x1F525;</div>
         <div class="mood-btn" data-mood="good" onclick="selectMood('good')">&#x1F60A;</div>
@@ -754,26 +692,6 @@
         <div class="mood-btn" data-mood="tired" onclick="selectMood('tired')">&#x1F634;</div>
         <div class="mood-btn" data-mood="stress" onclick="selectMood('stress')">&#x1F624;</div>
       </div>
-    </div>
-    <div class="task-group" data-period="morning">
-      <div class="task-group-label">晨间 · 09:00-12:00</div>
-    </div>
-    <div class="task-group" data-period="afternoon">
-      <div class="task-group-label">午后 · 13:30-18:00</div>
-    </div>
-    <div class="task-group" data-period="evening">
-      <div class="task-group-label">晚间 · 19:00-21:00</div>
-    </div>
-    <div class="task-progress">
-      <span class="count" id="progressText">0 / 0</span>
-      <div class="bar-wrap"><div class="bar" id="progressBar" style="width:0%"></div></div>
-      <span class="count"><span class="pct" id="progressPercent">0%</span></span>
-    </div>
-    <div class="encourage-msg" id="encourageMsg"></div>
-    <div class="energy-bar">
-      <span class="energy-label">今日能量</span>
-      <div class="energy-track"><div class="energy-fill" id="energyFill" style="width:0%"></div></div>
-      <span class="energy-val" id="energyVal">0</span>
     </div>
   </div>
 
@@ -792,9 +710,8 @@
     <div class="voice-controls" style="margin-top:10px">
       <button class="voice-btn" onclick="clearVoice()">清空</button>
       <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
-      <button class="voice-btn primary" id="extractTaskBtn" onclick="extractTasksFromVoice()" style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(52,211,153,.15));border-color:rgba(16,185,129,.3);color:var(--green)">&#x1F4CB; 提炼为待办</button>
     </div>
-    <div class="voice-hint">录音后点击「提炼为待办」自动识别工作安排，或复制后粘贴给AI</div>
+    <div class="voice-hint">录音后可一键复制，粘贴给AI整理工作安排</div>
   </div>
 
   <!-- ===== Industry Intelligence ===== -->
@@ -981,14 +898,6 @@
 
 </div>
 
-<!-- Celebration overlay -->
-<div class="celebration" id="celebration">
-  <div>
-    <div class="text">&#x1F389; 全部完成！</div>
-    <div class="sub" id="celebrationSub">今天的事干完了，志标你牛逼</div>
-  </div>
-</div>
-
 <!-- Schedule Modal -->
 <div class="modal-overlay" id="scheduleModal">
   <div class="modal">
@@ -1012,7 +921,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260810b"></script>
+<script src="qa-data.js?v=20260811a"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -1334,174 +1243,6 @@ const QUOTES = [
 ];
 const dayIndex = (now.getDate() + now.getMonth()) % QUOTES.length;
 document.getElementById('quoteText').innerHTML = QUOTES[dayIndex];
-
-// ===== Tasks =====
-function generateTasks(){
-  const dow = now.getDay();
-  const isMonthEnd = now.getDate() >= 27;
-  const morning = [
-    {text:'检查昨日57个在更账号发布情况，标记零播放账号', tag:'routine'},
-    {text:'查看测试新号冷启动进度（好友互动数、播放量）', tag:'urgent'},
-    {text:'检查是否有账号收到平台违规/限流通知', tag:'important'},
-  ];
-  if(dow === 1) morning.push({text:'周一站会：回顾上周数据 + 分配本周各组任务', tag:'important'});
-  else if(dow === 3) morning.push({text:'周中KPI进度检查：各组完成率是否过半', tag:'important'});
-  else if(dow === 5) morning.push({text:'整理本周数据汇总，准备周报', tag:'routine'});
-  else if(isMonthEnd) morning.push({text:'月末KPI预评估：哪些人达标、哪些需谈话', tag:'important'});
-  else morning.push({text:'确认今日3个运营组选题方向并分配任务', tag:'routine'});
-  const afternoon = [
-    {text:'审核今日待发布视频：标题、口播脚本、标签合规', tag:'urgent'},
-    {text:'跟进新号注册进度（个人微信号，不认证）', tag:'urgent'},
-    {text:'运营组15分钟站会：同步数据 + 选题 + 问题反馈', tag:'routine'},
-  ];
-  if(dow === 2) afternoon.push({text:'抽查剪辑素材质量 + 审核本周选题池补充', tag:'important'});
-  else if(dow === 4) afternoon.push({text:'逐条检查视频文案是否命中违禁词清单', tag:'important'});
-  else if(dow === 5) afternoon.push({text:'审核下周选题方向，提前备好脚本', tag:'important'});
-  else afternoon.push({text:'抽查剪辑团队素材质量，确认符合真实体验方向', tag:'routine'});
-  const evening = [
-    {text:'复盘今日各账号播放表现，记录测试新号数据变化', tag:'routine'},
-    {text:'检查是否有账号异常（限流加重、突然零播放）', tag:'urgent'},
-  ];
-  if(dow === 5) evening.push({text:'本周总结：数据变化 + 新号进度 + 下周计划', tag:'important'});
-  else if(isMonthEnd) evening.push({text:'月末团队一对一谈话准备：谁需要重点关注', tag:'important'});
-  else evening.push({text:'更新明日重点待办事项', tag:'important'});
-  evening.push({text:'整理今日语音记录，提炼明日工作计划', tag:'routine'});
-  return {morning, afternoon, evening};
-}
-const TASKS = generateTasks();
-// Extra tasks from voice extraction
-let extraTasks = {morning:[], afternoon:[], evening:[]};
-function getTaskKey(){ return 'zhibiao_tasks_' + todayStr; }
-function getExtraTaskKey(){ return 'zhibiao_extra_tasks_' + todayStr; }
-function getTaskStates(){
-  const saved = localStorage.getItem(getTaskKey());
-  let states = {};
-  if(saved){ try{ states = JSON.parse(saved); }catch(e){} }
-  return states;
-}
-function loadExtraTasks(){
-  const saved = localStorage.getItem(getExtraTaskKey());
-  if(saved){ try{ extraTasks = JSON.parse(saved); }catch(e){} }
-}
-function saveExtraTasks(){
-  localStorage.setItem(getExtraTaskKey(), JSON.stringify(extraTasks));
-}
-function renderTasks(){
-  const states = getTaskStates();
-  let total=0, done=0;
-  ['morning','afternoon','evening'].forEach(period=>{
-    const container = document.querySelector('.task-group[data-period="'+period+'"]');
-    container.querySelectorAll('.task-item').forEach(el=>el.remove());
-    const allTasks = TASKS[period].concat(extraTasks[period] || []);
-    allTasks.forEach((task, i)=>{
-      const id = period+'_'+i;
-      const isDone = states[id] === true;
-      if(isDone) done++;
-      total++;
-      const el = document.createElement('div');
-      el.className = 'task-item' + (isDone ? ' done' : '');
-      const tagLabel = task.tag==='urgent'?'紧急':task.tag==='important'?'重要':task.tag==='voice-gen'?'语音提炼':'日常';
-      el.innerHTML = '<div class="task-checkbox"></div><span class="task-text">'+task.text+'</span><span class="task-tag '+task.tag+'">'+tagLabel+'</span>';
-      el.onclick = function(){ toggleTask(id); };
-      container.appendChild(el);
-    });
-  });
-  const pct = total>0 ? Math.round(done/total*100) : 0;
-  document.getElementById('progressText').textContent = done + ' / ' + total;
-  document.getElementById('progressBar').style.width = pct + '%';
-  document.getElementById('progressPercent').textContent = pct + '%';
-  document.getElementById('energyFill').style.width = pct + '%';
-  document.getElementById('energyVal').textContent = pct;
-  const msg = document.getElementById('encourageMsg');
-  let enc = '';
-  if(pct === 0) enc = '开始吧，先干掉第一条';
-  else if(pct < 30) enc = '不错的开始，保持节奏';
-  else if(pct < 50) enc = '已经过半路程的三分之一了';
-  else if(pct < 70) enc = '过半了，势头正好';
-  else if(pct < 100) enc = '快收尾了，别松懈';
-  else enc = '全部搞定！';
-  msg.textContent = enc;
-  msg.style.color = pct === 100 ? 'var(--green)' : pct >= 50 ? 'var(--cyan)' : 'var(--text2)';
-  if(pct === 100 && total > 0){ showCelebration(); updateStreak(true); }
-  else { updateStreak(false); }
-}
-function toggleTask(id){
-  const states = getTaskStates();
-  states[id] = !states[id];
-  localStorage.setItem(getTaskKey(), JSON.stringify(states));
-  renderTasks();
-  saveWorkMemory();
-}
-
-// ===== Voice-to-Task Extraction =====
-function extractTasksFromVoice(){
-  const text = finalText.trim();
-  if(!text){ showToast('请先录入语音内容'); return; }
-
-  const segments = text.split(/[，。！？；\n,.!?;]+/).map(s=>s.trim()).filter(s=>s.length>=4);
-  const newTasks = [];
-  const usedTexts = new Set();
-
-  // Collect existing task texts to avoid duplicates
-  ['morning','afternoon','evening'].forEach(p=>{
-    TASKS[p].concat(extraTasks[p]||[]).forEach(t=>usedTexts.add(t.text));
-  });
-
-  segments.forEach(seg=>{
-    if(seg.length < 5) return;
-    let tag = 'routine';
-    if(/紧急|马上|立刻|赶紧|尽快|立刻|必须|马上|加急/.test(seg)) tag = 'urgent';
-    else if(/重要|需要|应该|要|得|注意|关注|检查|确认|跟进|处理/.test(seg)) tag = 'important';
-
-    let action = seg;
-    // Add action verbs if missing
-    if(!/跟进|检查|审核|确认|处理|完成|准备|整理|联系|通知|回复|更新|清理|注册|发布|分配|沟通|提醒|回复|汇总|复盘|排查|推进|落实|安排|对接|核实|统计|提交|起草|拟定|协调|督促|跟进/.test(seg)){
-      if(/新号/.test(seg)) action = '跟进' + seg;
-      else if(/数据|播放|播放量/.test(seg)) action = '检查' + seg;
-      else if(/视频|内容|选题|标题/.test(seg)) action = '审核' + seg;
-      else if(/违规|限流|异常/.test(seg)) action = '处理' + seg;
-      else if(/会议|站会|谈话|沟通/.test(seg)) action = '安排' + seg;
-      else if(/KPI|考核|评分/.test(seg)) action = '跟进' + seg;
-      else if(/素材|脚本|文案/.test(seg)) action = '准备' + seg;
-      else action = '处理：' + seg;
-    }
-
-    if(action.length > 50) action = action.substring(0,50);
-    if(!usedTexts.has(action)){
-      usedTexts.add(action);
-      newTasks.push({text:action, tag:tag});
-    }
-  });
-
-  if(newTasks.length === 0){ showToast('未识别到可提炼的工作安排，试试说得更具体'); return; }
-
-  // Smart period assignment
-  const curHour = now.getHours();
-  let targetPeriod;
-  if(curHour < 12) targetPeriod = 'morning';
-  else if(curHour < 18) targetPeriod = 'afternoon';
-  else targetPeriod = 'evening';
-
-  newTasks.forEach(t=>{
-    extraTasks[targetPeriod].push(t);
-  });
-  saveExtraTasks();
-  renderTasks();
-  showToast('已提炼 '+newTasks.length+' 条待办到'+
-    (targetPeriod==='morning'?'晨间':targetPeriod==='afternoon'?'午后':'晚间')+'时段');
-}
-
-// ===== Celebration =====
-let celebrated = false;
-function showCelebration(){
-  if(celebrated) return;
-  celebrated = true;
-  const subs = ['今天的事干完了，志标你牛逼','效率拉满，早点休息','又消灭一个工作日，Respect','全部清零，该陪家人了'];
-  document.getElementById('celebrationSub').textContent = subs[Math.floor(Math.random()*subs.length)];
-  const cel = document.getElementById('celebration');
-  cel.classList.add('show');
-  setTimeout(function(){ cel.classList.remove('show'); }, 3500);
-}
 
 // ===== Streak =====
 function updateStreak(allDone){
@@ -2534,7 +2275,6 @@ function doManualSync(){
     btn.textContent = '\u2705'; // check
     btn.title = hasData ? '已同步云端数据' : '已上传本地数据';
     renderMemoryCalendar();
-    renderTasks();
     loadMood();
     loadNotes();
     setTimeout(function(){ btn.textContent = '\u2601'; btn.title = '云同步'; }, 2000);
@@ -2973,19 +2713,9 @@ var memoryYear = now.getFullYear();
 var memoryMonth = now.getMonth();
 
 function saveWorkMemory(){
-  var states = getTaskStates();
-  var total = 0, done = 0;
-  ['morning','afternoon','evening'].forEach(function(period){
-    var allTasks = TASKS[period].concat(extraTasks[period] || []);
-    allTasks.forEach(function(task, i){
-      total++;
-      if(states[period+'_'+i]) done++;
-    });
-  });
   var mood = localStorage.getItem('zhibiao_mood_' + todayStr) || '';
   var notes = localStorage.getItem('zhibiao_notes_' + todayStr) || '';
-  var pct = total > 0 ? Math.round(done / total * 100) : 0;
-  var data = {date:todayStr, done:done, total:total, mood:mood, notes:notes, pct:pct};
+  var data = {date:todayStr, mood:mood, notes:notes};
   localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
   // Real-time update: re-render calendar
   renderMemoryCalendar();
@@ -3073,40 +2803,12 @@ function showMemoryDay(dateStr){
   html += '<div class="detail-date">' + dateStr + '</div>';
   html += '<div class="detail-tasks">';
   html += '<div style="display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap">';
-  html += '<span>完成任务：<strong style="color:var(--cyan)">' + mem.done + ' / ' + mem.total + '</strong></span>';
-  html += '<span>完成率：<strong style="color:' + (mem.pct >= 80 ? 'var(--green)' : 'var(--orange)') + '">' + mem.pct + '%</strong></span>';
+  if(mem.done !== undefined && mem.total !== undefined){
+    html += '<span>完成任务：<strong style="color:var(--cyan)">' + mem.done + ' / ' + mem.total + '</strong></span>';
+    html += '<span>完成率：<strong style="color:' + (mem.pct >= 80 ? 'var(--green)' : 'var(--orange)') + '">' + mem.pct + '%</strong></span>';
+  }
   if(mem.mood) html += '<span>状态：' + (moodEmojis[mem.mood] || '') + '</span>';
   html += '</div>';
-
-  // Show completed task names
-  var taskKey = 'zhibiao_tasks_' + dateStr;
-  var savedStates = localStorage.getItem(taskKey);
-  var states = {};
-  if(savedStates){ try{ states = JSON.parse(savedStates); }catch(e){} }
-  var completedTasks = [];
-  ['morning','afternoon','evening'].forEach(function(period){
-    var allTasks = TASKS[period].concat(extraTasks[period] || []);
-    allTasks.forEach(function(task, i){
-      var key = period + '_' + i;
-      if(states[key]){
-        completedTasks.push({period: period, name: task.name || task});
-      }
-    });
-  });
-  if(completedTasks.length > 0){
-    html += '<div style="margin-top:10px"><strong style="color:var(--text2);font-size:12px">已完成事项：</strong></div>';
-    html += '<div style="margin-top:6px;max-height:200px;overflow-y:auto">';
-    var periodLabels = {morning:'晨间',afternoon:'下午',evening:'晚上'};
-    var currentPeriod = '';
-    completedTasks.forEach(function(t){
-      if(t.period !== currentPeriod){
-        currentPeriod = t.period;
-        html += '<div style="font-size:11px;color:var(--purple);margin-top:6px;font-weight:600">' + periodLabels[currentPeriod] + '</div>';
-      }
-      html += '<div style="font-size:12px;color:var(--text2);padding:2px 0;padding-left:8px">✓ ' + t.name + '</div>';
-    });
-    html += '</div>';
-  }
 
   if(mem.notes) html += '<div style="margin-top:6px;padding:8px 12px;background:var(--glass);border-radius:8px;font-size:12px;color:var(--text2)"><strong>备注：</strong>' + mem.notes + '</div>';
   html += '</div></div>';
@@ -3843,7 +3545,6 @@ function renderDtActivity(el){
 }
 
 
-loadExtraTasks();
 loadSavedVoice();
 initVoice();
 renderKpi('ops');
@@ -3859,7 +3560,6 @@ renderDingTalk('followup');
 
 // Load cloud data first, then render data-dependent UI
 loadFromGitHub().then(function(){
-  renderTasks();
   loadNotes();
   loadMood();
   loadStreak();
