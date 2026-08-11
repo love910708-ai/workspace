@@ -28,7 +28,19 @@ var MEETING_TODOS = [
 {id:'mt13',name:'考核方案调整：标题不重复/条均播放量/互动率/组长考核标准',people:'全员',date:'2026-08-01',src:'群指令',done:false,urgent:false},
 {id:'mt14',name:'跟进各组今日复盘完成情况（运营+销转）',people:'李晗星/陈薇婷/郑艳彬',date:'2026-08-11',src:'群指令',done:false,urgent:true},
 {id:'mt15',name:'跟进新号注册进度（3个新号认证+养号状态）',people:'李晗星/陈薇婷',date:'2026-08-11',src:'群指令',done:false,urgent:false},
-{id:'mt16',name:'确认IP隔离方案完成后再启用新号',people:'富贵',date:'2026-08-11',src:'群指令',done:false,urgent:false}
+{id:'mt16',name:'确认IP隔离方案完成后再启用新号',people:'富贵',date:'2026-08-11',src:'群指令',done:false,urgent:false},
+{id:'mt17',name:'跟进8/10未复盘人员：卢东鸿、吴雪琦、林智杰、陈薇婷',people:'李晗星/陈薇婷/郑艳彬',date:'2026-08-11',src:'复盘监控',done:false,urgent:true},
+{id:'mt18',name:'搜不到的账号全部停更（表格备注），搜得到的想办法更新',people:'李晗星/陈薇婷/郑艳彬',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:true},
+{id:'mt19',name:'素材库持续整理命名分类',people:'全员',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
+{id:'mt20',name:'多尝试新框架，可以剪辑旧框架',people:'全员',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
+{id:'mt21',name:'错峰删除违规视频',people:'全员',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
+{id:'mt22',name:'直营设备刷视频号内容，提升账号活跃度',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10早会纪要',done:false,urgent:false},
+{id:'mt23',name:'TK视频用旧文案发布',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10早会纪要',done:false,urgent:false},
+{id:'mt24',name:'早会后和晚会前搜索账号是否放出来',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10早会纪要',done:false,urgent:false},
+{id:'mt25',name:'新号开始养号',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10早会纪要',done:false,urgent:false},
+{id:'mt26',name:'关注新号数据：一个账号0播被关小黑屋、新号三百播放、tk视频零播',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:true},
+{id:'mt27',name:'直营账号清理（河北作品太多目前只清理一半，继续推进）',people:'陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
+{id:'mt28',name:'已让销转刷视频转账养号，跟进执行情况',people:'陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false}
 ];
 
-var DATA_UPDATE_TIME = '2026-08-11 12:15:40';
+var DATA_UPDATE_TIME = '2026-08-11 12:30:00';
