@@ -2260,6 +2260,18 @@ var calYear = now.getFullYear();
 var calMonth = now.getMonth();
 var productTab = 'qa';
 
+// Load custom products from localStorage
+try{
+  var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
+  if(savedProducts.length > 0){
+    savedProducts.forEach(function(p){
+      if(!PRODUCTS.some(function(existing){ return existing.id === p.id; })){
+        PRODUCTS.push(p);
+      }
+    });
+  }
+}catch(e){}
+
 function switchProductTab(evt, tab){
   document.querySelectorAll('.product-tab').forEach(function(el){ el.classList.remove('active'); });
   evt.target.closest('.product-tab').classList.add('active');
@@ -2617,8 +2629,14 @@ function addProductFromFile(file){
             }
           });
           if(routeName) name = routeName;
+          // Parse complete product info from Excel
+          doAddProduct(name, rows[0], headers);
+          return;
         }
-      }catch(err){}
+      }catch(err){
+        showToast('Excel解析失败：'+err.message);
+        return;
+      }
       doAddProduct(name);
     };
     reader.readAsArrayBuffer(file);
@@ -2627,7 +2645,7 @@ function addProductFromFile(file){
   }
 }
 
-function doAddProduct(name){
+function doAddProduct(name, excelRow, headers){
   var exists = PRODUCTS.some(function(p){ return p.name.indexOf(name.substring(0,4)) >= 0; });
   if(exists){ showToast('产品已存在：'+name.substring(0,10)); return; }
   var region = 'hn';
@@ -2635,7 +2653,7 @@ function doAddProduct(name){
   var daysMatch = name.match(/(\d{1,2})日/);
   var days = daysMatch ? parseInt(daysMatch[1]) : 0;
   var dest = '未知';
-  var dests = ['新疆','东北','云南','西藏','额济纳','甘青','甘肃','青海','宁夏'];
+  var dests = ['新疆','东北','云南','西藏','额济纳','甘青','甘肃','青海','宁夏','漠河','黑河','抚远','哈尔滨','长白山','沈阳','丹东'];
   for(var i = 0; i < dests.length; i++){
     if(name.indexOf(dests[i]) >= 0){ dest = dests[i]; break; }
   }
@@ -2646,8 +2664,85 @@ function doAddProduct(name){
   if(name.indexOf('潇湘') >= 0) keywords.push('潇湘号');
   if(name.indexOf('北国') >= 0) keywords.push('北国');
   if(name.indexOf('东极') >= 0) keywords.push('东极');
-  PRODUCTS.push({id:id,name:name,region:region,days:days,dest:dest,keywords:keywords,desc:'从文件名自动识别：'+name});
-  showToast('已添加产品：'+name.substring(0,15));
+
+  // Build product object with Excel data if available
+  var product = {id:id,name:name,region:region,days:days,dest:dest,keywords:keywords,desc:'从文件名自动识别：'+name};
+
+  if(excelRow && headers){
+    // Map Excel columns to product fields
+    var colMap = {
+      'desc': ['描述','简介','说明','行程描述','产品描述'],
+      'prices': ['价格','报价','铺位','费用','团费'],
+      'meals': ['用餐','餐标','含餐','餐饮'],
+      'mealsIncluded': ['含餐','全程含餐'],
+      'transport': ['交通','用车','交通工具','大交通'],
+      'highlights': ['亮点','景点','特色','核心景点','主要景点'],
+      'sellPoints': ['卖点','销售点','推荐理由','核心卖点'],
+      'ageLimit': ['年龄','年龄要求','年龄限制'],
+      'shopping': ['购物','购物店','进几个店'],
+      'selfPay': ['自费','自费项目','自理'],
+      'ticketPrice': ['门票','景区门票','门票价格'],
+      'special': ['特别说明','注意事项','备注','特殊要求'],
+      'dates': ['班期','出发日期','发团日期','团期']
+    };
+
+    headers.forEach(function(h){
+      var hLower = h.toLowerCase();
+      for(var field in colMap){
+        var colNames = colMap[field];
+        for(var i = 0; i < colNames.length; i++){
+          if(hLower.indexOf(colNames[i].toLowerCase()) >= 0){
+            var val = excelRow[h];
+            if(val !== undefined && val !== null && val !== ''){
+              if(field === 'mealsIncluded'){
+                product[field] = (val === true || val === 1 || String(val).indexOf('含') >= 0 || String(val).indexOf('是') >= 0);
+              } else if(field === 'dates'){
+                // Parse dates - could be array or comma-separated string
+                if(Array.isArray(val)){
+                  product[field] = val.map(function(d){ return String(d); });
+                } else {
+                  product[field] = String(val).split(/[,;，、\n]/).map(function(d){ return d.trim(); }).filter(function(d){ return d.length > 0; });
+                }
+              } else {
+                product[field] = String(val);
+              }
+            }
+            break;
+          }
+        }
+      }
+    });
+
+    // Auto-extract dates and add to calendar
+    if(product.dates && product.dates.length > 0){
+      product.dates.forEach(function(dateStr){
+        // Validate date format
+        if(/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || /^\d{4}\/\d{2}\/\d{2}$/.test(dateStr)){
+          var normalizedDate = dateStr.replace(/\//g, '-');
+          var exists = schedules.some(function(s){ return s.productId === id && s.date === normalizedDate; });
+          if(!exists){
+            schedules.push({productId: id, date: normalizedDate});
+          }
+        }
+      });
+      localStorage.setItem('zhibiao_schedules', JSON.stringify(schedules));
+    }
+  }
+
+  PRODUCTS.push(product);
+
+  // Save to localStorage for persistence
+  try{
+    var savedProducts = JSON.parse(localStorage.getItem('zhibiao_custom_products') || '[]');
+    savedProducts.push(product);
+    localStorage.setItem('zhibiao_custom_products', JSON.stringify(savedProducts));
+  }catch(e){}
+
+  showToast('已添加产品：'+name.substring(0,15)+(product.dates ? ' ('+product.dates.length+'个班期)' : ''));
+
+  // Refresh product list if visible
+  if(productTab === 'list') renderProductList(document.getElementById('productContent'));
+  if(productTab === 'calendar') renderProductCalendar(document.getElementById('productContent'));
 }
 
 function showDayDetail(dateStr){
