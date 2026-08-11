@@ -898,7 +898,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811b"></script>
+<script src="qa-data.js?v=20260811c"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -1101,9 +1101,16 @@ function renderReview(){
   data.forEach(function(r){if(r.n&&r.n.trim()&&!allNamesSet[r.n.trim()]){allNamesSet[r.n.trim()]=1;allNames.push(r.n.trim())}});
   allNames.sort();
 
-  // Get unique dates desc
+  // Get unique dates desc — always include today and yesterday
   var dateSet={},dates=[];
   data.forEach(function(r){if(r.d&&!dateSet[r.d]){dateSet[r.d]=1;dates.push(r.d)}});
+  // Dynamically add today and yesterday so they always appear in nav
+  var _now=new Date();
+  function _fmtDate(d){return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()}
+  var _today=_fmtDate(_now);
+  var _yesterday=_fmtDate(new Date(_now.getTime()-86400000));
+  if(!dateSet[_today]){dateSet[_today]=1;dates.push(_today)}
+  if(!dateSet[_yesterday]){dateSet[_yesterday]=1;dates.push(_yesterday)}
   dates.sort().reverse();
 
   // Nav
@@ -1117,6 +1124,13 @@ function renderReview(){
   var selDate=dates[_reviewDateIdx];
   var dayData=data.filter(function(r){return r.d===selDate});
   var isOps=(_reviewTab==='ops');
+
+  // If no data for selected date, show empty state
+  if(!dayData.length){
+    document.getElementById('reviewSummary').innerHTML='<div style="text-align:center;padding:20px;color:#999;font-size:13px;background:#fafafa;border-radius:10px;">'+selDate.replace(/^\d{4}\//,'')+' 暂无复盘数据，数据将在每日早上自动拉取</div>';
+    document.getElementById('reviewDetail').innerHTML='';
+    return;
+  }
 
   // Actual reviewers for selected date
   var actualSet={};
