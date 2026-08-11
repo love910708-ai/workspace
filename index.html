@@ -901,7 +901,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811p"></script>
+<script src="qa-data.js?v=20260811q"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -911,19 +911,6 @@ if(typeof TODOS==='undefined') var TODOS=[];
 if(typeof DAILY_ROUTINE==='undefined') var DAILY_ROUTINE=[];
 if(typeof ACTION_ITEMS==='undefined') var ACTION_ITEMS=[];
 if(typeof MEETING_TODOS==='undefined') var MEETING_TODOS=[];
-// DEBUG: Show data state temporarily
-(function(){
-  var dbg=document.getElementById('meetingTodosSection');
-  if(dbg){
-    dbg.innerHTML='<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px;margin-bottom:8px;font-size:11px;color:#856404;">'+
-      'DEBUG: MEETING_TODOS.length='+MEETING_TODOS.length+
-      ' | TODOS.length='+TODOS.length+
-      ' | ACTION_ITEMS.length='+ACTION_ITEMS.length+
-      ' | DAILY_ROUTINE.length='+DAILY_ROUTINE.length+
-      ' | DATA_UPDATE_TIME='+(typeof DATA_UPDATE_TIME!=='undefined'?DATA_UPDATE_TIME:'undefined')+
-      '</div>';
-  }
-})();
 // Restore done states from localStorage
 try{
   TODOS.forEach(function(t){if(localStorage.getItem('done_todos_'+t.id)==='1')t.done=true});
@@ -2811,7 +2798,38 @@ var memoryMonth = now.getMonth();
 function saveWorkMemory(){
   var mood = localStorage.getItem('zhibiao_mood_' + todayStr) || '';
   var notes = localStorage.getItem('zhibiao_notes_' + todayStr) || '';
-  var data = {date:todayStr, mood:mood, notes:notes};
+  // Compute task completion stats
+  var done = 0, total = 0;
+  // Count DAILY_ROUTINE checked items
+  if(typeof DAILY_ROUTINE !== 'undefined'){
+    DAILY_ROUTINE.forEach(function(item){
+      total++;
+      try{ if(localStorage.getItem('routine_'+item.id)==='1') done++; }catch(e){}
+    });
+  }
+  // Count ACTION_ITEMS done items
+  if(typeof ACTION_ITEMS !== 'undefined'){
+    ACTION_ITEMS.forEach(function(item){
+      total++;
+      if(item.done) done++;
+    });
+  }
+  // Count MEETING_TODOS done items
+  if(typeof MEETING_TODOS !== 'undefined'){
+    MEETING_TODOS.forEach(function(item){
+      total++;
+      if(item.done) done++;
+    });
+  }
+  // Count TODOS done items
+  if(typeof TODOS !== 'undefined'){
+    TODOS.forEach(function(item){
+      total++;
+      if(item.done) done++;
+    });
+  }
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  var data = {date:todayStr, mood:mood, notes:notes, done:done, total:total, pct:pct};
   localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
   // Real-time update: re-render calendar
   renderMemoryCalendar();
@@ -2821,7 +2839,32 @@ function saveWorkMemory(){
 
 function getWorkMemory(dateStr){
   var saved = localStorage.getItem('zhibiao_memory_' + dateStr);
-  if(saved){ try{ return JSON.parse(saved); }catch(e){} }
+  if(saved){
+    try{
+      var mem = JSON.parse(saved);
+      // Backward compatibility: if done/total missing, compute from current data
+      if(mem.done === undefined || mem.total === undefined){
+        mem.done = 0; mem.total = 0;
+        if(typeof DAILY_ROUTINE !== 'undefined'){
+          DAILY_ROUTINE.forEach(function(item){
+            mem.total++;
+            try{ if(localStorage.getItem('routine_'+item.id)==='1') mem.done++; }catch(e){}
+          });
+        }
+        if(typeof ACTION_ITEMS !== 'undefined'){
+          ACTION_ITEMS.forEach(function(item){ mem.total++; if(item.done) mem.done++; });
+        }
+        if(typeof MEETING_TODOS !== 'undefined'){
+          MEETING_TODOS.forEach(function(item){ mem.total++; if(item.done) mem.done++; });
+        }
+        if(typeof TODOS !== 'undefined'){
+          TODOS.forEach(function(item){ mem.total++; if(item.done) mem.done++; });
+        }
+        mem.pct = mem.total > 0 ? Math.round(mem.done / mem.total * 100) : 0;
+      }
+      return mem;
+    }catch(e){}
+  }
   return null;
 }
 
