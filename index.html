@@ -33,7 +33,7 @@
     max-width:960px;margin:0 auto 16px;
     background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(14,165,233,.06));
     border:1px solid var(--border2);border-radius:18px;padding:28px 32px;
-    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
     position:relative;overflow:hidden;
   }
@@ -71,7 +71,7 @@
   .main{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .card{
     background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px 24px;
-    backdrop-filter:blur(16px);transition:border-color .2s;
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transition:border-color .2s;
     box-shadow:0 2px 16px rgba(14,165,233,.06);
     max-width:100%;overflow:hidden;
   }
@@ -85,7 +85,7 @@
   .quote-banner{
     max-width:960px;margin:0 auto 16px;padding:16px 24px;
     background:linear-gradient(135deg,rgba(56,189,248,.06),rgba(14,165,233,.04));
-    border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(12px);
+    border:1px solid var(--border);border-radius:14px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
     display:flex;align-items:center;gap:14px;
   }
   .quote-banner .q-icon{font-size:24px;flex-shrink:0;opacity:.7}
@@ -190,7 +190,7 @@
     background:rgba(255,255,255,.95);border:1px solid var(--border2);color:var(--text);
     padding:10px 24px;border-radius:30px;font-size:14px;font-weight:500;
     opacity:0;transition:all .3s;z-index:999;pointer-events:none;
-    backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(14,165,233,.15);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(14,165,233,.15);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .celebration{
@@ -368,8 +368,8 @@
     .quote-banner{padding:12px 16px;margin-bottom:10px}
     .quote-banner .q-text{font-size:13px}
     .top-row{grid-template-columns:1fr;gap:10px;margin-bottom:10px}
-    .main{grid-template-columns:1fr;gap:10px}
-    .card{padding:14px 16px;border-radius:12px}
+    .main{width:100%;grid-template-columns:1fr;gap:10px}
+    .card{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:none;backdrop-filter:none}
     .card-title{font-size:14px;margin-bottom:12px}
     .phase-grid{grid-template-columns:1fr}
     .phase-info,.kpi-card,.intel-card,.settle-card{grid-column:span 1}
@@ -400,8 +400,8 @@
     .header-left h1{font-size:17px}
     .header-right{width:100%;justify-content:flex-start;gap:6px}
     .top-row{grid-template-columns:1fr;gap:8px;margin-bottom:8px}
-    .main{grid-template-columns:1fr;gap:8px}
-    .card{padding:12px 12px;border-radius:12px}
+    .main{width:100%;grid-template-columns:1fr;gap:8px}
+    .card{padding:12px 12px;border-radius:12px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:none;backdrop-filter:none}
     .card-title{font-size:13px;margin-bottom:10px}
     .card-title .icon{font-size:15px}
     .quote-banner{padding:10px 12px;margin-bottom:8px;gap:10px}
