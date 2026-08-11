@@ -672,6 +672,25 @@
 <!-- Main -->
 <div class="main">
 
+  <!-- ===== Voice ===== -->
+  <div class="card voice-card" style="grid-column: 1 / -1;">
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F399;&#xFE0F;</span> 语音录入</div>
+    <div class="voice-area empty" id="voiceArea">
+      点击下方按钮开始语音录入<br>说出今天的情况、问题和安排
+    </div>
+    <div class="voice-controls">
+      <button class="mic-btn" id="micBtn" onclick="toggleVoice()">
+        <span class="mic-icon">&#x1F3A4;</span>
+        <span id="micLabel">开始录音</span>
+      </button>
+    </div>
+    <div class="voice-controls" style="margin-top:10px">
+      <button class="voice-btn" onclick="clearVoice()">清空</button>
+      <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
+    </div>
+    <div class="voice-hint">录音后可一键复制，粘贴给AI整理工作安排</div>
+  </div>
+
   <!-- ===== 今日待办 ===== -->
   <div class="card todo-card" style="grid-column: 1 / -1;">
     <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">操盘手工作流 · 会议行动项 · 钉钉待办</span></div>
@@ -698,25 +717,6 @@
     <div id="reviewNav" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"></div>
     <div id="reviewSummary" style="margin-bottom:12px;"></div>
     <div id="reviewDetail"></div>
-  </div>
-
-  <!-- ===== Voice ===== -->
-  <div class="card voice-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F399;&#xFE0F;</span> 语音录入</div>
-    <div class="voice-area empty" id="voiceArea">
-      点击下方按钮开始语音录入<br>说出今天的情况、问题和安排
-    </div>
-    <div class="voice-controls">
-      <button class="mic-btn" id="micBtn" onclick="toggleVoice()">
-        <span class="mic-icon">&#x1F3A4;</span>
-        <span id="micLabel">开始录音</span>
-      </button>
-    </div>
-    <div class="voice-controls" style="margin-top:10px">
-      <button class="voice-btn" onclick="clearVoice()">清空</button>
-      <button class="voice-btn primary" id="copyVoiceBtn" onclick="copyVoice()">一键复制</button>
-    </div>
-    <div class="voice-hint">录音后可一键复制，粘贴给AI整理工作安排</div>
   </div>
 
   <!-- ===== Industry Intelligence ===== -->
@@ -898,7 +898,7 @@
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-<script src="qa-data.js?v=20260811c"></script>
+<script src="qa-data.js?v=20260811d"></script>
 <script>
 // ===== Q&A Knowledge Base (loaded from qa-data.js) =====
 if(typeof QA_DATA==='undefined') var QA_DATA=[];
@@ -1096,9 +1096,16 @@ function renderReview(){
     document.getElementById('reviewSummary').innerHTML='';
     return;
   }
-  // All unique names = expected reviewers (full team roster)
+  // Expected reviewers from org structure (QA_DATA), not historical review data
+  // People not in org structure = resigned, don't count them
   var allNamesSet={},allNames=[];
-  data.forEach(function(r){if(r.n&&r.n.trim()&&!allNamesSet[r.n.trim()]){allNamesSet[r.n.trim()]=1;allNames.push(r.n.trim())}});
+  if(_reviewTab==='ops'){
+    // Use unique operators from QA_DATA
+    QA_DATA.forEach(function(r){if(r.o&&r.o.trim()&&!allNamesSet[r.o.trim()]){allNamesSet[r.o.trim()]=1;allNames.push(r.o.trim())}});
+  } else {
+    // Use unique sales people from QA_DATA
+    QA_DATA.forEach(function(r){if(r.s&&r.s.trim()&&!allNamesSet[r.s.trim()]){allNamesSet[r.s.trim()]=1;allNames.push(r.s.trim())}});
+  }
   allNames.sort();
 
   // Get unique dates desc — always include today and yesterday
@@ -1111,7 +1118,11 @@ function renderReview(){
   var _yesterday=_fmtDate(new Date(_now.getTime()-86400000));
   if(!dateSet[_today]){dateSet[_today]=1;dates.push(_today)}
   if(!dateSet[_yesterday]){dateSet[_yesterday]=1;dates.push(_yesterday)}
-  dates.sort().reverse();
+  // Sort by actual date (not string) to ensure 8/10 comes before 8/3
+  dates.sort(function(a,b){
+    var da=new Date(a), db=new Date(b);
+    return db-da; // descending: newest first
+  });
 
   // Nav
   var navHtml='<span style="font-size:12px;color:#999;">日期：</span>';
