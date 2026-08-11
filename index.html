@@ -373,7 +373,6 @@
     .card-title{font-size:14px;margin-bottom:12px}
     .phase-grid{grid-template-columns:1fr}
     .phase-info,.kpi-card,.intel-card,.settle-card{grid-column:span 1}
-    .dingtalk-card{grid-column:span 1}
     .kpi-table,.settle-table{font-size:11px}
     .kpi-table th,.kpi-table td,.settle-table th,.settle-table td{padding:6px 4px}
     .horo-text{font-size:12px}
@@ -538,84 +537,6 @@
 .extract-btn.secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
 .extract-btn:hover{opacity:0.85}
 
-/* DingTalk Workspace */
-.dingtalk-card{grid-column:span 2}
-.dt-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
-.dt-tab{
-  padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;
-  background:var(--glass);color:var(--text3);border-radius:10px;transition:all .2s;border:1px solid var(--border);
-  position:relative;
-}
-.dt-tab:hover{color:var(--text);border-color:var(--border2)}
-.dt-tab.active{
-  background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.12));
-  color:var(--cyan);border-color:rgba(14,165,233,.3);
-}
-.dt-tab .badge{
-  display:inline-block;background:var(--red);color:#fff;font-size:10px;
-  padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:700;vertical-align:middle;
-}
-.dt-group-section{margin-bottom:16px}
-.dt-group-title{
-  font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;
-  display:flex;align-items:center;gap:6px;padding:6px 0;
-  border-bottom:1px solid var(--border);
-}
-.dt-group-title .g-icon{font-size:15px}
-.dt-group-title .g-count{font-size:11px;color:var(--text3);font-weight:500;margin-left:auto}
-.dt-item{
-  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
-  border-radius:10px;margin-bottom:4px;border:1px solid transparent;transition:all .2s;
-  cursor:default;
-}
-.dt-item:hover{background:var(--glass2);border-color:var(--border)}
-.dt-item .dt-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;
-}
-.dt-dot.urgent{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.4)}
-.dt-dot.normal{background:var(--cyan);box-shadow:0 0 6px rgba(14,165,233,.3)}
-.dt-dot.info{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.3)}
-.dt-item .dt-text{font-size:13px;line-height:1.5;color:var(--text);flex:1}
-.dt-item .dt-meta{font-size:11px;color:var(--text3);white-space:nowrap;margin-top:2px}
-.dt-file-group{margin-bottom:16px}
-.dt-file-group-title{
-  font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;
-  display:flex;align-items:center;gap:6px;
-}
-.dt-file-item{
-  display:flex;align-items:center;gap:10px;padding:8px 12px;
-  border-radius:8px;margin-bottom:3px;cursor:pointer;transition:all .2s;
-  border:1px solid transparent;
-}
-.dt-file-item:hover{background:var(--glass2);border-color:var(--border)}
-.dt-file-icon{font-size:18px;flex-shrink:0}
-.dt-file-name{font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dt-file-tag{
-  font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;white-space:nowrap;
-}
-.dt-file-tag.folder{background:rgba(251,191,36,.12);color:var(--orange);border:1px solid rgba(251,191,36,.2)}
-.dt-file-tag.sheet{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2)}
-.dt-file-tag.doc{background:rgba(14,165,233,.12);color:var(--cyan);border:1px solid rgba(14,165,233,.2)}
-.dt-file-tag.link{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)}
-.dt-msg-section{margin-bottom:14px}
-.dt-msg-group{
-  font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;
-  display:flex;align-items:center;gap:6px;
-}
-.dt-msg-item{
-  padding:8px 12px;border-radius:8px;margin-bottom:4px;
-  background:rgba(14,165,233,.03);border:1px solid var(--border);
-  font-size:12px;line-height:1.6;color:var(--text2);
-}
-.dt-msg-item .msg-author{font-weight:600;color:var(--cyan);margin-right:6px}
-.dt-msg-item .msg-time{font-size:11px;color:var(--text3);float:right}
-.dt-empty{text-align:center;padding:30px;color:var(--text3);font-size:13px}
-.dt-refresh{
-  display:inline-flex;align-items:center;gap:4px;padding:4px 12px;
-  font-size:11px;color:var(--text3);border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;transition:all .2s;background:transparent;
-}
-.dt-refresh:hover{color:var(--cyan);border-color:var(--cyan)}
 .qa-tag{display:inline-block;padding:3px 10px;margin:2px 4px;font-size:12px;background:#fff0f5;color:#e75a8c;border:1px solid #f0a0b8;border-radius:12px;cursor:pointer;transition:all .2s}
 .qa-tag:hover{background:#e75a8c;color:#fff}
 .qa-result-item{background:#fff;border:1px solid #f5d5e0;border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:box-shadow .2s}
@@ -814,17 +735,6 @@
     <div id="memoryDayDetail"></div>
   </div>
 
-  <!-- ===== DingTalk Workspace ===== -->
-  <div class="card dingtalk-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4AC;</span> 钉钉工作台 <button class="dt-refresh" onclick="renderDingTalk('followup')" title="刷新数据">&#x21BB; 刷新</button></div>
-    <div class="dt-tabs">
-      <button class="dt-tab active" onclick="switchDtTab(event,'followup')">&#x1F4CB; 待跟进<span class="badge" id="dtFollowupCount">0</span></button>
-      <button class="dt-tab" onclick="switchDtTab(event,'files')">&#x1F4C1; 团队文件</button>
-      <button class="dt-tab" onclick="switchDtTab(event,'activity')">&#x1F4E2; 群动态</button>
-    </div>
-    <div id="dtContent"></div>
-  </div>
-
   <!-- ===== Instant Q&A ===== -->
   <div class="card qa-card" style="grid-column: 1 / -1;">
     <div class="card-title"><span class="accent"></span><span class="icon">&#x1F50D;</span> 即时问答 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">账号归属 / 运营人 / 销转 / 旅行社</span></div>
@@ -905,37 +815,78 @@ function _routineKey(slot,k){return 'routine_'+_todayStr()+'_'+slot+'_'+k}
 // Section 1: 操盘手每日工作流
 function renderDailyRoutine(){
   var box=document.getElementById('dailyRoutineSection');
-  if(!box||!DAILY_ROUTINE.length)return;
-  var h='<div style="font-size:13px;color:#888;font-weight:600;margin-bottom:10px;padding-left:4px;">&#x1F552; 操盘手每日工作流 <span style="font-size:11px;color:#aaa;font-weight:normal;">每日重置，勾选后自动保存</span></div>';
-  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;">';
-  DAILY_ROUTINE.forEach(function(item){
-    var lsKey='routine_'+item.id;
-    var checked=false;
-    try{checked=localStorage.getItem(lsKey)==='1'}catch(e){}
-    var textDec=checked?'text-decoration:line-through;color:#bbb;':'color:#444;';
-    var catColors={'数据':'#e17055','执行':'#00b894','策略':'#6c5ce7','管理':'#fdcb6e'};
-    var catColor=catColors[item.category]||'#d63384';
-    h+='<div style="background:linear-gradient(135deg,#fff5f8,#fef0f5);border-radius:10px;padding:12px 14px;border:1px solid #f5d5e0;'+(checked?'opacity:0.6;':'')+'">';
-    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
-    h+='<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(checked?'#2ed573':'#e8a0b8')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;background:'+(checked?'#2ed573':'transparent')+';cursor:pointer;transition:all .2s;" onclick="toggleRoutine(\''+lsKey+'\',this)">';
-    if(checked)h+='<span style="color:#fff;font-size:11px;">&#10003;</span>';
-    h+='</div>';
-    h+='<span style="font-size:14px;font-weight:600;color:#d63384;'+textDec+'">'+item.title+'</span>';
-    h+='<span style="font-size:11px;color:#aaa;margin-left:auto;background:#fff0f5;padding:1px 6px;border-radius:3px;">'+item.time+'</span>';
-    h+='</div>';
-    h+='<div style="font-size:11px;color:#999;padding-left:24px;line-height:1.5;">'+item.desc+'</div>';
-    h+='<div style="margin-top:4px;padding-left:24px;"><span style="font-size:9px;background:'+catColor+';color:#fff;padding:1px 5px;border-radius:3px;">'+item.category+'</span></div>';
-    h+='</div>';
+  if(!box)return;
+  // Collect all active items from all todo sources
+  var all=[];
+  if(typeof ACTION_ITEMS!=='undefined'){
+    ACTION_ITEMS.forEach(function(t){if(!t.done)all.push({name:t.name,people:t.people,date:t.due||t.date,urgent:t.urgent,source:'会议行动项'})});
+  }
+  if(typeof TODOS!=='undefined'){
+    TODOS.forEach(function(t){if(!t.done)all.push({name:t.name,people:t.people,date:t.due,urgent:t.urgent,source:'钉钉待办'})});
+  }
+  if(typeof MEETING_TODOS!=='undefined'){
+    MEETING_TODOS.forEach(function(t){if(!t.done)all.push({name:t.name,people:t.people,date:t.date,urgent:t.urgent,source:'会议待办'})});
+  }
+  var today=new Date();today.setHours(0,0,0,0);
+  var todayStr2=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  var urgentCount=0,overdueCount=0,todayCount=0;
+  all.forEach(function(t){
+    if(t.urgent)urgentCount++;
+    if(t.date){
+      var d=new Date(t.date);
+      if(d<today)overdueCount++;
+      if(t.date===todayStr2||(t.date&&t.date.indexOf(today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate())===0))todayCount++;
+    }
   });
+  // Sort: overdue first, then urgent, then today
+  all.sort(function(a,b){
+    var aOverdue=a.date&&new Date(a.date)<today?1:0;
+    var bOverdue=b.date&&new Date(b.date)<today?1:0;
+    if(bOverdue!==aOverdue)return bOverdue-aOverdue;
+    if(a.urgent&&!b.urgent)return -1;
+    if(!a.urgent&&b.urgent)return 1;
+    return 0;
+  });
+  var topItems=all.slice(0,5);
+  var dateStr=today.getFullYear()+'年'+(today.getMonth()+1)+'月'+today.getDate()+'日';
+  var weekDays=['日','一','二','三','四','五','六'];
+  var weekDay=weekDays[today.getDay()];
+  var h='<div style="background:linear-gradient(135deg,#fff5f8 0%,#fef0f5 50%,#f8f0ff 100%);border-radius:12px;padding:16px 18px;border:1px solid #f5d5e0;margin-bottom:4px;">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">';
+  h+='<div><span style="font-size:16px;font-weight:700;color:#d63384;">&#x1F31F; 今日重点</span>';
+  h+='<span style="font-size:12px;color:#999;margin-left:8px;">'+dateStr+' 周'+weekDay+'</span></div>';
+  h+='<div style="display:flex;gap:10px;">';
+  if(overdueCount>0)h+='<span style="background:#fee2e2;color:#dc2626;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">逾期 '+overdueCount+'</span>';
+  if(urgentCount>0)h+='<span style="background:#fef3c7;color:#d97706;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">紧急 '+urgentCount+'</span>';
+  h+='<span style="background:#f0f9ff;color:#0ea5e9;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">待办 '+all.length+'</span>';
+  h+='</div></div>';
+  if(!all.length){
+    h+='<div style="text-align:center;padding:16px;color:#aaa;font-size:13px;">今天暂无待办事项，保持节奏！</div>';
+  } else {
+    h+='<div style="display:grid;gap:6px;">';
+    topItems.forEach(function(t,i){
+      var isOverdue=t.date&&new Date(t.date)<today;
+      var borderColor=isOverdue?'#fca5a5':(t.urgent?'#fbbf24':'#f5d5e0');
+      var bgColor=isOverdue?'#fef2f2':(t.urgent?'#fffbeb':'#fff');
+      h+='<div style="display:flex;align-items:center;padding:8px 12px;background:'+bgColor+';border-radius:8px;border:1px solid '+borderColor+';gap:8px;">';
+      h+='<span style="width:20px;height:20px;border-radius:50%;background:'+(isOverdue?'#dc2626':(t.urgent?'#d97706':'#e75a8c'))+';color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(i+1)+'</span>';
+      h+='<div style="flex:1;min-width:0;">';
+      h+='<div style="font-size:12px;color:#333;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>';
+      h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
+      if(t.people)h+='&#x1F464; '+t.people+' ';
+      if(t.date)h+=' &#x1F4C5; '+t.date+' ';
+      if(isOverdue)h+='<span style="color:#dc2626;font-weight:bold;">已逾期</span>';
+      h+='</div></div>';
+      h+='<span style="font-size:9px;background:#f0f0f0;color:#888;padding:1px 5px;border-radius:3px;flex-shrink:0;">'+t.source+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+    if(all.length>5){
+      h+='<div style="text-align:center;font-size:11px;color:#aaa;margin-top:6px;">还有 '+(all.length-5)+' 项待办，见下方统一待办 ↓</div>';
+    }
+  }
   h+='</div>';
   box.innerHTML=h;
-}
-function toggleRoutine(key,el){
-  var cur=false;
-  try{cur=localStorage.getItem(key)==='1'}catch(e){}
-  var nv=!cur;
-  try{localStorage.setItem(key,nv?'1':'0')}catch(e){}
-  renderDailyRoutine();
 }
 
 // ===== 统一待办（合并会议行动项+钉钉待办+会议待办） =====
@@ -2710,13 +2661,6 @@ function saveWorkMemory(){
   var mood = localStorage.getItem('zhibiao_mood_' + todayStr) || '';
   // Compute task completion stats
   var done = 0, total = 0;
-  // Count DAILY_ROUTINE checked items
-  if(typeof DAILY_ROUTINE !== 'undefined'){
-    DAILY_ROUTINE.forEach(function(item){
-      total++;
-      try{ if(localStorage.getItem('routine_'+item.id)==='1') done++; }catch(e){}
-    });
-  }
   // Count ACTION_ITEMS done items
   if(typeof ACTION_ITEMS !== 'undefined'){
     ACTION_ITEMS.forEach(function(item){
@@ -2755,12 +2699,6 @@ function getWorkMemory(dateStr){
       // Backward compatibility: if done/total missing, compute from current data
       if(mem.done === undefined || mem.total === undefined){
         mem.done = 0; mem.total = 0;
-        if(typeof DAILY_ROUTINE !== 'undefined'){
-          DAILY_ROUTINE.forEach(function(item){
-            mem.total++;
-            try{ if(localStorage.getItem('routine_'+item.id)==='1') mem.done++; }catch(e){}
-          });
-        }
         if(typeof ACTION_ITEMS !== 'undefined'){
           ACTION_ITEMS.forEach(function(item){ mem.total++; if(item.done) mem.done++; });
         }
@@ -3407,8 +3345,9 @@ function copyExtractInfo(productId, format){
 
 
 
-// ===== DingTalk Workspace =====
-var DT_FOLLOWUP = [
+// ===== (DingTalk Workspace removed - data merged into unified todos) =====
+var _DT_REMOVED = true;
+/*
   {group:'运营部门-管理',icon:'\u2699\uFE0F',items:[
     {text:'盘所有账号：搜不到=停更，搜得到=更新',level:'urgent',date:'8/10'},
     {text:'李晗星需在表格新增账号状态页',level:'urgent',date:'8/10'},
@@ -3500,98 +3439,7 @@ var DT_ACTIVITY = [
     {author:'系统',time:'8/3',text:'补卡新规：仅限忘记打卡，迟到无效，本月生效'}
   ]}
 ];
-
-var dtCurrentTab = 'followup';
-function switchDtTab(e, tab){
-  dtCurrentTab = tab;
-  var tabs = document.querySelectorAll('.dt-tab');
-  for(var i=0;i<tabs.length;i++) tabs[i].className='dt-tab'+(tabs[i]===e.target?' active':'');
-  renderDingTalk(tab);
-}
-
-function renderDingTalk(tab){
-  var el = document.getElementById('dtContent');
-  if(!tab) tab = dtCurrentTab;
-  if(tab==='followup') renderDtFollowup(el);
-  else if(tab==='files') renderDtFiles(el);
-  else if(tab==='activity') renderDtActivity(el);
-  // Update badge
-  var total = 0;
-  for(var i=0;i<DT_FOLLOWUP.length;i++){
-    for(var j=0;j<DT_FOLLOWUP[i].items.length;j++){
-      if(DT_FOLLOWUP[i].items[j].level==='urgent') total++;
-    }
-  }
-  var badge = document.getElementById('dtFollowupCount');
-  if(badge) badge.textContent = total;
-}
-
-function renderDtFollowup(el){
-  var html = '';
-  for(var i=0;i<DT_FOLLOWUP.length;i++){
-    var g = DT_FOLLOWUP[i];
-    var urgentCount = 0;
-    for(var j=0;j<g.items.length;j++) if(g.items[j].level==='urgent') urgentCount++;
-    html += '<div class="dt-group-section">';
-    html += '<div class="dt-group-title"><span class="g-icon">'+g.icon+'</span>'+g.group;
-    html += '<span class="g-count">'+g.items.length+'项'+(urgentCount?' \u00B7 '+urgentCount+'项紧急':'')+'</span>';
-    html += '</div>';
-    for(var j=0;j<g.items.length;j++){
-      var item = g.items[j];
-      html += '<div class="dt-item">';
-      html += '<span class="dt-dot '+item.level+'"></span>';
-      html += '<span class="dt-text">'+item.text+'</span>';
-      html += '<span class="dt-meta">'+item.date+'</span>';
-      html += '</div>';
-    }
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
-function renderDtFiles(el){
-  var html = '';
-  for(var i=0;i<DT_FILES.length;i++){
-    var dept = DT_FILES[i];
-    html += '<div class="dt-file-group">';
-    html += '<div class="dt-file-group-title">'+dept.icon+' '+dept.dept+' <span style="font-size:11px;color:var(--text3);font-weight:400">('+dept.files.length+'个文件)</span></div>';
-    for(var j=0;j<dept.files.length;j++){
-      var f = dept.files[j];
-      var icon = '\u1F4C4';
-      if(f.type==='folder') icon = '\u1F4C1';
-      else if(f.type==='sheet') icon = '\u1F4CA';
-      else if(f.type==='doc') icon = '\u1F4DD';
-      else if(f.type==='link') icon = '\u1F517';
-      html += '<div class="dt-file-item" onclick="window.open(\''+f.url+'\','+'_blank\')">';
-      html += '<span class="dt-file-icon">'+icon+'</span>';
-      html += '<span class="dt-file-name">'+f.name+'</span>';
-      html += '<span class="dt-file-tag '+f.type+'">'+f.tag+'</span>';
-      html += '</div>';
-    }
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
-function renderDtActivity(el){
-  var html = '';
-  for(var i=0;i<DT_ACTIVITY.length;i++){
-    var g = DT_ACTIVITY[i];
-    html += '<div class="dt-msg-section">';
-    html += '<div class="dt-msg-group">'+g.icon+' '+g.group+'</div>';
-    for(var j=0;j<g.msgs.length;j++){
-      var m = g.msgs[j];
-      html += '<div class="dt-msg-item">';
-      html += '<span class="msg-time">'+m.time+'</span>';
-      html += '<span class="msg-author">'+m.author+'</span>';
-      html += m.text;
-      html += '</div>';
-    }
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
+*/
 
 loadSavedVoice();
 initVoice();
@@ -3603,7 +3451,6 @@ try{renderSettle('ops')}catch(e){console.error('renderSettle error:',e)}
 try{renderProduct('qa')}catch(e){console.error('renderProduct error:',e)}
 try{renderDailyRoutine()}catch(e){console.error('renderDailyRoutine error:',e)}
 try{renderUnifiedTodos()}catch(e){console.error('renderUnifiedTodos error:',e)}
-try{renderDingTalk('followup')}catch(e){console.error('renderDingTalk error:',e)}
 // Safety net: ensure unified todos render even if something above fails silently
 setTimeout(function(){try{renderUnifiedTodos()}catch(e){}},1000);
 
