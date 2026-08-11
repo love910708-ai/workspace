@@ -12,4 +12,19 @@ var DAILY_ROUTINE = [
 ];
 var TODOS = [];
 var ACTION_ITEMS = [];
-var DATA_UPDATE_TIME = '2026-08-11 10:50:17';
+var MEETING_TODOS = [
+{id:'mt01',name:'盘点所有账号可搜性，搜不到的停更，搜得到的想办法更新',people:'李晗星/陈薇婷/郑艳彬',date:'2026-08-10',src:'群指令',done:false,urgent:true},
+{id:'mt02',name:'在账号信息登记表新增一页，盘到账号层面（哪些正常/哪些搜不到）',people:'李晗星',date:'2026-08-10',src:'群指令',done:false,urgent:true},
+{id:'mt03',name:'晚会时间改为每天18:00，各团队晚会提前到17:00或17:30',people:'全员',date:'2026-08-10',src:'群指令',done:false,urgent:false},
+{id:'mt04',name:'参考赣州账号剪辑风格，流量不错',people:'全员',date:'2026-08-10',src:'群指令',done:false,urgent:false},
+{id:'mt05',name:'新号认证通过后开始养号，先种草/风景再发硬广',people:'李晗星/陈薇婷',date:'2026-08-08',src:'群指令',done:false,urgent:false},
+{id:'mt06',name:'讨论新号模板方案（旧模板一举报一个准，需评估新模板）',people:'李晗星/陈薇婷',date:'2026-08-07',src:'群指令',done:false,urgent:true},
+{id:'mt07',name:'用新资质注册5-10个账号（李晗星5个+陈薇婷5个），注册完先不启用等IP隔离',people:'李晗星/陈薇婷',date:'2026-08-05',src:'群指令',done:false,urgent:false},
+{id:'mt08',name:'5个账号分配方案（福州vs仙游）',people:'陈薇婷/李晗星',date:'2026-08-05',src:'群指令',done:false,urgent:false},
+{id:'mt09',name:'安排敏娟、威锦、王洲去办手机卡',people:'陈薇婷',date:'2026-08-05',src:'群指令',done:false,urgent:false},
+{id:'mt10',name:'停更期间重点：①绿联云素材整理命名分类 ②研究思考脚本 ③所有账号风险盘点+违规检测 ④恢复更新后定位切换关联性思考',people:'全员',date:'2026-08-03',src:'群指令',done:false,urgent:true},
+{id:'mt11',name:'提交上月组员主观评分（0-10分），私发给我',people:'李晗星/陈薇婷',date:'2026-08-03',src:'群指令',done:false,urgent:false},
+{id:'mt12',name:'内容改造推进：改成8条3000+',people:'全员',date:'2026-08-01',src:'群指令',done:false,urgent:false},
+{id:'mt13',name:'考核方案调整：标题不重复/条均播放量/互动率/组长考核标准',people:'全员',date:'2026-08-01',src:'群指令',done:false,urgent:false}
+];
+var DATA_UPDATE_TIME = '2026-08-11 11:28:45';
