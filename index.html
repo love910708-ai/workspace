@@ -185,14 +185,6 @@
   .kpi-dim-item:hover{border-color:var(--purple);background:rgba(56,189,248,.05)}
   .kpi-dim-item .score{font-weight:800;color:var(--cyan)}
   .kpi-dim-item .target{color:var(--text3);font-size:11px}
-  .notes-card{grid-column:span 2}
-  .notes-area{
-    width:100%;min-height:70px;border:1px solid var(--border);border-radius:10px;
-    padding:12px;font-size:13px;font-family:inherit;resize:vertical;color:var(--text);
-    background:rgba(14,165,233,.04);transition:all .2s;
-  }
-  .notes-area:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
-  .notes-area::placeholder{color:var(--text3)}
   .toast{
     position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
     background:rgba(255,255,255,.95);border:1px solid var(--border2);color:var(--text);
@@ -380,7 +372,7 @@
     .card{padding:14px 16px;border-radius:12px}
     .card-title{font-size:14px;margin-bottom:12px}
     .phase-grid{grid-template-columns:1fr}
-    .phase-info,.kpi-card,.intel-card,.notes-card,.settle-card{grid-column:span 1}
+    .phase-info,.kpi-card,.intel-card,.settle-card{grid-column:span 1}
     .dingtalk-card{grid-column:span 1}
     .kpi-table,.settle-table{font-size:11px}
     .kpi-table th,.kpi-table td,.settle-table th,.settle-table td{padding:6px 4px}
@@ -390,7 +382,6 @@
     .holiday-item .name{font-size:12px}
     .voice-area{min-height:120px;font-size:13px;padding:12px}
     .mic-btn{padding:10px 22px;font-size:13px}
-    .notes-area{min-height:60px;font-size:12px}
     .upload-zone{padding:20px 14px}
     .upload-zone .uz-icon{font-size:28px}
     .upload-zone .uz-text{font-size:13px}
@@ -694,18 +685,11 @@
 
   <!-- ===== 今日待办 ===== -->
   <div class="card todo-card" style="grid-column: 1 / -1;">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">操盘手工作流 · 会议行动项 · 钉钉待办</span></div>
+    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4CB;</span> 今日待办 <span style="font-size:12px;color:#999;font-weight:normal;margin-left:8px;">操盘手工作流 · 统一待办</span></div>
     <!-- Section 1: 操盘手每日工作流 -->
     <div id="dailyRoutineSection" style="margin-bottom:16px;"></div>
-    <!-- Section 2: 会议行动项 -->
-    <div id="actionItemsSection" style="margin-bottom:16px;"></div>
-    <!-- Section 3: 钉钉待办 -->
-    <div style="border-top:2px solid #f5e8ee;padding-top:10px;">
-      <div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">&#x1F4CC; 钉钉待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">点击圆圈标记完成</span></div>
-      <div id="todoList"></div>
-    </div>
-    <!-- Section 4: 会议待办 (运营部门-管理群) -->
-    <div id="meetingTodosSection" style="border-top:2px solid #f5e8ee;padding-top:10px;margin-top:10px;"></div>
+    <!-- Section 2: 统一待办 -->
+    <div id="unifiedTodosSection"></div>
   </div>
 
   <!-- ===== Review Monitor ===== -->
@@ -791,12 +775,6 @@
       <button class="settle-btn secondary" onclick="resetSettle()">重置数据</button>
       <button class="settle-btn primary" onclick="exportSettle()">导出结果</button>
     </div>
-  </div>
-
-  <!-- ===== Notes ===== -->
-  <div class="card notes-card">
-    <div class="card-title"><span class="accent"></span><span class="icon">&#x1F4DD;</span> 快速备注</div>
-    <textarea class="notes-area" id="notesArea" placeholder="随手记一些想法、问题、待跟进事项..." oninput="saveNotes()"></textarea>
   </div>
 
   <!-- ===== Product Info ===== -->
@@ -960,129 +938,73 @@ function toggleRoutine(key,el){
   renderDailyRoutine();
 }
 
-// Section 2: 会议行动项
-function renderActionItems(){
-  var box=document.getElementById('actionItemsSection');
+// ===== 统一待办（合并会议行动项+钉钉待办+会议待办） =====
+function renderUnifiedTodos(){
+  var box=document.getElementById('unifiedTodosSection');
   if(!box)return;
-  var active=ACTION_ITEMS.filter(function(t){return !t.done});
-  var doneCount=ACTION_ITEMS.length-active.length;
-  var h='<div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">&#x1F4DD; 会议行动项 <span style="font-size:11px;color:#aaa;font-weight:normal;">来源：8/10运营会议 ('+doneCount+'/'+ACTION_ITEMS.length+'已完成)</span></div>';
-  if(!active.length){h+='<div style="text-align:center;color:#aaa;padding:12px;font-size:13px;">所有行动项已完成！</div>';box.innerHTML=h;return}
-  h+='<div style="display:grid;gap:6px;">';
-  active.forEach(function(t){
-    var overdue=t.due&&new Date(t.due)<new Date(new Date().toDateString());
-    var bc=t.urgent?'#ff4757':(overdue?'#ff6348':'#f0a0b8');
-    var status=overdue?'<span style="color:#ff4757;font-size:11px;font-weight:bold;">逾期</span>':
-      (t.urgent?'<span style="color:#ff6348;font-size:11px;font-weight:bold;">紧急</span>':
-      '<span style="color:#f0a0b8;font-size:11px;">进行中</span>');
-    h+='<div style="display:flex;align-items:center;padding:8px 12px;background:#fff8fa;border-radius:8px;border:1px solid #f5e0ea;gap:10px;">';
-    h+='<div onclick="markActionDone(\''+t.id+'\')" style="width:18px;height:18px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成"></div>';
-    h+='<div style="flex:1;min-width:0;">';
-    h+='<div style="font-size:12px;color:#333;font-weight:500;">'+t.name+'</div>';
-    h+='<div style="font-size:11px;color:#999;margin-top:2px;">';
-    if(t.people)h+='&#x1F464; '+t.people+' ';
-    if(t.due)h+=' &#x1F4C5; '+t.due;
-    h+='</div></div>';
-    h+='<div style="flex-shrink:0;display:flex;align-items:center;gap:6px;">';
-    h+='<span style="font-size:10px;background:#fff0f5;color:#d63384;padding:1px 6px;border-radius:4px;">'+t.src+'</span>';
-    h+=status;
-    h+='</div></div>';
+  // Collect all items with source tags
+  var all=[];
+  if(typeof ACTION_ITEMS!=='undefined'){
+    ACTION_ITEMS.forEach(function(t){all.push({id:t.id,name:t.name,people:t.people,date:t.due||t.date,src:t.src||'会议行动项',urgent:t.urgent,done:t.done,source:'会议行动项',srcColor:'#6c5ce7'})});
+  }
+  if(typeof TODOS!=='undefined'){
+    TODOS.forEach(function(t){all.push({id:t.id,name:t.name,people:t.people,date:t.due,src:t.src||'',urgent:t.urgent,done:t.done,source:'钉钉待办',srcColor:'#0984e3'})});
+  }
+  if(typeof MEETING_TODOS!=='undefined'){
+    MEETING_TODOS.forEach(function(t){all.push({id:t.id,name:t.name,people:t.people,date:t.date,src:t.src||'',urgent:t.urgent,done:t.done,source:'会议待办',srcColor:'#d63384'})});
+  }
+  var active=all.filter(function(t){return !t.done});
+  var doneCount=all.length-active.length;
+  // Sort: urgent first, then by date
+  active.sort(function(a,b){
+    if(a.urgent&&!b.urgent)return -1;
+    if(!a.urgent&&b.urgent)return 1;
+    if(a.date&&b.date)return a.date<b.date?-1:1;
+    return 0;
   });
-  h+='</div>';
-  box.innerHTML=h;
-}
-function markActionDone(id){
-  ACTION_ITEMS.forEach(function(t){if(t.id===id)t.done=true});
-  try{localStorage.setItem('done_ai_'+id,'1')}catch(e){}
-  renderActionItems();
-}
-
-// Section 4: 会议待办 (运营部门-管理群消息提取)
-function renderMeetingTodos(){
-  var box=document.getElementById('meetingTodosSection');
-  if(!box||!MEETING_TODOS.length)return;
-  var active=MEETING_TODOS.filter(function(t){return !t.done});
-  var doneCount=MEETING_TODOS.length-active.length;
-  // Group by date
-  var groups={};
-  var dateKeys=[];
-  MEETING_TODOS.forEach(function(t){
-    if(!groups[t.date])groups[t.date]=[];
-    groups[t.date].push(t);
-    if(dateKeys.indexOf(t.date)===-1)dateKeys.push(t.date);
-  });
-  dateKeys.sort().reverse();
   var h='<div style="font-size:13px;color:#888;font-weight:600;margin-bottom:8px;padding-left:4px;">';
-  h+='&#x1F4E2; 会议待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">来源：运营部门-管理群 ('+doneCount+'/'+MEETING_TODOS.length+'已完成)</span>';
-  h+='</div>';
+  h+='&#x1F4CB; 统一待办 <span style="font-size:11px;color:#aaa;font-weight:normal;">('+doneCount+'/'+all.length+'已完成)';
+  // Source legend
+  h+=' <span style="margin-left:8px;">';
+  var sources={};
+  all.forEach(function(t){if(!sources[t.source])sources[t.source]=0;});
+  var srcKeys=Object.keys(sources);
+  srcKeys.forEach(function(s){
+    var color=all.find(function(t){return t.source===s}).srcColor;
+    h+='<span style="display:inline-block;font-size:9px;background:'+color+';color:#fff;padding:1px 5px;border-radius:3px;margin-right:3px;">'+s+'</span>';
+  });
+  h+='</span></div>';
   if(!active.length){
-    h+='<div style="text-align:center;color:#aaa;padding:12px;font-size:13px;">所有会议待办已完成！</div>';
+    h+='<div style="text-align:center;color:#aaa;padding:16px;font-size:13px;">所有待办已完成！</div>';
     box.innerHTML=h;return;
   }
-  dateKeys.forEach(function(dk){
-    var items=groups[dk];
-    var gActive=items.filter(function(t){return !t.done});
-    if(!gActive.length)return;
-    h+='<div style="margin-bottom:10px;">';
-    h+='<div style="font-size:11px;color:#d63384;font-weight:600;margin-bottom:6px;padding-left:4px;">'+dk+' <span style="color:#aaa;font-weight:400;">('+gActive.length+'项待办)</span></div>';
-    h+='<div style="display:grid;gap:4px;">';
-    gActive.forEach(function(t){
-      var bc=t.urgent?'#ff4757':'#f0a0b8';
-      h+='<div style="display:flex;align-items:center;padding:7px 10px;background:#fff8fa;border-radius:7px;border:1px solid #f5e0ea;gap:8px;">';
-      h+='<div onclick="markMeetingTodoDone(\''+t.id+'\')" style="width:16px;height:16px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成"></div>';
-      h+='<div style="flex:1;min-width:0;">';
-      h+='<div style="font-size:12px;color:#333;font-weight:500;">'+t.name+'</div>';
-      h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
-      if(t.people)h+='&#x1F464; '+t.people+' ';
-      if(t.urgent)h+='<span style="color:#ff4757;font-weight:bold;">紧急</span> ';
-      h+='</div></div>';
-      h+='<span style="font-size:9px;background:#fff0f5;color:#d63384;padding:1px 5px;border-radius:3px;flex-shrink:0;">'+t.src+'</span>';
-      h+='</div>';
-    });
-    h+='</div></div>';
-  });
-  box.innerHTML=h;
-}
-function markMeetingTodoDone(id){
-  MEETING_TODOS.forEach(function(t){if(t.id===id)t.done=true});
-  try{localStorage.setItem('done_mt_'+id,'1')}catch(e){}
-  renderMeetingTodos();
-}
-
-// Section 3: 钉钉待办
-function renderTodos(){
-  var box=document.getElementById('todoList');
-  if(!box)return;
-  var active=TODOS.filter(function(t){return !t.done});
-  if(!active.length){box.innerHTML='<div style="text-align:center;color:#aaa;padding:12px;font-size:13px;">所有待办已完成！</div>';return}
-  var h='';
+  h+='<div style="display:grid;gap:5px;">';
   active.forEach(function(t){
-    var urgent=t.urgent;
-    var overdue=t.due&&new Date(t.due)<new Date(new Date().toDateString());
-    var bc=urgent?'#ff4757':(overdue?'#ff6348':'#f0a0b8');
-    var status=t.done?'<span style="color:#2ed573;font-size:12px;">已完成</span>':
-      (overdue?'<span style="color:#ff4757;font-size:12px;font-weight:bold;">已逾期</span>':
-      (urgent?'<span style="color:#ff6348;font-size:12px;font-weight:bold;">紧急</span>':
-      '<span style="color:#f0a0b8;font-size:12px;">进行中</span>'));
-    h+='<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #f5e8ee;gap:10px;">';
-    h+='<div onclick="markTodoDone(\''+t.id+'\')" style="width:20px;height:20px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成">';
-    if(t.done)h+='<span style="color:#2ed573;font-size:12px;">&#10003;</span>';
-    h+='</div>';
+    var overdue=t.date&&new Date(t.date)<new Date(new Date().toDateString());
+    var bc=t.urgent?'#ff4757':(overdue?'#ff6348':'#f0a0b8');
+    var status='';
+    if(overdue)status='<span style="color:#ff4757;font-size:10px;font-weight:bold;">逾期</span>';
+    else if(t.urgent)status='<span style="color:#ff6348;font-size:10px;font-weight:bold;">紧急</span>';
+    h+='<div style="display:flex;align-items:center;padding:8px 10px;background:#fff8fa;border-radius:7px;border:1px solid #f5e0ea;gap:8px;">';
+    h+='<div onclick="markUnifiedDone(\''+t.source+'\',\''+t.id+'\')" style="width:16px;height:16px;border-radius:50%;border:2px solid '+bc+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;" title="点击标记完成"></div>';
     h+='<div style="flex:1;min-width:0;">';
-    h+='<div style="font-size:13px;color:#333;font-weight:500;">'+t.name+'</div>';
-    h+='<div style="font-size:11px;color:#999;margin-top:3px;">';
+    h+='<div style="font-size:12px;color:#333;font-weight:500;">'+t.name+'</div>';
+    h+='<div style="font-size:10px;color:#999;margin-top:1px;">';
     if(t.people)h+='&#x1F464; '+t.people+' ';
-    if(t.due)h+=' &#x1F4C5; '+t.due;
+    if(t.date)h+=' &#x1F4C5; '+t.date;
     h+='</div></div>';
-    h+='<div style="flex-shrink:0;">'+status+'</div>';
+    h+='<span style="font-size:9px;background:'+t.srcColor+';color:#fff;padding:1px 5px;border-radius:3px;flex-shrink:0;">'+t.source+'</span>';
+    if(status)h+=status;
     h+='</div>';
   });
+  h+='</div>';
   box.innerHTML=h;
 }
-function markTodoDone(id){
-  TODOS.forEach(function(t){if(t.id===id)t.done=true});
-  try{localStorage.setItem('done_todos_'+id,'1')}catch(e){}
-  renderTodos();
+function markUnifiedDone(source,id){
+  if(source==='会议行动项'){ACTION_ITEMS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_ai_'+id,'1')}catch(e){}}
+  else if(source==='钉钉待办'){TODOS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_todos_'+id,'1')}catch(e){}}
+  else if(source==='会议待办'){MEETING_TODOS.forEach(function(t){if(t.id===id)t.done=true});try{localStorage.setItem('done_mt_'+id,'1')}catch(e){}}
+  renderUnifiedTodos();
 }
 
 function doQASearch(){
@@ -1341,16 +1263,6 @@ function loadMood(){
     const btn = document.querySelector('.mood-btn[data-mood="'+saved+'"]');
     if(btn) btn.classList.add('selected');
   }
-}
-
-// ===== Notes =====
-function loadNotes(){
-  const saved = localStorage.getItem('zhibiao_notes_' + todayStr);
-  if(saved) document.getElementById('notesArea').value = saved;
-}
-function saveNotes(){
-  localStorage.setItem('zhibiao_notes_' + todayStr, document.getElementById('notesArea').value);
-  saveWorkMemory();
 }
 
 // ===== Voice =====
@@ -2359,7 +2271,6 @@ function doManualSync(){
     btn.title = hasData ? '已同步云端数据' : '已上传本地数据';
     renderMemoryCalendar();
     loadMood();
-    loadNotes();
     setTimeout(function(){ btn.textContent = '\u2601'; btn.title = '云同步'; }, 2000);
   });
 }
@@ -2797,7 +2708,6 @@ var memoryMonth = now.getMonth();
 
 function saveWorkMemory(){
   var mood = localStorage.getItem('zhibiao_mood_' + todayStr) || '';
-  var notes = localStorage.getItem('zhibiao_notes_' + todayStr) || '';
   // Compute task completion stats
   var done = 0, total = 0;
   // Count DAILY_ROUTINE checked items
@@ -2829,7 +2739,7 @@ function saveWorkMemory(){
     });
   }
   var pct = total > 0 ? Math.round(done / total * 100) : 0;
-  var data = {date:todayStr, mood:mood, notes:notes, done:done, total:total, pct:pct};
+  var data = {date:todayStr, mood:mood, done:done, total:total, pct:pct};
   localStorage.setItem('zhibiao_memory_' + todayStr, JSON.stringify(data));
   // Real-time update: re-render calendar
   renderMemoryCalendar();
@@ -2949,7 +2859,6 @@ function showMemoryDay(dateStr){
   if(mem.mood) html += '<span>状态：' + (moodEmojis[mem.mood] || '') + '</span>';
   html += '</div>';
 
-  if(mem.notes) html += '<div style="margin-top:6px;padding:8px 12px;background:var(--glass);border-radius:8px;font-size:12px;color:var(--text2)"><strong>备注：</strong>' + mem.notes + '</div>';
   html += '</div></div>';
   detail.innerHTML = html;
 }
@@ -3693,16 +3602,13 @@ try{renderHolidays()}catch(e){console.error('renderHolidays error:',e)}
 try{renderSettle('ops')}catch(e){console.error('renderSettle error:',e)}
 try{renderProduct('qa')}catch(e){console.error('renderProduct error:',e)}
 try{renderDailyRoutine()}catch(e){console.error('renderDailyRoutine error:',e)}
-try{renderActionItems()}catch(e){console.error('renderActionItems error:',e)}
-try{renderTodos()}catch(e){console.error('renderTodos error:',e)}
-try{renderMeetingTodos()}catch(e){console.error('renderMeetingTodos error:',e)}
+try{renderUnifiedTodos()}catch(e){console.error('renderUnifiedTodos error:',e)}
 try{renderDingTalk('followup')}catch(e){console.error('renderDingTalk error:',e)}
-// Safety net: ensure meeting todos render even if something above fails silently
-setTimeout(function(){try{renderMeetingTodos()}catch(e){}},1000);
+// Safety net: ensure unified todos render even if something above fails silently
+setTimeout(function(){try{renderUnifiedTodos()}catch(e){}},1000);
 
 // Load cloud data first, then render data-dependent UI
 loadFromGitHub().then(function(){
-  loadNotes();
   loadMood();
   loadStreak();
   renderMemoryCalendar();
