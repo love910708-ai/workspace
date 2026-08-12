@@ -40,6 +40,14 @@ var MEETING_TODOS = [
 {id:'mt25',name:'新号开始养号',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10早会纪要',done:false,urgent:false},
 {id:'mt26',name:'关注新号数据：一个账号0播被关小黑屋、新号三百播放、tk视频零播',people:'李晗星/陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:true},
 {id:'mt27',name:'直营账号清理（河北作品太多目前只清理一半，继续推进）',people:'陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
-{id:'mt28',name:'已让销转刷视频转账养号，跟进执行情况',people:'陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false}
+{id:'mt28',name:'已让销转刷视频转账养号，跟进执行情况',people:'陈薇婷',date:'2026-08-11',src:'8.10晚会纪要',done:false,urgent:false},
+
+{id:'mt29',name:'寄送设备至湖南供人脸识别登录',people:'郑艳彬',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:true},
+{id:'mt30',name:'用湖南账号测试宝旅类游轮/香港一日游内容，验证是否专列产品被限流',people:'郑艳彬/湖南组',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:false},
+{id:'mt31',name:'按框架启用新号测试，每日密集发布10条以上口播视频',people:'李晗星/小黄',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:false},
+{id:'mt32',name:'汇总小黄公众号学习卡点问题并提交富贵',people:'李晗星',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:true},
+{id:'mt33',name:'协调公司懂公众号同事，基于问题清单提供支持',people:'富贵',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:false},
+{id:'mt34',name:'跟进蓝V抖音账号改简介事宜，确认技术侧能否解决',people:'李晗星',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:false},
+{id:'mt35',name:'启动付费投流测试（选好作品好账号，单条10-20元起步，测试前报备审批）',people:'全员',date:'2026-08-11',src:'8.11运营管理会议',done:false,urgent:false},
 ];
-var DATA_UPDATE_TIME = '2026-08-12 09:19:50';
+var DATA_UPDATE_TIME = '2026-08-12 09:23:54';
